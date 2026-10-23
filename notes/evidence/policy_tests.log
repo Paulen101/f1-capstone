@@ -1,0 +1,9 @@
+test_adapter_preserves_background_and_suppresses_old_stop (integration.test_policy.PolicyTests) ... ok
+test_compound_must_be_available (integration.test_policy.PolicyTests) ... ok
+test_exact_lap_and_one_stop (integration.test_policy.PolicyTests) ... ok
+test_retirement_and_invalid_schedule (integration.test_policy.PolicyTests) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

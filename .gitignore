@@ -1,0 +1,18 @@
+# Data (too big / not ours to redistribute)
+fastf1_cache/
+f1_data/
+*.xlsx
+~$*
+
+# Environments & tooling
+.venv-data/
+.venv-tum/
+.tools/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Generated output
+integration/output/
+notes/evidence/*download*.log
+notes/evidence/data_download.log

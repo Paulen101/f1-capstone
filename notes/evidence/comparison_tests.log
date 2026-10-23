@@ -1,0 +1,8 @@
+test_incorrect_format_and_missing_driver_fail (data_pipeline.test_comparison.ComparisonTests) ... ok
+test_totals_are_not_added_to_winner_again (data_pipeline.test_comparison.ComparisonTests) ... ok
+test_winner_plus_gap_and_unequal_distance (data_pipeline.test_comparison.ComparisonTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.007s
+
+OK

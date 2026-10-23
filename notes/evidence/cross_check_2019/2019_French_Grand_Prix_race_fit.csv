@@ -1,0 +1,4 @@
+compound,k0_s_rel,k1_s_per_lap,laps_used,stints,distinct_start_laps,reliable,trend_s_per_lap,clean_laps,lap_age_corr
+HARD,0.0,0.0195,527,20,11,True,0.0716,885,0.48
+MEDIUM,0.361,-0.0189,338,20,10,True,0.0716,885,0.48
+SOFT,1.047,-0.0631,20,2,1,False,0.0716,885,0.48

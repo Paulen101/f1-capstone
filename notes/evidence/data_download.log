@@ -1,0 +1,1170 @@
+2019 R08 French Grand Prix
+core           INFO 	Loading data for French Grand Prix - Race [v3.8.3]
+Loading data for French Grand Prix - Race [v3.8.3]
+req            INFO 	No cached data found for session_info. Loading data...
+No cached data found for session_info. Loading data...
+_api           INFO 	Fetching session info data...
+Fetching session info data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load session info data!
+Failed to load session info data!
+Traceback for failure in session info data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 1452, in _load_session_info
+    self._session_info = api.session_info(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1728, in session_info
+    response = fetch_page(path, 'session_info')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/SessionInfo.jsonStream
+req            INFO 	No cached data found for driver_info. Loading data...
+No cached data found for driver_info. Loading data...
+_api           INFO 	Fetching driver list...
+Fetching driver list...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+core        WARNING 	Failed to load extended driver information!
+Failed to load extended driver information!
+Exception while loading driver list
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2459, in _drivers_from_f1_api
+    f1di = api.driver_info(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1562, in driver_info
+    response = fetch_page(path, 'driver_list')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/DriverList.jsonStream
+req            INFO 	No cached data found for session_status_data. Loading data...
+No cached data found for session_status_data. Loading data...
+_api           INFO 	Fetching session status data...
+Fetching session status data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load session status data!
+Failed to load session status data!
+Traceback for failure in session status data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2136, in _load_session_status_data
+    session_status = api.session_status_data(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1360, in session_status_data
+    response = fetch_page(path, 'session_status')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/SessionStatus.jsonStream
+req            INFO 	No cached data found for lap_count. Loading data...
+No cached data found for lap_count. Loading data...
+_api           INFO 	Fetching lap count data...
+Fetching lap count data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load total lap count!
+Failed to load total lap count!
+Traceback for failure in total lap count
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2118, in _load_total_lap_count
+    lap_count = api.lap_count(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1503, in lap_count
+    response = fetch_page(path, 'lap_count')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/LapCount.jsonStream
+req            INFO 	No cached data found for track_status_data. Loading data...
+No cached data found for track_status_data. Loading data...
+_api           INFO 	Fetching track status data...
+Fetching track status data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load track status data!
+Failed to load track status data!
+Traceback for failure in track status data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2105, in _load_track_status_data
+    track_status = api.track_status_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1304, in track_status_data
+    response = fetch_page(path, 'track_status')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/TrackStatus.jsonStream
+req            INFO 	No cached data found for _extended_timing_data. Loading data...
+No cached data found for _extended_timing_data. Loading data...
+_api           INFO 	Fetching timing data...
+Fetching timing data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load timing data!
+Failed to load timing data!
+Traceback for failure in lap timing data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 1458, in _load_laps_data
+    = api._extended_timing_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 199, in _extended_timing_data
+    response = fetch_page(path, 'timing_data')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/TimingData.jsonStream
+Failed to add first lap time for driver '44'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '77'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '16'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '33'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '55'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '4'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '5'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '10'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '99'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '3'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '7'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '27'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '11'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '20'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '18'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '23'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '88'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '8'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '63'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '26'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+core        WARNING 	Failed to add first lap time from Ergast for drivers: ['44', '77', '16', '33', '55', '4', '5', '10', '99', '3', '7', '27', '11', '20', '18', '23', '88', '8', '63', '26']
+Failed to add first lap time from Ergast for drivers: ['44', '77', '16', '33', '55', '4', '5', '10', '99', '3', '7', '27', '11', '20', '18', '23', '88', '8', '63', '26']
+req            INFO 	No cached data found for weather_data. Loading data...
+No cached data found for weather_data. Loading data...
+_api           INFO 	Fetching weather data...
+Fetching weather data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load weather data!
+Failed to load weather data!
+Traceback for failure in weather data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2611, in _load_weather_data
+    weather_data = api.weather_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1654, in weather_data
+    response = fetch_page(path, 'weather_data')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/WeatherData.jsonStream
+req            INFO 	No cached data found for race_control_messages. Loading data...
+No cached data found for race_control_messages. Loading data...
+_api           INFO 	Fetching race control messages...
+Fetching race control messages...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load race control messages!
+Failed to load race control messages!
+Traceback for failure in race control messages
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2618, in _load_race_control_messages
+    race_control_messages = api.race_control_messages(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1431, in race_control_messages
+    response = fetch_page(path, 'race_control_messages')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-23_French_Grand_Prix/2019-06-23_Race/RaceControlMessages.jsonStream
+core           INFO 	Finished loading data for 20 drivers: ['44', '77', '16', '33', '5', '55', '7', '27', '4', '10', '3', '11', '18', '26', '23', '99', '20', '88', '63', '8']
+Finished loading data for 20 drivers: ['44', '77', '16', '33', '5', '55', '7', '27', '4', '10', '3', '11', '18', '26', '23', '99', '20', '88', '63', '8']
+  failed: The data you are trying to access has not been loaded yet. See `Session.load`
+2019 R09 Austrian Grand Prix
+core           INFO 	Loading data for Austrian Grand Prix - Race [v3.8.3]
+Loading data for Austrian Grand Prix - Race [v3.8.3]
+req            INFO 	No cached data found for session_info. Loading data...
+No cached data found for session_info. Loading data...
+_api           INFO 	Fetching session info data...
+Fetching session info data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load session info data!
+Failed to load session info data!
+Traceback for failure in session info data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 1452, in _load_session_info
+    self._session_info = api.session_info(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1728, in session_info
+    response = fetch_page(path, 'session_info')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/SessionInfo.jsonStream
+req            INFO 	No cached data found for driver_info. Loading data...
+No cached data found for driver_info. Loading data...
+_api           INFO 	Fetching driver list...
+Fetching driver list...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+core        WARNING 	Failed to load extended driver information!
+Failed to load extended driver information!
+Exception while loading driver list
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2459, in _drivers_from_f1_api
+    f1di = api.driver_info(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1562, in driver_info
+    response = fetch_page(path, 'driver_list')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/DriverList.jsonStream
+req            INFO 	No cached data found for session_status_data. Loading data...
+No cached data found for session_status_data. Loading data...
+_api           INFO 	Fetching session status data...
+Fetching session status data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load session status data!
+Failed to load session status data!
+Traceback for failure in session status data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2136, in _load_session_status_data
+    session_status = api.session_status_data(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1360, in session_status_data
+    response = fetch_page(path, 'session_status')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/SessionStatus.jsonStream
+req            INFO 	No cached data found for lap_count. Loading data...
+No cached data found for lap_count. Loading data...
+_api           INFO 	Fetching lap count data...
+Fetching lap count data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load total lap count!
+Failed to load total lap count!
+Traceback for failure in total lap count
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2118, in _load_total_lap_count
+    lap_count = api.lap_count(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1503, in lap_count
+    response = fetch_page(path, 'lap_count')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/LapCount.jsonStream
+req            INFO 	No cached data found for track_status_data. Loading data...
+No cached data found for track_status_data. Loading data...
+_api           INFO 	Fetching track status data...
+Fetching track status data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load track status data!
+Failed to load track status data!
+Traceback for failure in track status data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2105, in _load_track_status_data
+    track_status = api.track_status_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1304, in track_status_data
+    response = fetch_page(path, 'track_status')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/TrackStatus.jsonStream
+req            INFO 	No cached data found for _extended_timing_data. Loading data...
+No cached data found for _extended_timing_data. Loading data...
+_api           INFO 	Fetching timing data...
+Fetching timing data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load timing data!
+Failed to load timing data!
+Traceback for failure in lap timing data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 1458, in _load_laps_data
+    = api._extended_timing_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 199, in _extended_timing_data
+    response = fetch_page(path, 'timing_data')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/TimingData.jsonStream
+Failed to add first lap time for driver '16'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '77'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '44'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '7'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '4'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '5'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '33'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '10'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '99'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '20'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '11'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '27'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '18'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '3'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '8'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '88'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '55'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '23'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '26'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+Failed to add first lap time for driver '63'
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2088, in _add_first_lap_time_from_ergast
+    self._laps.loc[
+AttributeError: 'Session' object has no attribute '_laps'. Did you mean: 'laps'?
+core        WARNING 	Failed to add first lap time from Ergast for drivers: ['16', '77', '44', '7', '4', '5', '33', '10', '99', '20', '11', '27', '18', '3', '8', '88', '55', '23', '26', '63']
+Failed to add first lap time from Ergast for drivers: ['16', '77', '44', '7', '4', '5', '33', '10', '99', '20', '11', '27', '18', '3', '8', '88', '55', '23', '26', '63']
+req            INFO 	No cached data found for weather_data. Loading data...
+No cached data found for weather_data. Loading data...
+_api           INFO 	Fetching weather data...
+Fetching weather data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load weather data!
+Failed to load weather data!
+Traceback for failure in weather data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2611, in _load_weather_data
+    weather_data = api.weather_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1654, in weather_data
+    response = fetch_page(path, 'weather_data')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/WeatherData.jsonStream
+req            INFO 	No cached data found for race_control_messages. Loading data...
+No cached data found for race_control_messages. Loading data...
+_api           INFO 	Fetching race control messages...
+Fetching race control messages...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load race control messages!
+Failed to load race control messages!
+Traceback for failure in race control messages
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2618, in _load_race_control_messages
+    race_control_messages = api.race_control_messages(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1431, in race_control_messages
+    response = fetch_page(path, 'race_control_messages')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-06-30_Austrian_Grand_Prix/2019-06-30_Race/RaceControlMessages.jsonStream
+core           INFO 	Finished loading data for 20 drivers: ['33', '16', '77', '5', '44', '4', '10', '55', '7', '99', '11', '3', '27', '18', '23', '8', '26', '63', '20', '88']
+Finished loading data for 20 drivers: ['33', '16', '77', '5', '44', '4', '10', '55', '7', '99', '11', '3', '27', '18', '23', '8', '26', '63', '20', '88']
+  failed: The data you are trying to access has not been loaded yet. See `Session.load`
+2019 R12 Hungarian Grand Prix
+core           INFO 	Loading data for Hungarian Grand Prix - Race [v3.8.3]
+Loading data for Hungarian Grand Prix - Race [v3.8.3]
+req            INFO 	No cached data found for session_info. Loading data...
+No cached data found for session_info. Loading data...
+_api           INFO 	Fetching session info data...
+Fetching session info data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load session info data!
+Failed to load session info data!
+Traceback for failure in session info data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 1452, in _load_session_info
+    self._session_info = api.session_info(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1728, in session_info
+    response = fetch_page(path, 'session_info')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/SessionInfo.jsonStream
+req            INFO 	No cached data found for driver_info. Loading data...
+No cached data found for driver_info. Loading data...
+_api           INFO 	Fetching driver list...
+Fetching driver list...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+core        WARNING 	Failed to load extended driver information!
+Failed to load extended driver information!
+Exception while loading driver list
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2459, in _drivers_from_f1_api
+    f1di = api.driver_info(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1562, in driver_info
+    response = fetch_page(path, 'driver_list')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/DriverList.jsonStream
+logger      WARNING 	Failed to load result data from Ergast!
+Failed to load result data from Ergast!
+Traceback for failure in ergast result data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2516, in _get_data
+    return self._ergast.get_race_results(
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 1083, in get_race_results
+    return self._build_default_result(endpoint='results',
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 615, in _build_default_result
+    return self._build_result(
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 556, in _build_result
+    resp = cls._get(url, params)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 530, in _get
+    raise exceptions.ErgastInvalidRequestError(
+fastf1.exceptions.ErgastInvalidRequestError: Invalid request to Ergast (https://api.jolpi.ca/ergast/f1/2019/12/results.json)
+Server response: 'None'
+core        WARNING 	No result data for this session available on Ergast! (This is expected for recent sessions)
+No result data for this session available on Ergast! (This is expected for recent sessions)
+core        WARNING 	Failed to load driver list and session results!
+Failed to load driver list and session results!
+req            INFO 	No cached data found for session_status_data. Loading data...
+No cached data found for session_status_data. Loading data...
+_api           INFO 	Fetching session status data...
+Fetching session status data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load session status data!
+Failed to load session status data!
+Traceback for failure in session status data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2136, in _load_session_status_data
+    session_status = api.session_status_data(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1360, in session_status_data
+    response = fetch_page(path, 'session_status')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/SessionStatus.jsonStream
+req            INFO 	No cached data found for lap_count. Loading data...
+No cached data found for lap_count. Loading data...
+_api           INFO 	Fetching lap count data...
+Fetching lap count data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load total lap count!
+Failed to load total lap count!
+Traceback for failure in total lap count
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2118, in _load_total_lap_count
+    lap_count = api.lap_count(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1503, in lap_count
+    response = fetch_page(path, 'lap_count')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/LapCount.jsonStream
+req            INFO 	No cached data found for track_status_data. Loading data...
+No cached data found for track_status_data. Loading data...
+_api           INFO 	Fetching track status data...
+Fetching track status data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load track status data!
+Failed to load track status data!
+Traceback for failure in track status data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2105, in _load_track_status_data
+    track_status = api.track_status_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1304, in track_status_data
+    response = fetch_page(path, 'track_status')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/TrackStatus.jsonStream
+req            INFO 	No cached data found for _extended_timing_data. Loading data...
+No cached data found for _extended_timing_data. Loading data...
+_api           INFO 	Fetching timing data...
+Fetching timing data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load timing data!
+Failed to load timing data!
+Traceback for failure in lap timing data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 1458, in _load_laps_data
+    = api._extended_timing_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 199, in _extended_timing_data
+    response = fetch_page(path, 'timing_data')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/TimingData.jsonStream
+logger      WARNING 	Failed to add first lap time from Ergast!
+Failed to add first lap time from Ergast!
+Traceback for failure in first lap time
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2067, in _add_first_lap_time_from_ergast
+    response = self._ergast.get_lap_times(
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 1374, in get_lap_times
+    return self._build_default_result(endpoint='laps',
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 615, in _build_default_result
+    return self._build_result(
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 556, in _build_result
+    resp = cls._get(url, params)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/ergast/interface.py", line 530, in _get
+    raise exceptions.ErgastInvalidRequestError(
+fastf1.exceptions.ErgastInvalidRequestError: Invalid request to Ergast (https://api.jolpi.ca/ergast/f1/2019/12/laps/1.json)
+Server response: 'None'
+req            INFO 	No cached data found for weather_data. Loading data...
+No cached data found for weather_data. Loading data...
+_api           INFO 	Fetching weather data...
+Fetching weather data...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load weather data!
+Failed to load weather data!
+Traceback for failure in weather data
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2611, in _load_weather_data
+    weather_data = api.weather_data(self.api_path, livedata=livedata)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1654, in weather_data
+    response = fetch_page(path, 'weather_data')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/WeatherData.jsonStream
+req            INFO 	No cached data found for race_control_messages. Loading data...
+No cached data found for race_control_messages. Loading data...
+_api           INFO 	Fetching race control messages...
+Fetching race control messages...
+Falling back to livetiming mirror (https://livetiming-mirror.fastf1.dev)
+logger      WARNING 	Failed to load race control messages!
+Failed to load race control messages!
+Traceback for failure in race control messages
+Traceback (most recent call last):
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/logger.py", line 112, in __wrapped
+    return func(*args, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/core.py", line 2618, in _load_race_control_messages
+    race_control_messages = api.race_control_messages(self.api_path,
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 459, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1431, in race_control_messages
+    response = fetch_page(path, 'race_control_messages')
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/_api.py", line 1772, in fetch_page
+    r = Cache.requests_get(base_url_mirror + path + pages[name],
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 283, in requests_get
+    return cls._cached_request('GET', url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 327, in _cached_request
+    response = func(url, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 133, in get
+    return self.request('GET', url, params=params, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 189, in request
+    return super().request(method, url, *args, headers=headers, **kwargs)  # type: ignore
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 255, in send
+    response = self._send_and_cache(request, actions, cached_response, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/requests_cache/session.py", line 279, in _send_and_cache
+    response = super().send(request, **kwargs)
+  File "/Users/paul/Desktop/Seminar/Main/.venv-data/lib/python3.10/site-packages/fastf1/req.py", line 112, in send
+    return super().send(request, **kwargs)
+  File "/tmp/capstone_offline_pipeline.py", line 16, in send
+    raise requests.exceptions.ConnectionError('HTTP mirror missing: '+url)
+requests.exceptions.ConnectionError: HTTP mirror missing: https://livetiming-mirror.fastf1.dev/static/2019/2019-08-04_Hungarian_Grand_Prix/2019-08-04_Race/RaceControlMessages.jsonStream
+core           INFO 	Finished loading data for 0 drivers: []
+Finished loading data for 0 drivers: []
+  failed: The data you are trying to access has not been loaded yet. See `Session.load`
+2019: wrote f1_data/F1_2019_dry_races.xlsx  (0 loaded, 0 included, 3 failed)
+  Some races failed (often a rate limit). Re-run the same command later; cached races are skipped quickly.

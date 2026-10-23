@@ -1,0 +1,24 @@
+driver,in_lap,compound_before,compound_after,pitlane_s,pit_loss_s,status,red_flag_change,tyre_change,no_tyre_change,counts_as_stop,reclass_reason,slow_stop
+ALB,35,MEDIUM,HARD,21.247,21.556,green,False,True,False,True,,False
+BOT,21,MEDIUM,HARD,22.558,20.94,green,False,True,False,True,,False
+GAS,25,SOFT,HARD,22.292,22.003,green,False,True,False,True,,False
+GIO,24,SOFT,HARD,21.668,20.765,green,False,True,False,True,,False
+GRO,34,MEDIUM,HARD,22.386,23.495,green,False,True,False,True,,False
+HAM,30,MEDIUM,HARD,30.092,30.47,green,False,True,False,True,,False
+HUL,26,MEDIUM,HARD,20.795,20.221,green,False,True,False,True,,False
+KUB,19,MEDIUM,HARD,21.544,19.883,green,False,True,False,True,,False
+KVY,32,MEDIUM,HARD,24.851,24.55,green,False,True,False,True,,False
+LEC,22,SOFT,HARD,21.887,21.765,green,False,True,False,True,,False
+MAG,11,SOFT,HARD,23.275,24.641,green,False,True,False,True,,False
+MAG,13,HARD,HARD,16.333,18.364,green,False,False,True,False,penalty: DRIVE THROUGH PENALTY FOR CAR 20 (MAG) - OUT OF POSITION AT THE START (lap 13),False
+MAG,62,HARD,SOFT,22.479,22.741,green,False,True,False,True,,False
+NOR,25,SOFT,MEDIUM,21.559,22.811,green,False,True,False,True,,False
+PER,28,MEDIUM,HARD,22.386,21.473,green,False,True,False,True,,False
+RAI,23,SOFT,HARD,21.715,21.258,green,False,True,False,True,,False
+RIC,46,MEDIUM,SOFT,22.293,22.27,green,False,True,False,True,,False
+RUS,27,MEDIUM,HARD,22.76,21.997,green,False,True,False,True,,False
+SAI,41,MEDIUM,HARD,21.263,19.623,green,False,True,False,True,,False
+STR,25,MEDIUM,HARD,21.996,21.351,green,False,True,False,True,,False
+VER,31,MEDIUM,HARD,21.122,20.512,green,False,True,False,True,,False
+VET,21,SOFT,HARD,25.257,25.74,green,False,True,False,True,,False
+VET,50,HARD,SOFT,22.261,21.193,green,False,True,False,True,,False

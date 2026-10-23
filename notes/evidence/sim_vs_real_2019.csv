@@ -1,0 +1,21 @@
+Driver,Position_sim,SimulatedLaps,RaceTime_s,DrivingAtEnd,Year,Round,Event,Position_real,ClassifiedPosition,GridPosition,Abbreviation,FullName,TeamName,Status,Points,Laps,ResultTime_s,PositionError,ActualRaceTime_s,TimeComparable,TimeError_s
+VER,2,71.0,4914.6466,True,2019,9,Austrian Grand Prix,1,1,2,VER,Max Verstappen,Red Bull Racing,Finished,26,71,4921.822,1,4921.822,True,-7.1754000000000815
+LEC,1,71.0,4903.6821,True,2019,9,Austrian Grand Prix,2,2,1,LEC,Charles Leclerc,Ferrari,Finished,18,71,2.724,-1,4924.546,True,-20.863900000000285
+BOT,3,71.0,4940.0214,True,2019,9,Austrian Grand Prix,3,3,3,BOT,Valtteri Bottas,Mercedes,Finished,15,71,18.96,0,4940.782,True,-0.7606000000005224
+VET,8,70.0,4941.563963380282,True,2019,9,Austrian Grand Prix,4,4,9,VET,Sebastian Vettel,Ferrari,Finished,12,71,19.61,4,4941.432,False,
+HAM,4,71.0,4940.5214000000005,True,2019,9,Austrian Grand Prix,5,5,4,HAM,Lewis Hamilton,Mercedes,Finished,10,71,22.805,-1,4944.627,True,-4.105599999999868
+NOR,9,70.0,4969.145963380281,True,2019,9,Austrian Grand Prix,6,6,5,NOR,Lando Norris,McLaren,+1 Lap,8,70,,3,,False,
+GAS,11,70.0,4970.14596338028,True,2019,9,Austrian Grand Prix,7,7,8,GAS,Pierre Gasly,Red Bull Racing,+1 Lap,6,70,,4,,False,
+SAI,17,69.0,4922.591090140845,True,2019,9,Austrian Grand Prix,8,8,19,SAI,Carlos Sainz,McLaren,+1 Lap,4,70,,9,,False,
+RAI,6,70.0,4940.563963380282,True,2019,9,Austrian Grand Prix,9,9,6,RAI,Kimi Räikkönen,Alfa Romeo Racing,+1 Lap,2,70,,-3,,False,
+GIO,10,70.0,4969.645963380281,True,2019,9,Austrian Grand Prix,10,10,7,GIO,Antonio Giovinazzi,Alfa Romeo Racing,+1 Lap,1,70,,0,,False,
+PER,13,70.0,4971.14596338028,True,2019,9,Austrian Grand Prix,11,11,13,PER,Sergio Perez,Racing Point,+1 Lap,0,70,,2,,False,
+RIC,7,70.0,4941.063963380281,True,2019,9,Austrian Grand Prix,12,12,12,RIC,Daniel Ricciardo,Renault,+1 Lap,0,70,,-5,,False,
+HUL,15,69.0,4921.057290140845,True,2019,9,Austrian Grand Prix,13,13,15,HUL,Nico Hulkenberg,Renault,+1 Lap,0,70,,2,,False,
+STR,12,70.0,4970.645963380281,True,2019,9,Austrian Grand Prix,14,14,14,STR,Lance Stroll,Racing Point,+1 Lap,0,70,,-2,,False,
+ALB,5,70.0,4940.063963380282,True,2019,9,Austrian Grand Prix,15,15,18,ALB,Alexander Albon,Toro Rosso,+1 Lap,0,70,,-10,,False,
+GRO,18,69.0,4923.091090140844,True,2019,9,Austrian Grand Prix,16,16,11,GRO,Romain Grosjean,Haas F1 Team,+1 Lap,0,70,,2,,False,
+KVY,16,69.0,4921.557290140845,True,2019,9,Austrian Grand Prix,17,17,16,KVY,Daniil Kvyat,Toro Rosso,+1 Lap,0,70,,-1,,False,
+RUS,14,69.0,4920.557290140845,True,2019,9,Austrian Grand Prix,18,18,0,RUS,George Russell,Williams,+2 Laps,0,69,,-4,,False,
+MAG,20,69.0,4959.803190140845,True,2019,9,Austrian Grand Prix,19,19,10,MAG,Kevin Magnussen,Haas F1 Team,+2 Laps,0,69,,1,,False,
+KUB,19,69.0,4949.053090140846,True,2019,9,Austrian Grand Prix,20,20,17,KUB,Robert Kubica,Williams,+3 Laps,0,68,,-1,,False,

@@ -1,0 +1,16 @@
+Race,Quantity,FastF1,TUM,Note
+Spielberg (R9),Green pit loss (s),21.66,16.83,"TUM = in + out transit + min standstill + median team add; excludes 1.0 s cold-tyre add; FastF1 = median (in-lap + out-lap - 2 x reference clean lap), green-flag stops"
+Spielberg (R9),Fuel + track trend (s/lap faster),0.036,0.0294,TUM = fuel only (mass sensitivity x burn); FastF1 fit also includes track evolution
+Spielberg (R9),HARD k1 (s/lap),0.0308,0.0258,"TUM median of 20 drivers, 2/20 at the 0.01 floor; FastF1 race-level fit, 736 laps, reliable"
+Spielberg (R9),MEDIUM k1 (s/lap),-0.0048,0.01,"TUM median of 20 drivers, 12/20 at the 0.01 floor; FastF1 race-level fit, 413 laps, reliable"
+Spielberg (R9),SOFT k1 (s/lap),-0.0065,0.01,"TUM median of 20 drivers, 18/20 at the 0.01 floor; FastF1 race-level fit, 185 laps, reliable"
+Le Castellet (R8),Green pit loss (s),24.96,24.04,"TUM = in + out transit + min standstill + median team add; excludes 1.0 s cold-tyre add; FastF1 = median (in-lap + out-lap - 2 x reference clean lap), green-flag stops"
+Le Castellet (R8),Fuel + track trend (s/lap faster),0.0716,0.0727,TUM = fuel only (mass sensitivity x burn); FastF1 fit also includes track evolution
+Le Castellet (R8),HARD k1 (s/lap),0.0195,0.02005,"TUM median of 20 drivers, 8/20 at the 0.01 floor; FastF1 race-level fit, 527 laps, reliable"
+Le Castellet (R8),MEDIUM k1 (s/lap),-0.0189,0.01,"TUM median of 20 drivers, 14/20 at the 0.01 floor; FastF1 race-level fit, 338 laps, reliable"
+Le Castellet (R8),SOFT k1 (s/lap),-0.0631,0.01,"TUM median of 20 drivers, 20/20 at the 0.01 floor; FastF1 race-level fit, 20 laps, NOT reliable"
+Budapest (R12),Green pit loss (s),21.29,20.52,"TUM = in + out transit + min standstill + median team add; excludes 1.0 s cold-tyre add; FastF1 = median (in-lap + out-lap - 2 x reference clean lap), green-flag stops"
+Budapest (R12),Fuel + track trend (s/lap faster),0.0503,0.044,TUM = fuel only (mass sensitivity x burn); FastF1 fit also includes track evolution
+Budapest (R12),HARD k1 (s/lap),0.038,0.03075,"TUM median of 20 drivers, 0/20 at the 0.01 floor; FastF1 race-level fit, 644 laps, reliable"
+Budapest (R12),MEDIUM k1 (s/lap),0.0332,0.01895,"TUM median of 20 drivers, 10/20 at the 0.01 floor; FastF1 race-level fit, 398 laps, reliable"
+Budapest (R12),SOFT k1 (s/lap),0.0368,0.0124,"TUM median of 20 drivers, 4/20 at the 0.01 floor; FastF1 race-level fit, 226 laps, reliable"
