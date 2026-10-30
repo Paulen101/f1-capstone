@@ -331,88 +331,322 @@ def load_season(year, rounds, include_wet, cache_dir, offline=False):
 
 
 # --------------------------------------------------------------------------- Excel output
+# Data dictionary: one entry per column. Fields: (sheet, column, unit, meaning, how to use it).
+# Sheet "All" = the column means the same thing in every sheet it appears in.
+# When you add or rename a column, add it here in the same change; check_dictionary() warns on gaps.
 DICTIONARY = [
-    ("Races", "Condition", "DRY, or WET/MIXED if any lap used INTERMEDIATE/WET tyres or rainfall was recorded during the race."),
-    ("Races", "Included", "True if the race's data is in the other sheets."),
-    ("Races", "LoadStatus", "OK, NOT RUN YET (future event), or FAILED with the error. Re-run the script to retry failures."),
-    ("Laps", "LapTime_s / Sector*_s", "Lap and sector times in seconds."),
-    ("Laps", "TyreLife", "Laps on this set of tyres, including laps from earlier sessions if the set was used before."),
-    ("Laps", "FreshTyre", "True if the set was new at the start of the stint."),
-    ("Laps", "PitInTime_s / PitOutTime_s", "Session time (s) the car crossed pit entry / exit. Present on in-laps / out-laps only."),
-    ("Laps", "LapEndTime_s", "Session time (s) when the lap ended. Gap to the car ahead at a lap end = difference of LapEndTime_s on the same LapNumber."),
-    ("Laps", "SpeedST_kph", "Speed-trap speed on this lap, km/h. Max over a driver's race or qualifying approximates TUM's vel_max."),
-    ("Laps", "TrackStatus","Every status code seen during the lap: 1 green, 2 yellow, 4 safety car, 5 red flag, 6 VSC deployed, 7 VSC ending."),
-    ("Laps", "IsAccurate", "FastF1's own flag that the lap timing is trustworthy."),
-    ("Laps", "CleanLap", "Green flag, not in/out lap, not lap 1, accurate, not deleted, dry tyres. Use these laps for degradation and pace fitting."),
-    ("Stints", "TyreLifeAtStart", "Tyre age on the first lap of the stint (>1 means a used set)."),
-    ("Stints", "MedianCleanLapTime_s", "Median of clean laps in the stint. NOT fuel-corrected."),
-    ("PitStops", "PitLaneTime_s", "Pit entry to pit exit (stationary time + lane driving). This is not the full pit loss vs a racing lap."),
-    ("PitStops", "InLapTime_s / OutLapTime_s", "Lap times of the laps either side of the stop. Pit loss = (in + out) - 2 x reference clean lap."),
-    ("PitStops", "UnderSCorVSC", "Stop made on a lap with SC/VSC. These stops are cheaper and should be modelled separately."),
-    ("PitStops", "UnderRedFlag", "Tyre change during a red flag. Excluded from MedianPitLaneTime_s."),
-    ("TrackStatus", "Status", "Track status change events with session time. Codes as in Laps.TrackStatus."),
-    ("Weather", "*", "Roughly one sample per minute during the race. Temperatures in C, wind in m/s."),
-    ("Results", "ResultTime_s", "Results Time field from FastF1 in seconds. The winner's value is the total race time; check whether other drivers show totals or gaps before using it."),
-    ("TrackSummary", "SCDeployments / VSCDeployments", "Number of times the status switched to 4 / 6 during the session."),
-    ("TrackSummary", "MedianPitLaneTime_s", "Median pit-lane time for stops not made under a red flag."),
-    ("TrackSummary", "CleanLapShare", "Fraction of all laps that are CleanLap."),
+    # ---- columns shared by several sheets
+    ("All", "Year", "-", "Season.", "Join key. Year + Round = one race."),
+    ("All", "Round", "-", "Round number in that season's calendar (1 = first race of the year).", "Join key. Use Year + Round, not Event, to join sheets."),
+    ("All", "Event", "-", "Official Grand Prix name, e.g. 'Italian Grand Prix'.", "Readable label only."),
+    ("All", "Driver", "-", "Three-letter driver code, e.g. VER = Verstappen, HAM = Hamilton (full names in Results.FullName).", "Join key. Year + Round + Driver = one driver's race."),
+    ("All", "Team", "-", "Constructor (team) name.", "Car pace differs by team; pace and degradation are fitted per team or car."),
+    ("All", "SessionTime_s", "s", "Seconds since the session clock started. The clock starts before lights out, so this is NOT race time.", "Lines up events across sheets: track status changes, weather samples and lap end times share this clock."),
+    ("All", "Compound", "-", "Tyre compound: SOFT, MEDIUM or HARD (dry), INTERMEDIATE or WET. See the Legend sheet: the names are relative to each race weekend.", "Pace and wear are fitted per compound."),
+    ("All", "FreshTyre", "True/False", "True if the tyre set was new (never used, not even in qualifying) when fitted.", "Used sets start the stint with some wear already."),
+    ("All", "Stint", "-", "Stint number: 1 = tyres the driver started on, 2 = after the first tyre change, and so on.", "Number of stints - 1 = number of pit stops."),
+
+    # ---- Races: one row per event in the season's calendar
+    ("Races", "Country", "-", "Country of the event.", ""),
+    ("Races", "Location", "-", "City or circuit name.", ""),
+    ("Races", "Date", "date", "Race day.", ""),
+    ("Races", "Condition", "-", "DRY, or WET/MIXED if any lap used INTERMEDIATE/WET tyres or rain was recorded during the race.", "Project scope is DRY races only. WET/MIXED races are excluded from the other sheets."),
+    ("Races", "WetLapCount", "laps", "Total laps (all drivers together) driven on INTERMEDIATE or WET tyres.", "Reason for exclusion."),
+    ("Races", "RainfallDuringRace", "True/False", "True if the official weather feed reported rain at any point between race start and finish.", "Reason for exclusion."),
+    ("Races", "Included", "True/False", "True if this race's data is in the other sheets.", "False = excluded (see ExcludeReason) or not loaded (see LoadStatus)."),
+    ("Races", "ExcludeReason", "-", "Why a loaded race was left out, e.g. '12 laps on INTERMEDIATE/WET'.", ""),
+    ("Races", "LoadStatus", "-", "OK; NOT RUN YET (race is in the future); or FAILED with the download error.", "FAILED races can be retried by re-running the script."),
+
+    # ---- TrackSummary: one row per included race
+    ("TrackSummary", "RaceLaps", "laps", "Laps completed by the winner (the race distance, unless the race was shortened).", ""),
+    ("TrackSummary", "Drivers", "drivers", "Drivers who completed at least one lap.", ""),
+    ("TrackSummary", "Classified", "drivers", "Drivers officially classified at the finish (blank if results data is missing).", ""),
+    ("TrackSummary", "MeanStopsPerClassifiedDriver", "stops", "Average number of pit stops made by classified drivers.", "About 1 = mostly one-stop race, about 2 = two-stop. Shows how strategy-heavy the track is."),
+    ("TrackSummary", "MedianPitLaneTime_s", "s", "Median time from pit entry to pit exit, excluding stops under a red flag.", "Part of the pit loss. Full pit loss also includes slowing for the in-lap and accelerating on the out-lap (see PitStops)."),
+    ("TrackSummary", "StopsUnderSCorVSC", "stops", "Pit stops made on a lap with a safety car or virtual safety car.", "These stops cost less time, so they distort average pit loss."),
+    ("TrackSummary", "SCDeployments", "count", "Times the safety car was deployed.", "Safety-car frequency per track feeds the simulator's random-event model."),
+    ("TrackSummary", "VSCDeployments", "count", "Times the virtual safety car was deployed.", "As above, for the VSC."),
+    ("TrackSummary", "RedFlags", "count", "Times the race was stopped with a red flag.", "Drivers can change tyres for free under a red flag."),
+    ("TrackSummary", "CleanLapShare", "0-1", "Share of all laps that are clean laps (0.85 = 85%).", "How much usable pace data the race gives."),
+    ("TrackSummary", "CompoundsUsed", "-", "Compounds that appear in the race.", ""),
+    ("TrackSummary", "MeanAirTemp_C", "degC", "Average air temperature during the race.", "Hot races usually mean more tyre wear."),
+    ("TrackSummary", "MeanTrackTemp_C", "degC", "Average track surface temperature during the race.", "As above; track temperature matters more than air temperature."),
+
+    # ---- Laps: one row per lap per driver
+    ("Laps", "DriverNumber", "-", "Car number.", ""),
+    ("Laps", "LapNumber", "lap", "Lap of the race, starting at 1.", ""),
+    ("Laps", "Position", "1-20", "Race position at the end of this lap (1 = leading).", "Blank in rare cases where timing has no position (e.g. the lap a car retires)."),
+    ("Laps", "LapTime_s", "s", "Time to complete the lap. Blank if timing did not record it.", "Raw lap time. Use only CleanLap = True laps to fit pace and wear."),
+    ("Laps", "Sector1_s", "s", "Time for the first of the three timing sectors of the lap.", ""),
+    ("Laps", "Sector2_s", "s", "Time for the second sector.", ""),
+    ("Laps", "Sector3_s", "s", "Time for the third sector.", ""),
+    ("Laps", "TyreLife", "laps", "Laps driven on this tyre set, counting this lap, plus any laps the set did earlier in the weekend.", "Tyre age: the main input for tyre wear."),
+    ("Laps", "PitInTime_s", "s (session clock)", "When the car entered the pit lane. Only filled on in-laps.", ""),
+    ("Laps", "PitOutTime_s", "s (session clock)", "When the car left the pit lane. Only filled on out-laps (and lap 1 for pit-lane starters).", ""),
+    ("Laps", "LapStartTime_s", "s (session clock)", "When the lap started.", ""),
+    ("Laps", "LapEndTime_s", "s (session clock)", "When the lap ended.", "Gap to the car ahead after lap N = difference in LapEndTime_s between the two drivers on lap N."),
+    ("Laps", "SpeedST_kph", "km/h", "Speed at the speed trap on this lap.", "A driver's maximum approximates top speed (TUM's vel_max)."),
+    ("Laps", "TrackStatus", "codes", "Every track status code seen during the lap, joined together. '1' = all green; '124' = green, then yellow, then safety car. Excel may show it as a number: read it digit by digit. Codes in the Legend sheet.", "Used to flag safety-car and yellow-flag laps."),
+    ("Laps", "Deleted", "True/False", "True if the stewards deleted this lap time (usually track limits).", ""),
+    ("Laps", "IsAccurate", "True/False", "FastF1's check that the lap's timing data is consistent and trustworthy.", "False laps are left out of clean laps."),
+    ("Laps", "IsInLap", "True/False", "True if the driver entered the pits at the end of this lap.", "In-laps are slower and are not clean laps."),
+    ("Laps", "IsOutLap", "True/False", "True if this lap started from the pit exit (lap 1 is never counted).", "Out-laps are slower (cold tyres, pit lane) and are not clean laps."),
+    ("Laps", "GreenFlag", "True/False", "True if the whole lap was under green flag (TrackStatus is exactly '1').", ""),
+    ("Laps", "Yellow", "True/False", "True if there was a yellow flag somewhere on track during the lap.", ""),
+    ("Laps", "SC", "True/False", "True if the safety car was out at any point during the lap.", "Pitting under the safety car is cheap: the field is slow, so less time is lost."),
+    ("Laps", "VSC", "True/False", "True if a virtual safety car was out (or ending) during the lap.", "Same idea as SC, smaller effect."),
+    ("Laps", "RedFlag", "True/False", "True if the race was red-flagged during the lap.", ""),
+    ("Laps", "CleanLap", "True/False", "True if the lap is representative racing pace: green flag, not lap 1, not an in- or out-lap, accurate, not deleted, dry tyres.", "Only these laps are used to fit pace and tyre wear."),
+
+    # ---- Stints: one row per stint (one tyre set) per driver
+    ("Stints", "StartLap", "lap", "First lap of the stint.", ""),
+    ("Stints", "EndLap", "lap", "Last lap of the stint (the in-lap, or the final lap).", ""),
+    ("Stints", "StintLaps", "laps", "Laps recorded in the stint.", "Stint length: how long a set lasted."),
+    ("Stints", "TyreLifeAtStart", "laps", "Tyre age on the first lap of the stint. 1 = new set; more than 1 = used set.", ""),
+    ("Stints", "CleanLaps", "laps", "Clean laps in the stint.", "Few clean laps = an unreliable wear estimate for this stint."),
+    ("Stints", "MedianCleanLapTime_s", "s", "Median lap time of the stint's clean laps. NOT fuel-corrected.", "Cars get lighter as fuel burns, which hides some tyre wear. Correct for fuel before fitting wear."),
+    ("Stints", "BestCleanLapTime_s", "s", "Fastest clean lap of the stint.", ""),
+
+    # ---- PitStops: one row per pit stop
+    ("PitStops", "StopNumber", "-", "1 = the driver's first stop of the race, 2 = second, and so on.", ""),
+    ("PitStops", "InLap", "lap", "Lap at the end of which the driver pitted.", "This is the decision the project models: which lap to pit on."),
+    ("PitStops", "CompoundBefore", "-", "Compound on the car before the stop.", ""),
+    ("PitStops", "CompoundAfter", "-", "Compound fitted at the stop. Blank if there was no out-lap.", ""),
+    ("PitStops", "PitLaneTime_s", "s", "Pit entry to pit exit: driving the pit lane at the speed limit plus standing still.", "NOT the full pit loss. Pit loss = (InLapTime_s + OutLapTime_s) - 2 x a normal clean lap."),
+    ("PitStops", "InLapTime_s", "s", "Lap time of the in-lap.", "Used to compute pit loss."),
+    ("PitStops", "OutLapTime_s", "s", "Lap time of the out-lap.", "Used to compute pit loss."),
+    ("PitStops", "TrackStatusInLap", "codes", "Track status codes during the in-lap (same format as Laps.TrackStatus).", ""),
+    ("PitStops", "UnderSCorVSC", "True/False", "True if the stop was made on a safety-car or VSC lap.", "Cheap stops. Kept, but modelled separately from green-flag stops."),
+    ("PitStops", "UnderRedFlag", "True/False", "True if the tyre change happened during a red flag.", "Free tyre change; left out of pit-loss averages."),
+    ("PitStops", "Note", "-", "Data caveat, e.g. no out-lap because the car retired in the pits.", ""),
+
+    # ---- TrackStatus: one row per change of track status
+    ("TrackStatus", "Status", "code", "New track status code from this moment on. Codes in the Legend sheet.", ""),
+    ("TrackStatus", "Message", "-", "Text for the code: AllClear, Yellow, SCDeployed, Red, VSCDeployed, VSCEnding.", ""),
+
+    # ---- Weather: about one sample per minute during the race
+    ("Weather", "AirTemp", "degC", "Air temperature.", ""),
+    ("Weather", "TrackTemp", "degC", "Track surface temperature.", "Higher track temperature usually means more tyre wear."),
+    ("Weather", "Humidity", "%", "Relative humidity.", ""),
+    ("Weather", "Pressure", "mbar", "Air pressure.", ""),
+    ("Weather", "Rainfall", "True/False", "True if rain was falling at this sample.", "Used to classify races as DRY or WET/MIXED."),
+    ("Weather", "WindSpeed", "m/s", "Wind speed.", ""),
+    ("Weather", "WindDirection", "degrees", "Wind direction, 0-359 (0 = north, 90 = east).", ""),
+
+    # ---- Results: one row per driver per race (official classification)
+    ("Results", "Position", "1-20", "Finishing position. Retired drivers are also given a number here.", "Use ClassifiedPosition to tell finishers from retirements."),
+    ("Results", "ClassifiedPosition", "-", "Official result: a number, or a letter for drivers not classified (R retired, D disqualified, etc.; see Legend).", "The simulator's finishing order is compared against this."),
+    ("Results", "GridPosition", "1-20", "Starting position. 0 = started from the pit lane.", ""),
+    ("Results", "Abbreviation", "-", "Three-letter driver code (same as Driver in other sheets).", "Join key with Driver."),
+    ("Results", "FullName", "-", "Driver's full name.", ""),
+    ("Results", "TeamName", "-", "Team name.", ""),
+    ("Results", "Status", "-", "Finished; '+1 Lap' or 'Lapped' = finished one or more laps behind the winner; anything else = retirement reason (e.g. Engine, Collision).", ""),
+    ("Results", "Points", "points", "Championship points scored.", ""),
+    ("Results", "Laps", "laps", "Laps completed.", ""),
+    ("Results", "ResultTime_s", "s", "Winner: total race time. Other drivers on the winner's lap: gap behind the winner. Lapped drivers: not a usable gap (ignore it).", "Compare race times only for drivers on the lead lap."),
+
+    # ---- this file's own sheets
+    ("DataDictionary", "Unit", "-", "Unit of the column. s = seconds; s (session clock) = seconds on the session clock; True/False = yes/no flag; '-' = text or ID.", ""),
+    ("DataDictionary", "How it is used", "-", "Why the column matters for the pit-stop model, or a caution when reading it.", ""),
 ]
-SHEET_ORDER = ["README", "Races", "TrackSummary", "Laps", "Stints", "PitStops",
-               "TrackStatus", "Weather", "Results", "DataDictionary"]
+
+# Code lists for the Legend sheet: (group, code, meaning).
+LEGEND = [
+    ("How to read codes", "TrackStatus", "Laps.TrackStatus lists every code seen during the lap, joined: '1' = all green; '12' = green then yellow; '124' = green, yellow, then safety car. Read it digit by digit."),
+    ("TrackStatus code", "1", "Track clear (green)."),
+    ("TrackStatus code", "2", "Yellow flag somewhere on track: no overtaking in that zone."),
+    ("TrackStatus code", "4", "Safety car deployed: field bunches up behind it at reduced speed."),
+    ("TrackStatus code", "5", "Red flag: race stopped, cars go to the pit lane and may change tyres for free."),
+    ("TrackStatus code", "6", "Virtual safety car (VSC) deployed: every driver must slow to a set lap delta; gaps stay roughly the same."),
+    ("TrackStatus code", "7", "VSC ending: racing resumes shortly."),
+    ("Compound", "SOFT / MEDIUM / HARD", "Dry tyres. For each race Pirelli picks three of its compounds (C1 = hardest ... C5/C6 = softest) and names them HARD, MEDIUM, SOFT. So SOFT at one track can be a different rubber from SOFT at another: compare compounds within a race, not across tracks."),
+    ("Compound", "Faster vs longer", "SOFT is fastest but wears quickest; HARD is slowest but lasts longest."),
+    ("Compound", "Two-compound rule", "In a dry race each driver must use at least two different dry compounds, so at least one pit stop is required."),
+    ("Compound", "INTERMEDIATE / WET", "Rain tyres. Any lap on these makes the race WET/MIXED and it is excluded."),
+    ("Compound", "UNKNOWN / blank", "Timing did not record the compound."),
+    ("Races.Condition", "DRY", "No laps on rain tyres and no rainfall recorded during the race. In scope."),
+    ("Races.Condition", "WET/MIXED", "Rain tyres used or rainfall recorded. Out of scope; excluded."),
+    ("Races.LoadStatus", "OK", "Race downloaded and processed."),
+    ("Races.LoadStatus", "NOT RUN YET", "Race is later in the season."),
+    ("Races.LoadStatus", "FAILED: ...", "Download failed (usually a rate limit or missing login). Re-run the script."),
+    ("Results.ClassifiedPosition", "number", "Official finishing position."),
+    ("Results.ClassifiedPosition", "R", "Retired."),
+    ("Results.ClassifiedPosition", "D", "Disqualified."),
+    ("Results.ClassifiedPosition", "E", "Excluded."),
+    ("Results.ClassifiedPosition", "W", "Withdrawn (did not start)."),
+    ("Results.ClassifiedPosition", "F", "Failed to qualify."),
+    ("Results.ClassifiedPosition", "N", "Not classified (finished but completed too little of the race distance)."),
+    ("Results.GridPosition", "0", "Started from the pit lane."),
+    ("Terms", "Stint", "The laps driven on one set of tyres, between two pit stops."),
+    ("Terms", "In-lap / out-lap", "The lap into the pits and the lap back out of them. Both are slower than normal laps."),
+    ("Terms", "Pit loss", "Total time a stop costs compared with staying out: about (in-lap + out-lap) - 2 x a normal lap. Larger than PitLaneTime_s."),
+    ("Terms", "Clean lap", "A lap that shows true racing pace: green flag, no pit stop, not lap 1, accurate timing, dry tyres."),
+    ("Terms", "Degradation (wear)", "How much slower a tyre gets each lap as it wears, in seconds per lap."),
+    ("Terms", "Session clock", "Columns ending in _s marked 'session clock' count from when timing started, not from lights out."),
+    ("Cells", "blank", "Not recorded, or does not apply (e.g. PitInTime_s on a lap with no stop)."),
+    ("Cells", "True / False", "Yes / no flag."),
+]
+
+# What one row means in each sheet (shown in README and as the first lines of each sheet's guide).
+SHEET_GUIDE = [
+    ("DataDictionary", "Every column in this file: unit, meaning and how it is used. Also shown when you hover over a column header."),
+    ("Legend", "Codes and terms: track status codes, tyre compounds, result letters."),
+    ("Races", "One row per race in the season's calendar, including excluded and future races, with the reason."),
+    ("TrackSummary", "One row per included race: laps, stops, safety cars, pit-lane time, temperatures. Start here to compare tracks."),
+    ("Laps", "One row per lap per driver. The raw data everything else is built from."),
+    ("Stints", "One row per stint (one set of tyres) per driver."),
+    ("PitStops", "One row per pit stop."),
+    ("TrackStatus", "One row each time the track status changed (green, yellow, safety car, VSC, red flag)."),
+    ("Weather", "About one row per minute of the race."),
+    ("Results", "One row per driver per race: the official result."),
+]
+SHEET_ORDER = ["README", "DataDictionary", "Legend", "Races", "TrackSummary", "Laps", "Stints",
+               "PitStops", "TrackStatus", "Weather", "Results"]
 
 
-def readme_frame(year, include_wet, races):
+def dictionary_lookup():
+    """(sheet, column) -> (unit, meaning, use). Sheet-specific entries win over 'All'."""
+    shared = {col: (u, m, h) for s, col, u, m, h in DICTIONARY if s == "All"}
+    specific = {(s, col): (u, m, h) for s, col, u, m, h in DICTIONARY if s != "All"}
+    return lambda sheet, col: specific.get((sheet, col)) or shared.get(col)
+
+
+def check_dictionary(sheets):
+    """Warn about any column that has no dictionary entry (keeps the legend complete)."""
+    lookup = dictionary_lookup()
+    missing = [f"{name}.{col}" for name, df in sheets.items()
+               if name not in ("README", "DataDictionary", "Legend")
+               for col in df.columns if lookup(name, col) is None]
+    if missing:
+        log.warning("Columns missing from DICTIONARY (add them): %s", ", ".join(missing))
+    return missing
+
+
+def dictionary_frame(sheets):
+    """Dictionary rows for the columns actually in this workbook, in sheet order."""
+    lookup = dictionary_lookup()
+    rows = []
+    for name in SHEET_ORDER:
+        df = sheets.get(name)
+        if df is None or not len(df.columns) or name in ("README", "DataDictionary", "Legend"):
+            continue
+        for col in df.columns:
+            unit, meaning, use = lookup(name, col) or ("", "(not documented)", "")
+            rows.append((name, col, unit, meaning, use))
+    return pd.DataFrame(rows, columns=["Sheet", "Column", "Unit", "Meaning", "How it is used"])
+
+
+def readme_frame(year, include_wet, races, generated=None):
     import importlib.metadata as md
     try:
         ff1v = md.version("fastf1")
     except Exception:
         ff1v = "unknown"
     n_inc = int(races["Included"].fillna(False).sum()) if not races.empty else 0
-    return pd.DataFrame({"Item": [
-        "Season", "Generated (UTC)", "Source", "Session type", "Filter",
-        "Races included", "Races in schedule", "Time units", "Notes"],
-        "Value": [
-        year, datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"), f"FastF1 {ff1v}",
-        "Grand Prix race only (sprints excluded)",
-        "All races" if include_wet else "Dry races only (see Races sheet for exclusions)",
-        n_inc, len(races), "Seconds",
-        "Generated by f1_to_excel.py. Do not edit by hand; re-run the script instead."]})
+    items = [
+        ("Season", year),
+        ("Generated (UTC)", generated or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")),
+        ("Source", f"Official F1 timing data via the FastF1 Python library ({ff1v})"),
+        ("Session type", "Grand Prix race only (sprints, practice and qualifying excluded)"),
+        ("Filter", "All races" if include_wet else "Dry races only (see Races sheet for exclusions and reasons)"),
+        ("Races included", n_inc),
+        ("Races in schedule", len(races)),
+        ("Units", "Times in seconds (s), speeds in km/h, temperatures in degC. Every column's unit is in DataDictionary."),
+        ("Column meanings", "Hover over any column header to see what it means, or open the DataDictionary sheet."),
+        ("How sheets connect", "Year + Round identify a race; Year + Round + Driver identify one driver's race. Use these to join sheets."),
+    ]
+    items += [(f"Sheet: {name}", text) for name, text in SHEET_GUIDE]
+    items.append(("Notes", "Generated by f1_to_excel.py. Do not edit by hand; re-run the script instead."))
+    return pd.DataFrame(items, columns=["Item", "Value"])
 
 
 def write_workbook(path, sheets):
-    from openpyxl.styles import Alignment, Font, PatternFill
-    from openpyxl.utils import get_column_letter
     with pd.ExcelWriter(path, engine="openpyxl") as xw:
         for name in SHEET_ORDER:
             if name in sheets and not sheets[name].empty:
                 sheets[name].to_excel(xw, sheet_name=name, index=False)
-        wb = xw.book
-        head_font = Font(name="Arial", bold=True, color="FFFFFF")
-        head_fill = PatternFill("solid", fgColor="1F3864")
-        body_font = Font(name="Arial", size=10)
-        for ws in wb.worksheets:
+        style_workbook(xw.book)
+
+
+def style_workbook(wb):
+    """Header colours, hover notes from DICTIONARY, filters, column widths."""
+    from openpyxl.comments import Comment
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+    lookup = dictionary_lookup()
+    docs = ("README", "DataDictionary", "Legend")
+    head_font = Font(name="Arial", bold=True, color="FFFFFF")
+    head_fill = PatternFill("solid", fgColor="1F3864")
+    doc_fill = PatternFill("solid", fgColor="7F6000")
+    body_font = Font(name="Arial", size=10)
+    for ws in wb.worksheets:
+        for row in ws.iter_rows(min_row=2):
+            for c in row:
+                c.font = body_font
+        for c in ws[1]:
+            c.font = head_font
+            c.fill = doc_fill if ws.title in docs else head_fill
+            c.alignment = Alignment(vertical="center")
+            entry = None if ws.title in docs else lookup(ws.title, c.value)
+            if entry:  # hover note on the header: meaning, unit, how it is used
+                unit, meaning, use = entry
+                text = meaning + (f"\nUnit: {unit}" if unit and unit != "-" else "") + (f"\n{use}" if use else "")
+                note = Comment(text, "f1_to_excel")
+                note.width, note.height = 320, 40 + 16 * (len(text) // 45 + text.count("\n") + 1)
+                c.comment = note
+        ws.freeze_panes = "A2"
+        if ws.max_row > 1:
+            ws.auto_filter.ref = ws.dimensions
+        for i, col in enumerate(ws.iter_cols(min_row=1, max_row=min(ws.max_row, 200)), start=1):
+            width = max(len(str(c.value)) if c.value is not None else 0 for c in col)
+            ws.column_dimensions[get_column_letter(i)].width = min(max(width + 2, 8), 60)
+        if ws.title in docs:
+            wide = {"README": {"A": 26, "B": 110},
+                    "DataDictionary": {"A": 16, "B": 30, "C": 18, "D": 70, "E": 70},
+                    "Legend": {"A": 28, "B": 24, "C": 110}}[ws.title]
+            for letter, w in wide.items():
+                ws.column_dimensions[letter].width = w
             for row in ws.iter_rows(min_row=2):
                 for c in row:
-                    c.font = body_font
-            for c in ws[1]:
-                c.font, c.fill = head_font, head_fill
-                c.alignment = Alignment(vertical="center")
-            ws.freeze_panes = "A2"
-            if ws.max_row > 1:
-                ws.auto_filter.ref = ws.dimensions
-            for i, col in enumerate(ws.iter_cols(min_row=1, max_row=min(ws.max_row, 200)), start=1):
-                width = max(len(str(c.value)) if c.value is not None else 0 for c in col)
-                ws.column_dimensions[get_column_letter(i)].width = min(max(width + 2, 8), 60)
-            if ws.title in ("README", "DataDictionary"):
-                ws.column_dimensions["B" if ws.title == "README" else "C"].width = 100
-                for row in ws.iter_rows(min_row=2):
-                    for c in row:
-                        c.alignment = Alignment(wrap_text=True, vertical="top")
+                    c.alignment = Alignment(wrap_text=True, vertical="top")
+
+
+def relabel_workbook(path):
+    """Refresh README, DataDictionary, Legend and the header notes of an existing workbook,
+    without re-downloading anything. Data sheets are left exactly as they are."""
+    import openpyxl
+    path = Path(path)
+    old_readme = pd.read_excel(path, sheet_name="README")
+    generated = dict(zip(old_readme["Item"], old_readme["Value"])).get("Generated (UTC)")
+    races = pd.read_excel(path, sheet_name="Races")
+    wb = openpyxl.load_workbook(path)
+    for name in ("README", "DataDictionary", "Legend"):
+        if name in wb.sheetnames:
+            del wb[name]
+    frames = {ws.title: pd.DataFrame(columns=[c.value for c in ws[1]]) for ws in wb.worksheets}
+    check_dictionary(frames)
+    docs = {
+        "README": readme_frame(int(races["Year"].iloc[0]), not path.name.endswith("_dry_races.xlsx"),
+                               races, generated=generated),
+        "DataDictionary": dictionary_frame(frames),
+        "Legend": pd.DataFrame(LEGEND, columns=["Group", "Code / term", "Meaning"]),
+    }
+    for name, df in docs.items():
+        ws = wb.create_sheet(name)
+        ws.append(list(df.columns))
+        for row in df.itertuples(index=False):
+            ws.append([None if pd.isna(v) else v for v in row])
+    wb._sheets.sort(key=lambda ws: SHEET_ORDER.index(ws.title) if ws.title in SHEET_ORDER else 99)
+    wb.active = 0
+    style_workbook(wb)
+    wb.save(path)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--years", type=int, nargs="+", required=True)
+    ap.add_argument("--years", type=int, nargs="+")
+    ap.add_argument("--relabel", nargs="+", metavar="XLSX",
+                    help="only refresh the legends (README, DataDictionary, Legend, header notes) of existing workbooks")
     ap.add_argument("--rounds", type=int, nargs="*", help="only these round numbers (for testing)")
     ap.add_argument("--include-wet", action="store_true", help="keep wet/mixed races")
     ap.add_argument("--out", default="f1_data", help="output folder for workbooks")
@@ -422,6 +656,13 @@ def main():
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    if args.relabel:
+        for f in args.relabel:
+            relabel_workbook(f)
+            log.info("relabelled %s", f)
+        return
+    if not args.years:
+        ap.error("--years is required (or use --relabel)")
     logging.getLogger("fastf1").setLevel(logging.WARNING)
     out, cache = Path(args.out), Path(args.cache)
     out.mkdir(parents=True, exist_ok=True)
@@ -431,7 +672,9 @@ def main():
         races, sheets = load_season(year, args.rounds, args.include_wet, cache, offline=args.offline)
         sheets["Races"] = races
         sheets["README"] = readme_frame(year, args.include_wet, races)
-        sheets["DataDictionary"] = pd.DataFrame(DICTIONARY, columns=["Sheet", "Column", "Meaning"])
+        sheets["Legend"] = pd.DataFrame(LEGEND, columns=["Group", "Code / term", "Meaning"])
+        check_dictionary(sheets)
+        sheets["DataDictionary"] = dictionary_frame(sheets)
         suffix = "all_races" if args.include_wet else "dry_races"
         path = out / f"F1_{year}_{suffix}.xlsx"
         write_workbook(path, sheets)
