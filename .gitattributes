@@ -1,0 +1,6 @@
+# Shell scripts must keep LF, or bash fails on Windows checkouts with core.autocrlf=true.
+*.sh text eol=lf
+*.command text eol=lf
+
+# TUM snapshot stays byte-identical to notes/tum_upstream_manifest.json on every platform.
+race-simulation/** -text
