@@ -10,7 +10,9 @@
 # Every run goes through run_experiment.py, which asserts that the simulator executed
 # exactly the requested stop (pitinlap on N, pitoutlap on N+1).
 set -euo pipefail
-PY=${PY:-.venv-tum/bin/python}
+VENV_PY=.venv-tum/bin/python
+if [ -e .venv-tum/Scripts/python.exe ]; then VENV_PY=.venv-tum/Scripts/python.exe; fi  # Windows
+PY=${PY:-$VENV_PY}
 DRIVERS=${DRIVERS:-"VER LEC HAM"}
 COMPOUND=${COMPOUND:-A3}
 FIRST=${FIRST:-2}

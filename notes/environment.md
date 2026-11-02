@@ -38,3 +38,29 @@ Raw public results were obtained from `https://api.jolpi.ca/ergast/f1/2019/9/res
 F1's archive returned HTTP 401; FastF1's mirror returned 404 for the selected 2019 sessions. The maintainer confirms the authentication change and describes the new alpha release in [FastF1 issue 978](https://github.com/theOehrly/Fast-F1/issues/978). An F1TV Access subscription or higher and supported authentication, or a previously saved 2019 cache/workbook, is needed to complete lap/weather validation. No account login or subscription was attempted.
 
 The user-provided `/Users/paul/Desktop/Seminar/fastf1_cache` was inspected read-only. Its parsed cache contains 2025 and 2026 directories; its HTTP cache contains 216 timing responses for 2025 and 144 for 2026, and no 2019 URLs. It was not modified or deleted. Those seasons remain separate from the 2019 validation work.
+
+## Windows
+
+Tested 2026-11-01 on Windows 11 Pro with an AMD Ryzen 9 8940HX (AVX available). Only `.venv-tum` was set up; `.venv-data` and the FastF1 pipeline have not been run on Windows.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File integration\setup_windows.ps1
+
+.venv-tum\Scripts\python.exe -m unittest integration.test_policy -v
+.venv-tum\Scripts\python.exe integration\run_experiment.py realstrategy
+.venv-tum\Scripts\python.exe -X utf8 race-simulation\main_racesim.py
+.venv-tum\Scripts\python.exe integration\demo_vse.py
+```
+
+Run the sweep from Git Bash: `bash integration/run_sweep.sh`. It needs `integration/output/realstrategy/` from the `realstrategy` run above.
+
+The script unpacks Astral's `python-build-standalone` release `20231002`, file `cpython-3.8.18+20231002-x86_64-pc-windows-msvc-shared-install_only.tar.gz`, into `.tools/python` after checking its SHA-256, then builds `.venv-tum` from wheels. TUM's top-level pins are unchanged; transitive versions are in `requirements-tum-windows.lock.txt`.
+
+Differences from the Mac setup:
+
+- **`osqp` is 0.6.1, not the 0.6.3 in `requirements-tum.lock.txt`.** Versions 0.6.2.post5, post8 and post9, 0.6.2.post0 and 0.6.3 crash on import with an access violation (`0xC0000005`), and 0.6.2.post4 fails with a NumPy import error. `cvxpy` imports `osqp` while listing solvers, so the crash stops anything that imports `cvxpy`. TUM only calls `ECOS_BB`, so this solver is never used. Version 0.6.1 also adds `future`.
+- **TensorFlow loads normally because the CPU has AVX.** `main_racesim.py` runs with no wrapper, and `integration/demo_vse.py` runs both neural-network VSEs. `run_experiment.py` still defers the import, as on the Mac.
+- **`-X utf8` is needed for `main_racesim.py` when its output is piped or redirected.** Its progress bar prints a character that the default Windows encoding (cp1252) cannot write.
+- **`.gitattributes` sets the line endings.** Without it, `core.autocrlf=true` breaks `run_sweep.sh` in bash and changes the hashes of TUM's text files, including `race_file_sha256` in each run's `manifest.json`.
+
+Compared with the Mac results in `evidence/`: `realstrategy` positions, laps and race times are identical for all 20 drivers; the four VER rows around the stop in `evidence/fixed_lap_native_rows.csv` are identical; and the 207-run sweep reproduces the fastest laps, gains and finishing positions in [pit_lap_sweep.md](pit_lap_sweep.md). The VSE runs have no Mac results to compare against. With all 20 drivers on the reinforcement VSE, three drivers needed a forced late stop and some strategies look implausible, so that run shows the models execute, not that the strategies are good. The GPU is not used.

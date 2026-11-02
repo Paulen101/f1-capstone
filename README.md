@@ -69,6 +69,13 @@ Exact package versions are in `notes/requirements-data.lock.txt` and
 `notes/requirements-tum.lock.txt`. On Apple Silicon, TUM's TensorFlow 2.2 cannot run under
 Rosetta (no AVX); see `notes/environment.md` for the workaround and its limits.
 
+On 64-bit Windows, build `.venv-tum` with the setup script below. Then use
+`.venv-tum/Scripts/python.exe` in place of `.venv-tum/bin/python` in the commands in this file.
+
+```sh
+powershell -ExecutionPolicy Bypass -File integration/setup_windows.ps1
+```
+
 ## Data
 
 ```sh
@@ -97,6 +104,10 @@ Rosetta (no AVX); see `notes/environment.md` for the workaround and its limits.
 .venv-tum/bin/python integration/run_experiment.py fixed --driver VER --pit-lap 25 --compound A3
 .venv-tum/bin/python integration/run_experiment.py realstrategy
 integration/run_sweep.sh
+
+# needs real TensorFlow, so not on Apple Silicon: TUM's stock simulator and neural-network VSEs
+.venv-tum/bin/python -X utf8 race-simulation/main_racesim.py
+.venv-tum/bin/python integration/demo_vse.py
 
 .venv-tum/bin/python -m unittest integration.test_policy -v
 .venv-data/bin/python -m unittest data_pipeline.test_comparison -v
