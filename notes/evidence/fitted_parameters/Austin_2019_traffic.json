@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 19,
+    "event": "United States Grand Prix",
+    "location": "Austin"
+  },
+  "tum_file": "pars_Austin_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.592,
+      "se": 0.027,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": -0.19,
+      "se": 0.184,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 1.458,
+      "se": 0.233,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 1.21,
+      "se": 0.304,
+      "tum": 1.83
+    }
+  },
+  "counts": {
+    "pairs": 756,
+    "close_pairs": 175,
+    "passes": 43,
+    "duel_laps": 24,
+    "passes_clear_ahead": 29
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 48,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 19,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 15,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 5,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 18,
+      "passes": 4
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 12,
+      "passes": 2
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 15,
+      "passes": 4
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 34,
+      "passes": 23
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

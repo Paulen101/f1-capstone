@@ -30,7 +30,7 @@ Austin (in between).
 | Simulator vs real result, Austria 2019 (`notes/sim_vs_real_2019.md`) | Done |
 | Pit-lap sweep, Austria 2019, 207 runs (`notes/pit_lap_sweep.md`) | Done |
 | FastF1 workbooks for 2019 and 2022-2026 with a full data dictionary | Done |
-| Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`) | Done for Austria 2019; other races next |
+| Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`, `notes/fitted_parameters_study_circuits.md`) | Done for 2019: Austria and the four study circuits; held-out check next |
 | Label generator, one driver and race (`integration/label_generator.py`) | In progress |
 | Retrained pit-timing network | Planned |
 | Evaluation against the original VSE and real strategies | Planned |
@@ -119,6 +119,9 @@ integration/run_sweep.sh
 .venv-tum/bin/python integration/label_generator.py --race integration/parameters/pars_Spielberg_2019_fitted.ini --driver VER --compound A3 --deterministic
 .venv-data/bin/python data_pipeline/compare_fitted.py
 .venv-tum/bin/python integration/tune_traffic.py --loser 0.3 0.8 1.33
+# all five 2019 races (see notes/fitted_parameters_study_circuits.md)
+.venv-data/bin/python data_pipeline/check_lap_model.py
+.venv-tum/bin/python integration/check_races.py
 
 # needs real TensorFlow, so not on Apple Silicon: TUM's stock simulator and neural-network VSEs
 .venv-tum/bin/python -X utf8 race-simulation/main_racesim.py

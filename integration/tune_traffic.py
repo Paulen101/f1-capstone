@@ -8,7 +8,8 @@ definition as data_pipeline/fit_traffic.py: cars next to each other in race posi
 during a green lap in which neither pits, from lap 2) and the finishing order and race times
 against the real result.
 
-Output: notes/evidence/fitted_parameters/traffic_grid.csv.
+Needs <Track>_<year>_traffic.json (fit_traffic.py) and <Track>_<year>_results.csv (fit_parameters.py).
+Output: notes/evidence/fitted_parameters/<Track>_<year>_traffic_grid.csv.
 """
 import argparse
 import itertools
@@ -20,8 +21,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TUM = ROOT / "race-simulation"
-REAL = ROOT / "notes/evidence/sim_vs_real_2019.csv"
-TRAFFIC = ROOT / "notes/evidence/fitted_parameters/Spielberg_2019_traffic.json"
+EVIDENCE = ROOT / "notes/evidence/fitted_parameters"
 RACE_KEYS = ("min_t_dist", "t_duel", "t_overtake_loser")       # race_pars
 TRACK_KEYS = ("t_gap_overtake",)                                 # track_pars
 
@@ -44,6 +44,8 @@ def simulate(source: Path, values: dict):
     np.random.seed(0)
     pars, paths = import_pars(use_print=False, use_vse=True, race_pars_file=str(source),
                              mcs_pars_file="pars_mcs.ini")
+    from integration.race_files import allow_recorded_fcy
+    allow_recorded_fcy(pars)
     for key, value in values.items():
         pars["race_pars" if key in RACE_KEYS else "track_pars"][key] = value
     pars["vse_pars"]["vse_type"] = dict.fromkeys(pars["race_pars"]["participants"], "realstrategy")
@@ -65,6 +67,11 @@ def count_passes(race) -> int:
                 continue
             passes += int(race.positions[lap, back] < race.positions[lap, front])
     return passes
+
+
+def real_results(name: str):
+    import pandas as pd
+    return pd.read_csv(EVIDENCE / ("%s_results.csv" % name))
 
 
 def score(race, real) -> dict:
@@ -97,19 +104,19 @@ def main():
                         default=[2.01, 1.5, 1.0, 0.75, 0.5, 0.4, 0.315, 0.2, 0.1, 0.05],
                         help="t_gap_overtake values; TUM accepts only 0 < value < 5")
     parser.add_argument("--loser", type=float, nargs="+", help="t_overtake_loser values (default: TUM, measured)")
-    parser.add_argument("--out", type=Path, default=ROOT / "notes/evidence/fitted_parameters/traffic_grid.csv")
+    parser.add_argument("--out", type=Path, help="default: <Track>_<year>_traffic_grid.csv")
     args = parser.parse_args()
     if sys.version_info[:2] != (3, 8):
         parser.error("Run this script with .venv-tum (Python 3.8)")
     setup()
     import pandas as pd
-    from integration.race_files import resolve_race_file
+    from integration.race_files import race_name, resolve_race_file
     source = resolve_race_file(args.race)
-    measured = {k: v["measured"] for k, v in json.loads(TRAFFIC.read_text(encoding="utf-8"))["values"].items()}
-    tum = {k: v["tum"] for k, v in json.loads(TRAFFIC.read_text(encoding="utf-8"))["values"].items()}
-    joined = pd.read_csv(REAL)
-    real = joined[["Abbreviation", "Position_real", "Laps", "Status", "ResultTime_s"]].rename(
-        columns={"Position_real": "Position"})
+    name = race_name(source)
+    traffic = json.loads((EVIDENCE / ("%s_traffic.json" % name)).read_text(encoding="utf-8"))
+    measured = {k: v["measured"] for k, v in traffic["values"].items()}
+    tum = {k: v["tum"] for k, v in traffic["values"].items()}
+    real = real_results(name)
     rows = []
     sets = {"tum": {k: tum[k] for k in RACE_KEYS}, "measured": {k: measured[k] for k in RACE_KEYS}}
     losers = args.loser or sorted({tum["t_overtake_loser"], measured["t_overtake_loser"]})
@@ -122,9 +129,10 @@ def main():
             row.update(passes=count_passes(race), **score(race, real))
         rows.append(row)
         print({k: v for k, v in row.items() if k != "Positions"}, flush=True)
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(args.out, index=False)
-    print("Real race: 40 passes, top 4 VER-LEC-BOT-HAM. Wrote %s" % args.out)
+    out = args.out or EVIDENCE / ("%s_traffic_grid.csv" % name)
+    pd.DataFrame(rows).to_csv(out, index=False)
+    top = "-".join(real.sort_values("Position").Abbreviation[:4])
+    print("Real race: %d passes, top 4 %s. Wrote %s" % (traffic["counts"]["passes"], top, out))
 
 
 if __name__ == "__main__":

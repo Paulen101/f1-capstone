@@ -33,6 +33,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data_pipeline.fit_parameters import find_workbook  # noqa: E402
+from integration.race_files import tum_track  # noqa: E402
 from integration.write_fitted_pars import TUM_PARAMETERS, parse_pars  # noqa: E402
 
 CLOSE_GAP_S = 1.5         # pairs closer than this at the start of a lap can fight for position
@@ -138,16 +139,24 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--year", type=int, default=2019)
     parser.add_argument("--round", type=int, default=9)
-    parser.add_argument("--race", default="pars_Spielberg_2019.ini", help="TUM race file name")
-    parser.add_argument("--fit", type=Path, default=ROOT / "notes/evidence/fitted_parameters/Spielberg_2019_fit.json")
+    parser.add_argument("--race", help="TUM race file name (default: the one named in the fit)")
+    parser.add_argument("--fit", type=Path, help="default: <Track>_<year>_fit.json")
     parser.add_argument("--workbook", type=Path)
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
+    workbook = args.workbook or find_workbook(args.year)
+    if args.fit is None:
+        races = pd.read_excel(workbook, sheet_name="Races")
+        location = races[(races.Year == args.year) & (races.Round == args.round)].Location.iloc[0]
+        args.fit = ROOT / "notes/evidence/fitted_parameters" / ("%s_%d_fit.json" % (tum_track(location), args.year))
     fit = json.loads(args.fit.read_text(encoding="utf-8"))
+    if (fit["race"]["year"], fit["race"]["round"]) != (args.year, args.round):
+        parser.error("%s is not round %d of %d" % (args.fit, args.round, args.year))
+    args.race = args.race or fit["tum_file"]
     pars = parse_pars((TUM_PARAMETERS / args.race).read_bytes().decode("utf-8"))
     track, race = pars["track_pars"], pars["race_pars"]
     top_speed = {d: v["vel_max"] for d, v in pars["driver_pars"].items()}
-    laps = pd.read_excel(args.workbook or find_workbook(args.year), sheet_name="Laps")
+    laps = pd.read_excel(workbook, sheet_name="Laps")
     laps = laps[(laps.Year == args.year) & (laps.Round == args.round)]
     p = pairs(laps, fit, top_speed)
     result = measure(p, track, race)

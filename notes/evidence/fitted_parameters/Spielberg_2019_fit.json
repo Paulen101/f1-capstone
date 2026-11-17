@@ -5,6 +5,7 @@
     "event": "Austrian Grand Prix",
     "location": "Spielberg"
   },
+  "tum_file": "pars_Spielberg_2019.ini",
   "workbook": "F1_2019_dry_races.xlsx",
   "laps": {
     "clean": 1334,

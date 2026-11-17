@@ -85,6 +85,19 @@ class WriterTests(unittest.TestCase):
         tum_gap = self.pars["driver_pars"]["PER"]["t_driver"] - self.pars["driver_pars"]["STR"]["t_driver"]
         self.assertAlmostEqual(new["PER"]["t_driver"] - new["STR"]["t_driver"], tum_gap, places=3)
 
+    def test_team_without_free_air_laps_keeps_tum_pace_against_the_field(self):
+        fit = make_fit(self.pars)
+        drivers, cars = self.pars["driver_pars"], self.pars["car_pars"]
+        tum_pace = {d: cars[drivers[d]["team"]]["t_car"] + drivers[d]["t_driver"] for d in drivers}
+        fit["driver_level_s"] = {d: 70.0 + tum_pace[d] for d in drivers}     # field = TUM + 70 s
+        fit["drivers_below_min_laps"] = ["PER", "STR"]
+        fit["driver_level_s"]["PER"] = fit["driver_level_s"]["STR"] = 99.0
+        new = parse_pars(build(STOCK, fit, ("tyres", "pace"))[0])
+        new_pace = {d: new["car_pars"][new["driver_pars"][d]["team"]]["t_car"] + new["driver_pars"][d]["t_driver"]
+                    for d in drivers}
+        for driver in ("PER", "STR"):
+            self.assertAlmostEqual(new_pace[driver] - new_pace["HAM"], tum_pace[driver] - tum_pace["HAM"], places=2)
+
     def test_pace_needs_tyres(self):
         with self.assertRaises(ValueError):
             build(STOCK, make_fit(self.pars), ("pace",))
@@ -110,6 +123,12 @@ class WriterTests(unittest.TestCase):
                               "t_overtake_loser": {"measured": 0.3}, "t_gap_overtake": {"measured": 0.0}}}
         with self.assertRaises(ValueError):
             build(STOCK, make_fit(self.pars), ("traffic",), traffic)
+
+    def test_negative_duel_loss_is_written_as_zero(self):
+        traffic = {"values": {"min_t_dist": {"measured": 0.5}, "t_duel": {"measured": -0.19},
+                              "t_overtake_loser": {"measured": 1.4}, "t_gap_overtake": {"measured": 1.2}}}
+        new = parse_pars(build(STOCK, make_fit(self.pars), ("traffic",), traffic)[0])
+        self.assertEqual(new["race_pars"]["t_duel"], 0.0)
 
 
 class SetNumberTests(unittest.TestCase):

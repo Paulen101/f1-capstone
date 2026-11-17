@@ -2,8 +2,9 @@
 
     fit_parameters.py --year 2019 --round 9
 
-Output: notes/evidence/fitted_parameters/<Location>_<year>_fit.json. Writing the values into a TUM
-race file is a separate step: integration/write_fitted_pars.py.
+Output in notes/evidence/fitted_parameters/, named by TUM's track name (Barcelona -> Catalunya):
+<Track>_<year>_fit.json and <Track>_<year>_results.csv (the real classification, for the checks).
+Writing the values into a TUM race file is a separate step: integration/write_fitted_pars.py.
 
 Model for a free-air lap:
     lap time = driver level - trend * (lap - 1) + k0[compound] + k1[compound] * tyre age
@@ -13,12 +14,16 @@ Tyre age is TyreLife - 1, so a new tyre has age 0 as in TUM. The hard compound i
 import argparse
 import json
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import lsq_linear
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from integration.race_files import tum_track  # noqa: E402
+
 DATA_DIRS = (ROOT / "f1_data", ROOT.parent / "f1-race-data")
 ORDER = ["HARD", "MEDIUM", "SOFT"]   # hardest first
 FREE_AIR_GAP_S = 2.0
@@ -218,12 +223,18 @@ def main():
         parser.error("Round %d of %d is not an included dry race in %s" % (args.round, args.year, workbook))
     laps = pd.read_excel(workbook, sheet_name="Laps")
     laps = laps[(laps.Year == args.year) & (laps.Round == args.round)]
+    track = tum_track(str(race.iloc[0].Location))
     result = {"race": {"year": args.year, "round": args.round, "event": race.iloc[0].Event,
-                       "location": race.iloc[0].Location}, "workbook": workbook.name, **fit_race(laps)}
-    name = "%s_%d_fit.json" % (str(race.iloc[0].Location).replace(" ", ""), args.year)
-    out = args.out or ROOT / "notes" / "evidence" / "fitted_parameters" / name
+                       "location": race.iloc[0].Location},
+              "tum_file": "pars_%s_%d.ini" % (track, args.year), "workbook": workbook.name,
+              **fit_race(laps)}
+    out = args.out or ROOT / "notes" / "evidence" / "fitted_parameters" / ("%s_%d_fit.json" % (track, args.year))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    results = pd.read_excel(workbook, sheet_name="Results")
+    results = results[(results.Year == args.year) & (results.Round == args.round)]
+    results[["Abbreviation", "Position", "Laps", "Status", "ResultTime_s"]].to_csv(
+        out.with_name(out.name.replace("_fit.json", "_results.csv")), index=False)
     print("Laps: %(clean)d clean, %(free_air)d free air; residual %(rmse_s).3f s" % result["laps"])
     print("Trend %.4f s/lap (SE %.4f)" % (result["trend_s_per_lap"], result["trend_se"]))
     for compound, t in result["tyres"].items():

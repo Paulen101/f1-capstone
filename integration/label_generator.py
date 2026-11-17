@@ -161,7 +161,7 @@ def main():
     from racesim.src.import_pars import import_pars
     from racesim.src.race import Race
     from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
-    from integration.race_files import resolve_race_file
+    from integration.race_files import allow_recorded_fcy, resolve_race_file
 
     source = resolve_race_file(args.race)
     stochastic = not args.deterministic
@@ -169,6 +169,7 @@ def main():
     events = "file" if args.deterministic else args.events
     pars, paths = import_pars(use_print=False, use_vse=True, race_pars_file=str(source),
                               mcs_pars_file="pars_mcs.ini")
+    fcy_changes = allow_recorded_fcy(pars)
     participants = pars["race_pars"]["participants"]
     if args.driver not in participants:
         parser.error("Unknown driver for this race: %s" % args.driver)
@@ -224,7 +225,8 @@ def main():
                 "python": sys.version, "driver": args.driver, "compound": args.compound,
                 "first_lap": args.first_lap, "last_lap": last_lap, "runs_per_lap": runs,
                 "use_prob_infl": stochastic, "create_rand_events": stochastic, "events": events,
-                "background_vse": "realstrategy", "seed": args.seed, "races_simulated": len(rows),
+                "background_vse": "realstrategy",
+                "fcy_min_dist_lowered": fcy_changes, "seed": args.seed, "races_simulated": len(rows),
                 "invalid_races_rerun": invalid, "runtime_s": round(elapsed, 1),
                 "ms_per_race": round(elapsed / len(rows) * 1000, 1),
                 "label_pit_lap": label, "fastest_pit_lap": fastest}

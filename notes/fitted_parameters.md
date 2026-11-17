@@ -1,6 +1,6 @@
 # Fitted parameters: Spielberg 2019
 
-Methodology step 2, first race. Updated 2026-11-17. Data: `F1_2019_dry_races.xlsx`, round 9.
+Methodology step 2, first race. Updated 2026-11-17. The four study circuits in 2019: [fitted_parameters_study_circuits.md](fitted_parameters_study_circuits.md). Data: `F1_2019_dry_races.xlsx`, round 9.
 
 **Result:** tyre, fuel, pit-loss, pace and traffic values are fitted and written to `integration/parameters/pars_Spielberg_2019_fitted.ini`. The fitted values describe real lap times better than TUM's. With the traffic values measured too, the simulated race is also closer to the real one: position MAE 2.8 → 1.8, race-time error 8.2 s → 6.7 s. Before, TUM's pass threshold (2.01 s) allowed almost no passes; the data says about 0.3 s.
 
@@ -83,7 +83,7 @@ Standard errors come from resampling whole laps 200 times.
 
 ### Measuring rather than tuning
 
-`integration/tune_traffic.py` reruns the race over a grid of values (in memory, no file written) and scores each run against the real result: [evidence/fitted_parameters/traffic_grid.csv](evidence/fitted_parameters/traffic_grid.csv).
+`integration/tune_traffic.py` reruns the race over a grid of values (in memory, no file written) and scores each run against the real result: [evidence/fitted_parameters/Spielberg_2019_traffic_grid.csv](evidence/fitted_parameters/Spielberg_2019_traffic_grid.csv).
 
 | `t_gap_overtake` (others measured) | Passes (real 40) | Position MAE | Rank correlation | Time MAE |
 |---:|---:|---:|---:|---:|

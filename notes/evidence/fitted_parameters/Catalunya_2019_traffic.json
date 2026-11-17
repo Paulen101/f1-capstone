@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 5,
+    "event": "Spanish Grand Prix",
+    "location": "Barcelona"
+  },
+  "tum_file": "pars_Catalunya_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.554,
+      "se": 0.021,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": -0.052,
+      "se": 0.063,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 1.64,
+      "se": 0.47,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 1.076,
+      "se": 0.168,
+      "tum": 2.31
+    }
+  },
+  "counts": {
+    "pairs": 931,
+    "close_pairs": 268,
+    "passes": 17,
+    "duel_laps": 44,
+    "passes_clear_ahead": 11
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 81,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 43,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 28,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 35,
+      "passes": 3
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 23,
+      "passes": 3
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 15,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 24,
+      "passes": 3
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 19,
+      "passes": 7
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

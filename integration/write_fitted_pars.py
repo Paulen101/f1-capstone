@@ -103,15 +103,23 @@ def compound_codes(fit: dict, pars: dict) -> dict:
 
 def driver_levels(fit: dict, pars: dict) -> dict:
     """Fitted free-air level per driver. A driver with too few free-air laps takes the team-mate's
-    level plus TUM's own gap between the two."""
+    level plus TUM's own gap between the two. If the team-mate is short of free-air laps too, the
+    driver takes TUM's pace (t_car + t_driver) shifted by the field's median difference between our
+    levels and TUM's pace."""
     levels = dict(fit["driver_level_s"])
     drivers = pars["driver_pars"]
-    for driver in fit["drivers_below_min_laps"]:
+    short = set(fit["drivers_below_min_laps"])
+    tum_pace = {d: pars["car_pars"][drivers[d]["team"]]["t_car"] + drivers[d]["t_driver"] for d in drivers}
+    if len(short) >= len(drivers):
+        raise ValueError("No driver has enough free-air laps")
+    shift = statistics.median(levels[d] - tum_pace[d] for d in drivers if d not in short)
+    for driver in sorted(short):
         mates = [d for d in drivers if d != driver and drivers[d]["team"] == drivers[driver]["team"]
-                 and d not in fit["drivers_below_min_laps"]]
-        if not mates:
-            raise ValueError("No free-air laps for %s or a team-mate" % driver)
-        levels[driver] = levels[mates[0]] + drivers[driver]["t_driver"] - drivers[mates[0]]["t_driver"]
+                 and d not in short]
+        if mates:
+            levels[driver] = levels[mates[0]] + drivers[driver]["t_driver"] - drivers[mates[0]]["t_driver"]
+        else:
+            levels[driver] = tum_pace[driver] + shift
     if set(levels) != set(drivers):
         raise ValueError("Drivers differ between the fit and the TUM file")
     return levels
@@ -159,8 +167,13 @@ def tyre_values(fit: dict, pars: dict, with_pace: bool) -> dict:
 
 
 def traffic_values(traffic: dict) -> dict:
-    """Measured traffic values. TUM accepts t_gap_overtake only above 0."""
+    """Measured traffic values. TUM accepts t_gap_overtake only above 0.
+
+    A duel cannot make a car faster, so a negative t_duel (noise around zero: the measurement's
+    standard error is 0.06-0.2 s) is written as 0.
+    """
     measured = {key: value["measured"] for key, value in traffic["values"].items()}
+    measured["t_duel"] = max(measured["t_duel"], 0.0)
     if not 0.0 < measured["t_gap_overtake"] < 5.0 or min(measured.values()) < 0:
         raise ValueError("Traffic values outside TUM's range: %s" % measured)
     values = {("race_pars", key): round(measured[key], 3) for key in RACE_TRAFFIC}
@@ -202,15 +215,16 @@ def build(stock_text: str, fit: dict, groups: tuple = GROUPS, traffic: dict = No
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--race", default="pars_Spielberg_2019.ini", help="TUM race file name")
+    parser.add_argument("--race", help="TUM race file name (default: the one named in the fit)")
     parser.add_argument("--fit", type=Path, required=True, help="JSON from data_pipeline/fit_parameters.py")
     parser.add_argument("--traffic", type=Path, help="JSON from data_pipeline/fit_traffic.py "
                                                       "(default: <race>_traffic.json next to --fit)")
     parser.add_argument("--groups", nargs="+", choices=GROUPS, default=list(GROUPS))
     parser.add_argument("--out", type=Path, help="default: integration/parameters/<race>_fitted.ini")
     args = parser.parse_args()
-    source = TUM_PARAMETERS / args.race
     fit = json.loads(args.fit.read_text(encoding="utf-8"))
+    args.race = args.race or fit.get("tum_file", "pars_Spielberg_2019.ini")
+    source = TUM_PARAMETERS / args.race
     traffic_file = args.traffic or args.fit.with_name(args.fit.name.replace("_fit.json", "_traffic.json"))
     traffic = json.loads(traffic_file.read_text(encoding="utf-8")) if "traffic" in args.groups else None
     text, changes = build(source.read_bytes().decode("utf-8"), fit, tuple(args.groups), traffic)

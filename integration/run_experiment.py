@@ -43,7 +43,7 @@ def main():
     from racesim.src.import_pars import import_pars
     from racesim.src.race import Race
     from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
-    from integration.race_files import is_tum_file, resolve_race_file
+    from integration.race_files import allow_recorded_fcy, is_tum_file, resolve_race_file
 
     random.seed(0)
     np.random.seed(0)
@@ -54,6 +54,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     pars, paths = import_pars(use_print=True, use_vse=args.mode != "baseline",
                              race_pars_file=str(source), mcs_pars_file="pars_mcs.ini")
+    fcy_changes = allow_recorded_fcy(pars)
     if pars["race_pars"]["season"] != 2019:
         parser.error("Week 2 experiments are restricted to the 2019 validation season")
     if any(row[1] in ("I", "W") for d in pars["driver_pars"].values()
@@ -102,7 +103,8 @@ def main():
         print("Verified actual simulator pit stop:", actual[0])
     manifest = {"mode": args.mode, "python": sys.version, "race_file": source.name,
                 "race_file_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-                "result_status": int(race.result_status), "laps": race.cur_lap,
+                "result_status": int(race.result_status),
+                "fcy_min_dist_lowered": fcy_changes, "laps": race.cur_lap,
                 "drivers": race.no_drivers, "use_prob_infl": False, "create_rand_events": False,
                 "vse": "disabled (original strategy_info)" if args.mode == "baseline" else "realstrategy",
                 "tensorflow_import": "deferred; neural-network VSEs unused",

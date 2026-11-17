@@ -1,0 +1,21 @@
+Track,Parameters,Laps,Count,RMSE_s,MeanError_s
+Spielberg,tum,free-air laps,625,0.568,-0.202
+Spielberg,tum,all clean laps,1334,0.854,-0.43
+Spielberg,fitted,free-air laps,625,0.395,0.005
+Spielberg,fitted,all clean laps,1334,0.68,-0.187
+Catalunya,tum,free-air laps,508,1.555,-1.354
+Catalunya,tum,all clean laps,1062,1.854,-1.625
+Catalunya,fitted,free-air laps,508,0.55,-0.0
+Catalunya,fitted,all clean laps,1062,0.789,-0.269
+Monza,tum,free-air laps,434,0.817,-0.25
+Monza,tum,all clean laps,819,0.968,-0.4
+Monza,fitted,free-air laps,434,0.472,-0.001
+Monza,fitted,all clean laps,819,0.709,-0.177
+Singapore,tum,free-air laps,323,1.612,-0.62
+Singapore,tum,all clean laps,873,2.266,-1.495
+Singapore,fitted,free-air laps,323,1.142,-0.001
+Singapore,fitted,all clean laps,873,1.79,-0.797
+Austin,tum,free-air laps,469,1.466,-1.129
+Austin,tum,all clean laps,859,1.623,-1.274
+Austin,fitted,free-air laps,469,0.558,-0.0
+Austin,fitted,all clean laps,859,0.852,-0.295
