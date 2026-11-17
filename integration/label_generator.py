@@ -2,6 +2,7 @@
 
     label_generator.py --race pars_Spielberg_2019.ini --driver VER --compound A3 --deterministic
     label_generator.py --race pars_Spielberg_2019.ini --driver VER --compound A3 --runs 10
+    label_generator.py --race integration/parameters/pars_Spielberg_2019_fitted.ini --driver VER --compound A3 --runs 300 --jobs 16
 
 Output in integration/output/labels/<race>_<driver>_<mode>/:
     runs.csv       one row per simulated race
@@ -10,6 +11,10 @@ Output in integration/output/labels/<race>_<driver>_<mode>/:
 
 The label is a pit lap: best mean finishing position, then more laps completed, then lower
 mean race time. Turning it into per-lap pit/stay training rows is a later step.
+
+Every candidate lap uses the same seeds, so runs are paired: summary.csv also gives each lap's mean
+position and race time difference to the label lap over the runs where both finished, with standard
+errors. --jobs splits the candidate laps over worker processes; results do not depend on it.
 """
 import argparse
 import csv
@@ -17,6 +22,7 @@ import hashlib
 import json
 import math
 import os
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import random
 import statistics
@@ -97,6 +103,40 @@ def pick_fastest(summary: list):
     return min(candidates, key=lambda row: row["MeanFullDistanceTime_s"])["PitLap"]
 
 
+def paired_differences(rows: list, label_lap, tot_no_laps: int) -> dict:
+    """Per pit lap: mean difference to the label lap in position and full-distance race time, over
+    runs (same seed) where both finished, with the standard error of each mean."""
+    if label_lap is None:
+        return {}
+    by_key = {(row["PitLap"], row["Run"]): row for row in rows}
+    result = {}
+    for pit_lap in sorted({row["PitLap"] for row in rows}):
+        pos, time_ = [], []
+        for (lap, run), row in by_key.items():
+            ref = by_key.get((label_lap, run))
+            if lap != pit_lap or ref is None or not (row["Finished"] and ref["Finished"]):
+                continue
+            pos.append(row["Position"] - ref["Position"])
+            if row["SimulatedLaps"] >= tot_no_laps and ref["SimulatedLaps"] >= tot_no_laps:
+                time_.append(row["RaceTime_s"] - ref["RaceTime_s"])
+        se = lambda x: statistics.stdev(x) / math.sqrt(len(x)) if len(x) > 1 else ""
+        result[pit_lap] = {"PairedRuns": len(pos),
+                           "PosDiffVsLabel": round(statistics.mean(pos), 4) if pos else "",
+                           "PosDiffSE": round(se(pos), 4) if pos and se(pos) != "" else "",
+                           "TimeDiffVsLabel_s": round(statistics.mean(time_), 3) if time_ else "",
+                           "TimeDiffSE_s": round(se(time_), 3) if time_ and se(time_) != "" else ""}
+    return result
+
+
+def close_to_label(paired: dict) -> list:
+    """Pit laps whose mean position is within two standard errors of the label lap's."""
+    return [lap for lap, d in paired.items()
+            if d["PosDiffVsLabel"] != "" and (d["PosDiffSE"] in ("", 0)
+                                              and d["PosDiffVsLabel"] == 0
+                                              or d["PosDiffSE"] not in ("", 0)
+                                              and d["PosDiffVsLabel"] <= 2 * d["PosDiffSE"])]
+
+
 def write_csv(path, rows):
     with path.open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
@@ -141,6 +181,7 @@ def parse_args():
     parser.add_argument("--first-lap", type=int, default=2)
     parser.add_argument("--last-lap", type=int, help="default: second-to-last lap of the race")
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--jobs", type=int, default=1, help="worker processes; results do not depend on it")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     if sys.version_info[:2] != (3, 8):
@@ -150,52 +191,47 @@ def parse_args():
     return parser, args
 
 
-def main():
-    parser, args = parse_args()
+def setup():
+    # One maths thread per process. Without this every process reserves buffers for every CPU thread:
+    # about 5.5 GB of commit each on a 32-thread machine, so 16 workers exhausted memory. With it: 81 MB.
+    for name in ("OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "OMP_NUM_THREADS"):
+        os.environ.setdefault(name, "1")
     os.environ.setdefault("MPLBACKEND", "Agg")
     os.environ.setdefault("MPLCONFIGDIR", str(ROOT / ".tools" / "matplotlib"))
-    sys.path.insert(0, str(ROOT))
-    sys.path.insert(0, str(TUM))
+    for path in (str(ROOT), str(TUM)):
+        if path not in sys.path:
+            sys.path.insert(0, path)
     from integration.optional_tensorflow import defer_tensorflow
     defer_tensorflow()
-    from racesim.src.import_pars import import_pars
-    from racesim.src.race import Race
-    from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
-    from integration.race_files import allow_recorded_fcy, resolve_race_file
 
+
+def load(args):
+    """Race file, parameters prepared for the label runs, TUM paths and FCY changes."""
+    from racesim.src.import_pars import import_pars
+    from integration.race_files import allow_recorded_fcy, resolve_race_file
     source = resolve_race_file(args.race)
-    stochastic = not args.deterministic
-    runs = 1 if args.deterministic else args.runs
-    events = "file" if args.deterministic else args.events
     pars, paths = import_pars(use_print=False, use_vse=True, race_pars_file=str(source),
                               mcs_pars_file="pars_mcs.ini")
     fcy_changes = allow_recorded_fcy(pars)
-    participants = pars["race_pars"]["participants"]
-    if args.driver not in participants:
-        parser.error("Unknown driver for this race: %s" % args.driver)
-    if any(stint[1] in ("I", "W") for strategy in pars["vse_pars"]["real_strategy"].values()
-           for stint in strategy):
-        parser.error("Dry races only")
-    if pars["vse_pars"]["real_strategy"][args.driver][0][1] == args.compound:
-        parser.error("Choose a fixed compound different from the start compound")
-    pars["vse_pars"]["vse_type"] = dict.fromkeys(participants, "realstrategy")
-    if stochastic and args.events == "sampled":
+    pars["vse_pars"]["vse_type"] = dict.fromkeys(pars["race_pars"]["participants"], "realstrategy")
+    if not args.deterministic and args.events == "sampled":
         clear_recorded_events(pars["event_pars"])
+    return source, pars, paths, fcy_changes
 
-    tot_no_laps = pars["race_pars"]["tot_no_laps"]
-    last_lap = args.last_lap if args.last_lap is not None else tot_no_laps - 1
-    if not 1 <= args.first_lap <= last_lap < tot_no_laps:
-        parser.error("Pit laps must lie between 1 and %d" % (tot_no_laps - 1))
 
-    mode = "deterministic" if args.deterministic else "mc%d" % runs
-    out = args.out or ROOT / "integration" / "output" / "labels" / (
-        "%s_%s_%s" % (source.stem.replace("pars_", ""), args.driver, mode))
-    out.mkdir(parents=True, exist_ok=True)
-
-    rows = []
-    invalid = 0
+def simulate_laps(task):
+    """Simulate every run for the pit laps in `task` = (settings dict, pit laps). Runs in a worker."""
+    settings, pit_laps = task
+    args = argparse.Namespace(**settings)
+    setup()
+    from racesim.src.race import Race
+    from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
+    source, pars, paths, _ = load(args)
+    stochastic = not args.deterministic
+    runs = 1 if args.deterministic else args.runs
+    rows, invalid = [], 0
     started = time.perf_counter()
-    for pit_lap in range(args.first_lap, last_lap + 1):
+    for pit_lap in pit_laps:
         policy = FixedLapPolicy(pit_lap, args.compound)
         for run in range(runs):
             for attempt in range(MAX_ATTEMPTS):
@@ -212,12 +248,58 @@ def main():
                                    % (MAX_ATTEMPTS, pit_lap, run))
             rows.append({"Race": source.name, "Driver": args.driver, "Compound": args.compound,
                          "PitLap": pit_lap, "Run": run, "Seed": seed, **result})
-        print("lap %d/%d done (%.0f s)" % (pit_lap, last_lap, time.perf_counter() - started), flush=True)
+        print("lap %d done (%.0f s)" % (pit_lap, time.perf_counter() - started), flush=True)
+    return rows, invalid
+
+
+def main():
+    parser, args = parse_args()
+    setup()
+    source, pars, paths, fcy_changes = load(args)
+    stochastic = not args.deterministic
+    runs = 1 if args.deterministic else args.runs
+    events = "file" if args.deterministic else args.events
+    participants = pars["race_pars"]["participants"]
+    if args.driver not in participants:
+        parser.error("Unknown driver for this race: %s" % args.driver)
+    if any(stint[1] in ("I", "W") for strategy in pars["vse_pars"]["real_strategy"].values()
+           for stint in strategy):
+        parser.error("Dry races only")
+    if pars["vse_pars"]["real_strategy"][args.driver][0][1] == args.compound:
+        parser.error("Choose a fixed compound different from the start compound")
+
+    tot_no_laps = pars["race_pars"]["tot_no_laps"]
+    last_lap = args.last_lap if args.last_lap is not None else tot_no_laps - 1
+    if not 1 <= args.first_lap <= last_lap < tot_no_laps:
+        parser.error("Pit laps must lie between 1 and %d" % (tot_no_laps - 1))
+
+    mode = "deterministic" if args.deterministic else "mc%d" % runs
+    out = args.out or ROOT / "integration" / "output" / "labels" / (
+        "%s_%s_%s" % (source.stem.replace("pars_", ""), args.driver, mode))
+    out.mkdir(parents=True, exist_ok=True)
+
+    laps = list(range(args.first_lap, last_lap + 1))
+    jobs = max(1, min(args.jobs, len(laps)))
+    settings = dict(vars(args))
+    tasks = [(settings, laps[i::jobs]) for i in range(jobs)]     # interleaved: early and late laps mixed
+    started = time.perf_counter()
+    if jobs == 1:
+        results = [simulate_laps(tasks[0])]
+    else:
+        # ProcessPoolExecutor raises if a worker dies; multiprocessing.Pool would wait forever.
+        with ProcessPoolExecutor(jobs) as pool:
+            results = list(pool.map(simulate_laps, tasks))
     elapsed = time.perf_counter() - started
+    rows = sorted((row for part, _ in results for row in part), key=lambda r: (r["PitLap"], r["Run"]))
+    invalid = sum(part for _, part in results)
 
     summary = summarize(rows, tot_no_laps)
     label = pick_label(summary)
     fastest = pick_fastest(summary)
+    paired = paired_differences(rows, label, tot_no_laps)
+    for row in summary:
+        row.update(paired.get(row["PitLap"], {}))
+    close = close_to_label(paired)
     write_csv(out / "runs.csv", rows)
     write_csv(out / "summary.csv", summary)
     manifest = {"race_file": source.name,
@@ -227,12 +309,14 @@ def main():
                 "use_prob_infl": stochastic, "create_rand_events": stochastic, "events": events,
                 "background_vse": "realstrategy",
                 "fcy_min_dist_lowered": fcy_changes, "seed": args.seed, "races_simulated": len(rows),
-                "invalid_races_rerun": invalid, "runtime_s": round(elapsed, 1),
+                "invalid_races_rerun": invalid, "jobs": jobs, "runtime_s": round(elapsed, 1),
                 "ms_per_race": round(elapsed / len(rows) * 1000, 1),
-                "label_pit_lap": label, "fastest_pit_lap": fastest}
+                "label_pit_lap": label, "fastest_pit_lap": fastest,
+                "laps_within_2se_of_label": close}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    print("Label: pit on lap %s. Fastest: lap %s. %d races, %d invalid re-run, %.1f ms per race. Output: %s"
-          % (label, fastest, len(rows), invalid, manifest["ms_per_race"], out))
+    print("Label: pit on lap %s. Fastest: lap %s. Within 2 SE of the label: %s. %d races, %d invalid re-run, "
+          "%.1f ms per race (wall clock, %d jobs). Output: %s"
+          % (label, fastest, close, len(rows), invalid, manifest["ms_per_race"], jobs, out))
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 """Behavior checks for label selection; Python 3.8 stdlib only, no simulator needed."""
 import unittest
 
-from integration.label_generator import (check_stop, clear_recorded_events, pick_fastest, pick_label,
-                                         run_seed, summarize)
+from integration.label_generator import (check_stop, clear_recorded_events, close_to_label,
+                                         paired_differences, pick_fastest, pick_label, run_seed,
+                                         summarize)
 
 
 def row(pit_lap, position, laps=71.0, time=5000.0, finished=True):
@@ -44,6 +45,29 @@ class SummaryTests(unittest.TestCase):
         rows = [row(23, 1, time=5010.0), row(52, 2, time=4990.0)]
         summary = summarize(rows, 71)
         self.assertEqual((pick_label(summary), pick_fastest(summary)), (23, 52))
+
+
+class PairedTests(unittest.TestCase):
+    def runs(self, pit_lap, positions, times):
+        return [dict(row(pit_lap, p, time=t), Run=i) for i, (p, t) in enumerate(zip(positions, times))]
+
+    def test_differences_are_paired_by_run(self):
+        rows = self.runs(10, [1, 3, 5], [5000.0, 5010.0, 5020.0]) + self.runs(11, [2, 4, 6], [5001.0, 5011.0, 5021.0])
+        paired = paired_differences(rows, 10, 71)
+        self.assertEqual(paired[11]["PosDiffVsLabel"], 1)
+        self.assertEqual(paired[11]["PosDiffSE"], 0)                # every run exactly one place worse
+        self.assertEqual(paired[11]["TimeDiffVsLabel_s"], 1.0)
+        self.assertEqual(paired[10]["PosDiffVsLabel"], 0)
+
+    def test_laps_within_two_standard_errors_are_close(self):
+        rows = (self.runs(10, [1, 1, 1, 1], [5000.0] * 4) + self.runs(11, [1, 2, 1, 1], [5000.0] * 4)
+                + self.runs(12, [3, 3, 3, 3], [5000.0] * 4))
+        self.assertEqual(close_to_label(paired_differences(rows, 10, 71)), [10, 11])
+
+    def test_retired_runs_are_not_paired(self):
+        rows = self.runs(10, [1, 1], [5000.0] * 2) + [dict(row(11, 20, laps=30.0, finished=False), Run=0),
+                                                      dict(row(11, 2), Run=1)]
+        self.assertEqual(paired_differences(rows, 10, 71)[11]["PairedRuns"], 1)
 
 
 class StopCheckTests(unittest.TestCase):
