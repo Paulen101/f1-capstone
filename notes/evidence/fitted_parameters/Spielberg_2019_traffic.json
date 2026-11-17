@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 9,
+    "event": "Austrian Grand Prix",
+    "location": "Spielberg"
+  },
+  "tum_file": "pars_Spielberg_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.488,
+      "se": 0.023,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": 0.033,
+      "se": 0.085,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 1.33,
+      "se": 0.128,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 0.315,
+      "se": 0.085,
+      "tum": 2.01
+    }
+  },
+  "counts": {
+    "pairs": 1231,
+    "close_pairs": 292,
+    "passes": 40,
+    "duel_laps": 44,
+    "passes_clear_ahead": 19
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 107,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 54,
+      "passes": 2
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 26,
+      "passes": 2
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 34,
+      "passes": 4
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 27,
+      "passes": 9
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 17,
+      "passes": 9
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 20,
+      "passes": 8
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 7,
+      "passes": 6
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

@@ -1,0 +1,5 @@
+Parameters,Laps,Count,RMSE_s,MeanError_s
+tum,free-air laps,625,0.568,-0.202
+tum,all clean laps,1334,0.854,-0.43
+fitted,free-air laps,625,0.395,0.005
+fitted,all clean laps,1334,0.68,-0.187

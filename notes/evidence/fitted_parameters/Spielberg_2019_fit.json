@@ -1,0 +1,428 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 9,
+    "event": "Austrian Grand Prix",
+    "location": "Spielberg"
+  },
+  "workbook": "F1_2019_dry_races.xlsx",
+  "laps": {
+    "clean": 1334,
+    "free_air": 625,
+    "free_air_gap_s": 2.0,
+    "rmse_s": 0.394
+  },
+  "trend_s_per_lap": 0.0295,
+  "trend_se": 0.0042,
+  "tyres": {
+    "HARD": {
+      "k0_s": 0.0,
+      "k1_s_per_lap": 0.0177,
+      "k0_se": 0.0,
+      "k1_se": 0.0046,
+      "laps": 348,
+      "stints": 18,
+      "max_age": 49
+    },
+    "MEDIUM": {
+      "k0_s": 0.0,
+      "k1_s_per_lap": 0.0177,
+      "k0_se": 0.0099,
+      "k1_se": 0.0046,
+      "laps": 196,
+      "stints": 14,
+      "max_age": 43
+    },
+    "SOFT": {
+      "k0_s": -0.0556,
+      "k1_s_per_lap": 0.0177,
+      "k0_se": 0.1039,
+      "k1_se": 0.0042,
+      "laps": 81,
+      "stints": 8,
+      "max_age": 25
+    }
+  },
+  "driver_level_s": {
+    "ALB": 70.568,
+    "BOT": 69.786,
+    "GAS": 70.473,
+    "GIO": 70.865,
+    "GRO": 70.739,
+    "HAM": 69.814,
+    "HUL": 70.895,
+    "KUB": 72.484,
+    "KVY": 71.25,
+    "LEC": 69.688,
+    "MAG": 71.094,
+    "NOR": 70.431,
+    "PER": 70.569,
+    "RAI": 70.773,
+    "RIC": 70.55,
+    "RUS": 71.456,
+    "SAI": 70.934,
+    "STR": 71.009,
+    "VER": 69.541,
+    "VET": 69.604
+  },
+  "driver_free_air_laps": {
+    "ALB": 26,
+    "BOT": 44,
+    "GAS": 10,
+    "GIO": 15,
+    "GRO": 42,
+    "HAM": 40,
+    "HUL": 19,
+    "KUB": 44,
+    "KVY": 43,
+    "LEC": 48,
+    "MAG": 38,
+    "NOR": 36,
+    "PER": 4,
+    "RAI": 32,
+    "RIC": 24,
+    "RUS": 46,
+    "SAI": 32,
+    "STR": 19,
+    "VER": 25,
+    "VET": 38
+  },
+  "drivers_below_min_laps": [
+    "PER"
+  ],
+  "stints": {
+    "ALB": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "BOT": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "GAS": [
+      "SOFT",
+      "HARD"
+    ],
+    "GIO": [
+      "SOFT",
+      "HARD"
+    ],
+    "GRO": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "HAM": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "HUL": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "KUB": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "KVY": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "LEC": [
+      "SOFT",
+      "HARD"
+    ],
+    "MAG": [
+      "SOFT",
+      "HARD",
+      "HARD",
+      "SOFT"
+    ],
+    "NOR": [
+      "SOFT",
+      "MEDIUM"
+    ],
+    "PER": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "RAI": [
+      "SOFT",
+      "HARD"
+    ],
+    "RIC": [
+      "MEDIUM",
+      "SOFT"
+    ],
+    "RUS": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "SAI": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "STR": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "VER": [
+      "MEDIUM",
+      "HARD"
+    ],
+    "VET": [
+      "SOFT",
+      "HARD",
+      "SOFT"
+    ]
+  },
+  "pit": {
+    "stops_used": 22,
+    "in_lap_loss_s": 3.414,
+    "out_lap_loss_s": 17.806,
+    "stops": [
+      {
+        "driver": "ALB",
+        "in_lap": 35,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 4.332,
+        "out_lap_loss_s": 18.15,
+        "used": true
+      },
+      {
+        "driver": "BOT",
+        "in_lap": 21,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 2.919,
+        "out_lap_loss_s": 17.107,
+        "used": true
+      },
+      {
+        "driver": "GAS",
+        "in_lap": 25,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 2.808,
+        "out_lap_loss_s": 18.534,
+        "used": true
+      },
+      {
+        "driver": "GIO",
+        "in_lap": 24,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.622,
+        "out_lap_loss_s": 16.979,
+        "used": true
+      },
+      {
+        "driver": "GRO",
+        "in_lap": 34,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.3,
+        "out_lap_loss_s": 20.316,
+        "used": true
+      },
+      {
+        "driver": "HAM",
+        "in_lap": 30,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.678,
+        "out_lap_loss_s": 25.427,
+        "used": true
+      },
+      {
+        "driver": "HUL",
+        "in_lap": 26,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 2.795,
+        "out_lap_loss_s": 17.028,
+        "used": true
+      },
+      {
+        "driver": "KUB",
+        "in_lap": 19,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.922,
+        "out_lap_loss_s": 14.994,
+        "used": true
+      },
+      {
+        "driver": "KVY",
+        "in_lap": 32,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 2.995,
+        "out_lap_loss_s": 21.78,
+        "used": true
+      },
+      {
+        "driver": "LEC",
+        "in_lap": 22,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.066,
+        "out_lap_loss_s": 18.174,
+        "used": true
+      },
+      {
+        "driver": "MAG",
+        "in_lap": 11,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 1.991,
+        "out_lap_loss_s": 19.419,
+        "used": true
+      },
+      {
+        "driver": "MAG",
+        "in_lap": 13,
+        "green": true,
+        "tyre_change": false,
+        "in_lap_loss_s": 1.827,
+        "out_lap_loss_s": 13.306,
+        "used": false
+      },
+      {
+        "driver": "MAG",
+        "in_lap": 62,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.429,
+        "out_lap_loss_s": 17.59,
+        "used": true
+      },
+      {
+        "driver": "NOR",
+        "in_lap": 25,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 4.572,
+        "out_lap_loss_s": 17.818,
+        "used": true
+      },
+      {
+        "driver": "PER",
+        "in_lap": 28,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.9,
+        "out_lap_loss_s": 17.795,
+        "used": true
+      },
+      {
+        "driver": "RAI",
+        "in_lap": 23,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.339,
+        "out_lap_loss_s": 17.536,
+        "used": true
+      },
+      {
+        "driver": "RIC",
+        "in_lap": 46,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.4,
+        "out_lap_loss_s": 18.978,
+        "used": true
+      },
+      {
+        "driver": "RUS",
+        "in_lap": 27,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.035,
+        "out_lap_loss_s": 19.021,
+        "used": true
+      },
+      {
+        "driver": "SAI",
+        "in_lap": 41,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 4.155,
+        "out_lap_loss_s": 17.073,
+        "used": true
+      },
+      {
+        "driver": "STR",
+        "in_lap": 25,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.492,
+        "out_lap_loss_s": 17.297,
+        "used": true
+      },
+      {
+        "driver": "VER",
+        "in_lap": 31,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.351,
+        "out_lap_loss_s": 16.804,
+        "used": true
+      },
+      {
+        "driver": "VET",
+        "in_lap": 21,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.566,
+        "out_lap_loss_s": 21.515,
+        "used": true
+      },
+      {
+        "driver": "VET",
+        "in_lap": 50,
+        "green": true,
+        "tyre_change": true,
+        "in_lap_loss_s": 3.946,
+        "out_lap_loss_s": 17.582,
+        "used": true
+      }
+    ]
+  },
+  "for_comparison": {
+    "free_air_without_ordering": {
+      "trend_s_per_lap": 0.0287,
+      "tyres": {
+        "HARD": {
+          "k0": 0.0,
+          "k1": 0.0202
+        },
+        "MEDIUM": {
+          "k0": 0.2737,
+          "k1": 0.009
+        },
+        "SOFT": {
+          "k0": 0.1316,
+          "k1": 0.0084
+        }
+      }
+    },
+    "all_clean_laps_without_ordering": {
+      "trend_s_per_lap": 0.036,
+      "tyres": {
+        "HARD": {
+          "k0": 0.0,
+          "k1": 0.0308
+        },
+        "MEDIUM": {
+          "k0": 0.6728,
+          "k1": -0.0048
+        },
+        "SOFT": {
+          "k0": 0.5523,
+          "k1": -0.0065
+        }
+      }
+    }
+  }
+}
