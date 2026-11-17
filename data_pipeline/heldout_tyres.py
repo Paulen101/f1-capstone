@@ -5,7 +5,8 @@
 A pit-lap label asks what happens if a driver stays out longer or shorter than in the real race, so
 the tyre model has to hold beyond the tyre ages it was fitted on. For every stint, the free-air laps
 in the last third of the stint's tyre-age range are held out; the model is fitted on the rest (same
-method as fit_parameters.py) and predicts the held-out laps. Compared with:
+method as fit_parameters.py), with linear and with quadratic wear (k2 * age**2), and predicts the
+held-out laps. Compared with:
 
     tum        TUM's race file as a lap-time formula (its values are fixed, not refitted)
     in-sample  our fit on all free-air laps, the held-out ones included (a lower bound)
@@ -43,7 +44,9 @@ def our_predict(fit: dict, laps: pd.DataFrame) -> np.ndarray:
     levels = laps.Driver.map(fit["levels"])
     k0 = laps.Compound.map({c: t["k0"] for c, t in fit["tyres"].items()})
     k1 = laps.Compound.map({c: t["k1"] for c, t in fit["tyres"].items()})
-    return (levels - fit["trend"] * (laps.LapNumber - 1) + k0 + k1 * (laps.TyreLife - 1)).values
+    k2 = laps.Compound.map({c: t.get("k2", 0.0) for c, t in fit["tyres"].items()})
+    age = laps.TyreLife - 1
+    return (levels - fit["trend"] * (laps.LapNumber - 1) + k0 + k1 * age + k2 * age ** 2).values
 
 
 def metrics(error) -> dict:
@@ -59,12 +62,16 @@ def check(laps: pd.DataFrame, track: str, year: int):
     free = free[free.Compound.isin(codes)]
     held = split(free)
     train, test = free[~held], free[held]
-    heldout_fit = solve(train)
+    heldout_fit, heldout_quad = solve(train), solve(train, quad=True)
     test = test[test.Driver.isin(heldout_fit["levels"]) & test.Compound.isin(heldout_fit["tyres"])]
-    full_fit = solve(free)
-    predictions = {"held-out fit": our_predict(heldout_fit, test), "in-sample fit": our_predict(full_fit, test),
+    full_fit, full_quad = solve(free), solve(free, quad=True)
+    predictions = {"held-out fit": our_predict(heldout_fit, test),
+                   "held-out fit, quad": our_predict(heldout_quad, test),
+                   "in-sample fit": our_predict(full_fit, test),
+                   "in-sample fit, quad": our_predict(full_quad, test),
                    "tum": tum_predict(tum, test, codes)}
-    trained = {"held-out fit": len(train), "in-sample fit": len(free), "tum": 0}
+    trained = {"held-out fit": len(train), "held-out fit, quad": len(train), "in-sample fit": len(free),
+               "in-sample fit, quad": len(free), "tum": 0}
     rows = [{"Track": track, "Model": name, "TrainLaps": trained[name], "TestLaps": len(test),
              **metrics(pred - test.LapTime_s.values)} for name, pred in predictions.items()]
     # how far beyond the oldest training lap of the same stint each test lap is
@@ -72,8 +79,11 @@ def check(laps: pd.DataFrame, track: str, year: int):
     extra = test.TyreLife.values - oldest.reindex(list(zip(test.Driver, test.Stint))).values
     by_age = pd.DataFrame({"Track": track, "ExtraAge": extra,
                            "Error_s": predictions["held-out fit"] - test.LapTime_s.values,
+                           "QuadError_s": predictions["held-out fit, quad"] - test.LapTime_s.values,
                            "TumError_s": predictions["tum"] - test.LapTime_s.values})
-    wear = {c: {"held_out": round(heldout_fit["tyres"][c]["k1"], 4), "all": round(full_fit["tyres"][c]["k1"], 4)}
+    wear = {c: {"lin_held_out": round(heldout_fit["tyres"][c]["k1"], 4), "lin_all": round(full_fit["tyres"][c]["k1"], 4),
+                "quad_held_out": (round(heldout_quad["tyres"][c]["k1"], 4), round(heldout_quad["tyres"][c]["k2"], 5)),
+                "quad_all": (round(full_quad["tyres"][c]["k1"], 4), round(full_quad["tyres"][c]["k2"], 5))}
             for c in heldout_fit["tyres"]}
     return rows, by_age, wear
 
@@ -94,7 +104,7 @@ def main():
         r, a, wear = check(all_laps[(all_laps.Year == args.year) & (all_laps.Round == rnd)], track, args.year)
         rows += r
         ages.append(a)
-        print("%-10s wear k1 held-out fit vs all laps: %s" % (track, wear))
+        print("%-10s wear (k1, k2): %s" % (track, json.dumps(wear)))
     table = pd.DataFrame(rows)
     print(table.to_string(index=False))
     ages = pd.concat(ages)
@@ -102,6 +112,8 @@ def main():
     by_age = ages.groupby("ExtraAgeBin", observed=True).agg(
         Laps=("Error_s", "size"), MeanError_s=("Error_s", "mean"),
         RMSE_s=("Error_s", lambda e: float(np.sqrt(np.mean(e ** 2)))),
+        QuadMeanError_s=("QuadError_s", "mean"),
+        QuadRMSE_s=("QuadError_s", lambda e: float(np.sqrt(np.mean(e ** 2)))),
         TumMeanError_s=("TumError_s", "mean")).round(3).reset_index()
     print(by_age.to_string(index=False))
     table.to_csv(EVIDENCE / "heldout_tyres.csv", index=False)

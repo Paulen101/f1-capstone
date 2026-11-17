@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from data_pipeline.fit_parameters import add_gaps, free_air, pit_stops, solve
+from data_pipeline.fit_parameters import QUAD_MIN_GAIN_S, add_gaps, free_air, pit_stops, solve, stint_cv
 
 LEVELS = {"AAA": 70.0, "BBB": 70.4, "CCC": 71.0, "DDD": 71.3}
 PLANS = {"AAA": [("SOFT", 18), ("HARD", 42)], "BBB": [("MEDIUM", 25), ("HARD", 35)],
@@ -48,6 +48,24 @@ class SolveTests(unittest.TestCase):
         self.assertGreaterEqual(tyres["SOFT"]["k1"], tyres["MEDIUM"]["k1"] - 1e-9)
         self.assertLessEqual(tyres["MEDIUM"]["k0"], 1e-9)
         self.assertLessEqual(tyres["SOFT"]["k0"], tyres["MEDIUM"]["k0"] + 1e-9)
+
+    def test_quadratic_wear_is_recovered_and_chosen_by_cross_validation(self):
+        truth = {"HARD": (0.0, 0.0), "MEDIUM": (-0.3, 0.0), "SOFT": (-0.6, 0.0)}
+        laps = make_laps(truth, noise=0.05)
+        laps["LapTime_s"] += 0.002 * (laps.TyreLife - 1) ** 2
+        fit = solve(laps, quad=True)
+        for compound in truth:
+            self.assertAlmostEqual(fit["tyres"][compound]["k2"], 0.002, delta=0.0003)
+            self.assertLess(fit["tyres"][compound]["k1"], 0.01)
+        cv = stint_cv(laps)
+        self.assertLess(cv["quad"], cv["lin"] - QUAD_MIN_GAIN_S)
+
+    def test_linear_wear_gets_no_quadratic_term(self):
+        truth = {"HARD": (0.0, 0.02), "MEDIUM": (-0.3, 0.04), "SOFT": (-0.6, 0.08)}
+        fit = solve(make_laps(truth, noise=0.05), quad=True)
+        for compound, (_, k1) in truth.items():
+            self.assertLess(fit["tyres"][compound]["k2"], 0.0003)
+            self.assertAlmostEqual(fit["tyres"][compound]["k1"], k1, delta=0.01)
 
 
 class FreeAirTests(unittest.TestCase):

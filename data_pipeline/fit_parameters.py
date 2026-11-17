@@ -8,8 +8,11 @@ Writing the values into a TUM race file is a separate step: integration/write_fi
 
 Model for a free-air lap:
     lap time = driver level - trend * (lap - 1) + k0[compound] + k1[compound] * tyre age
+               (+ k2[compound] * tyre age**2 with quadratic wear)
 Tyre age is TyreLife - 1, so a new tyre has age 0 as in TUM. The hard compound is the reference
-(k0 = 0). Method and limits: notes/fitted_parameters.md.
+(k0 = 0). Quadratic wear is used when it predicts whole stints left out of the fit better than
+linear wear, by at least QUAD_MIN_GAIN_S (stint_cv). Method and limits: notes/fitted_parameters.md
+and notes/heldout_check.md.
 """
 import argparse
 import json
@@ -31,6 +34,8 @@ REFERENCE_LAPS = 3                   # clean laps that give the normal lap time 
 REFERENCE_WINDOW = 5                 # ...taken from at most this many laps before or after it
 BOOTSTRAP_RUNS = 200
 MIN_DRIVER_LAPS = 5
+CV_FOLDS = 5                         # stint groups for choosing linear or quadratic wear
+QUAD_MIN_GAIN_S = 0.003              # quadratic wear must lower the cross-validated RMSE by this much
 
 
 def add_gaps(laps: pd.DataFrame) -> pd.DataFrame:
@@ -52,8 +57,14 @@ def free_air(laps: pd.DataFrame, gap: float = FREE_AIR_GAP_S) -> pd.DataFrame:
     return laps[laps.CleanLap & clear & laps.Compound.isin(ORDER)]
 
 
-def design(laps: pd.DataFrame, drivers: list, compounds: list, ordered: bool):
-    """Build the least-squares problem. Returns matrix, lower bounds and column names."""
+def design(laps: pd.DataFrame, drivers: list, compounds: list, ordered: bool, quad: bool = False):
+    """Build the least-squares problem. Returns matrix, lower bounds and column names.
+
+    With `quad`, wear also gets an age squared term (k2 >= 0: wear can only speed up with age),
+    ordered like k1. Only used with `ordered`.
+    """
+    if quad and not ordered:
+        raise ValueError("Quadratic wear is only fitted with the ordering rule")
     softer = lambda i: laps.Compound.isin(compounds[i:]).values.astype(float)
     age = laps.TyreLife.values.astype(float) - 1.0
     columns = [((laps.Driver == d).values.astype(float), -np.inf, "level_" + d) for d in drivers]
@@ -62,9 +73,13 @@ def design(laps: pd.DataFrame, drivers: list, compounds: list, ordered: bool):
         # Each softer compound is the next harder one plus a step that cannot go the wrong way:
         # no slower when new (k0 step <= 0) and no slower to wear (k1 step >= 0).
         columns.append((age, 0.0, "k1_step_0"))
+        if quad:
+            columns.append((age ** 2, 0.0, "k2_step_0"))
         for i in range(1, len(compounds)):
             columns.append((-softer(i), 0.0, "k0_step_%d" % i))
             columns.append((softer(i) * age, 0.0, "k1_step_%d" % i))
+            if quad:
+                columns.append((softer(i) * age ** 2, 0.0, "k2_step_%d" % i))
     else:
         for i, compound in enumerate(compounds):
             own = (laps.Compound == compound).values.astype(float)
@@ -75,47 +90,79 @@ def design(laps: pd.DataFrame, drivers: list, compounds: list, ordered: bool):
             [c[2] for c in columns])
 
 
-def solve(laps: pd.DataFrame, ordered: bool = True) -> dict:
-    """Fit the lap-time model. `ordered` keeps softer compounds from being slower or longer-lived."""
+def solve(laps: pd.DataFrame, ordered: bool = True, quad: bool = False) -> dict:
+    """Fit the lap-time model. `ordered` keeps softer compounds from being slower or longer-lived;
+    `quad` adds a k2 * age**2 wear term."""
     drivers = sorted(laps.Driver.unique())
     compounds = [c for c in ORDER if (laps.Compound == c).any()]
-    matrix, lower, names = design(laps, drivers, compounds, ordered)
+    matrix, lower, names = design(laps, drivers, compounds, ordered, quad)
     target = laps.LapTime_s.values.astype(float)
     solution = lsq_linear(matrix, target, bounds=(lower, np.full(len(lower), np.inf)))
     value = dict(zip(names, solution.x))
     tyres = {}
-    k0 = k1 = 0.0
+    k0 = k1 = k2 = 0.0
     for i, compound in enumerate(compounds):
         if ordered:
             k0 -= value["k0_step_%d" % i] if i else 0.0
             k1 += value["k1_step_%d" % i]
+            k2 += value.get("k2_step_%d" % i, 0.0)
         else:
             k0, k1 = value.get("k0_" + compound, 0.0), value["k1_" + compound]
         tyres[compound] = {"k0": float(k0), "k1": float(k1)}
+        if quad:
+            tyres[compound]["k2"] = float(k2)
     residual = target - matrix @ solution.x
     return {"trend": float(value["trend"]), "tyres": tyres,
             "levels": {d: float(value["level_" + d]) for d in drivers},
             "rmse": float(np.sqrt(np.mean(residual ** 2)))}
 
 
-def bootstrap(laps: pd.DataFrame, runs: int = BOOTSTRAP_RUNS, seed: int = 0) -> dict:
+def bootstrap(laps: pd.DataFrame, runs: int = BOOTSTRAP_RUNS, seed: int = 0, quad: bool = False) -> dict:
     """Standard errors from resampling whole stints, because laps within a stint are not independent."""
     rng = np.random.default_rng(seed)
     stints = [group for _, group in laps.groupby(["Driver", "Stint"])]
     drivers = set(laps.Driver)
+    keys = ("k0", "k1", "k2") if quad else ("k0", "k1")
     draws = []
     while len(draws) < runs:
         sample = pd.concat([stints[i] for i in rng.integers(len(stints), size=len(stints))])
         if set(sample.Driver) != drivers:
             continue                    # every driver needs a level
-        fit = solve(sample)
+        fit = solve(sample, quad=quad)
         draws.append([fit["trend"]] + [fit["tyres"].get(c, {}).get(k, np.nan)
-                                       for c in ORDER for k in ("k0", "k1")])
+                                       for c in ORDER for k in keys])
     # Spread from the quartiles: a resample that leaves a value unidentified cannot blow it up.
     low, high = np.nanpercentile(np.array(draws), [25, 75], axis=0)
     spread = (high - low) / 1.349
-    names = ["trend"] + ["%s_%s" % (c, k) for c in ORDER for k in ("k0", "k1")]
+    names = ["trend"] + ["%s_%s" % (c, k) for c in ORDER for k in keys]
     return dict(zip(names, spread))
+
+
+def predict_free_air(fit: dict, laps: pd.DataFrame) -> np.ndarray:
+    """Lap time of each lap from a solve() result. NaN for a driver or compound the fit does not know."""
+    k = {name: laps.Compound.map({c: t.get(name, 0.0) for c, t in fit["tyres"].items()}) for name in ("k0", "k1", "k2")}
+    age = laps.TyreLife - 1
+    return (laps.Driver.map(fit["levels"]) - fit["trend"] * (laps.LapNumber - 1)
+            + k["k0"] + k["k1"] * age + k["k2"] * age ** 2).values
+
+
+def stint_cv(free: pd.DataFrame, folds: int = CV_FOLDS, seed: int = 0) -> dict:
+    """Prediction error of linear and quadratic wear on whole stints left out of the fit.
+
+    Stints are split into `folds` groups; each group is predicted from a fit on the others. Laps of a
+    driver with no other stint in the training part cannot be predicted and are skipped.
+    """
+    stints = free[["Driver", "Stint"]].drop_duplicates()
+    order = np.random.default_rng(seed).permutation(len(stints)) % folds
+    fold = pd.Series(order, index=pd.MultiIndex.from_frame(stints)).reindex(
+        list(zip(free.Driver, free.Stint))).values
+    errors = {"lin": [], "quad": []}
+    for k in range(folds):
+        train, test = free[fold != k], free[fold == k]
+        for model in errors:
+            prediction = predict_free_air(solve(train, quad=model == "quad"), test)
+            errors[model].extend((prediction - test.LapTime_s.values)[np.isfinite(prediction)])
+    return {model: round(float(np.sqrt(np.mean(np.square(e)))), 4) for model, e in errors.items()}
 
 
 def stint_sequences(laps: pd.DataFrame) -> dict:
@@ -165,8 +212,11 @@ def fit_race(laps: pd.DataFrame) -> dict:
     laps = add_gaps(laps)
     free = free_air(laps)
     per_driver = free.groupby("Driver").size()
-    fit = solve(free)
-    errors = bootstrap(free)
+    cv = stint_cv(free)
+    wear_model = "quad" if cv["quad"] < cv["lin"] - QUAD_MIN_GAIN_S else "lin"
+    quad = wear_model == "quad"
+    fit = solve(free, quad=quad)
+    errors = bootstrap(free, quad=quad)
     stops = pit_stops(laps)
     used = [s for s in stops if usable(s)]
     tyres = {}
@@ -177,6 +227,9 @@ def fit_race(laps: pd.DataFrame) -> dict:
             "k0_se": round(errors[compound + "_k0"], 4), "k1_se": round(errors[compound + "_k1"], 4),
             "laps": int(len(own)), "stints": int(own.groupby(["Driver", "Stint"]).ngroups),
             "max_age": int(own.TyreLife.max() - 1)}
+        if quad:
+            tyres[compound]["k2_s_per_lap2"] = round(values["k2"], 6)
+            tyres[compound]["k2_se"] = round(errors[compound + "_k2"], 6)
     free_form = solve(free, ordered=False)
     all_clean = solve(laps[laps.CleanLap & laps.Compound.isin(ORDER)], ordered=False)
     plain = lambda fit: {"trend_s_per_lap": round(fit["trend"], 4),
@@ -185,6 +238,7 @@ def fit_race(laps: pd.DataFrame) -> dict:
         "laps": {"clean": int(laps.CleanLap.sum()), "free_air": int(len(free)),
                  "free_air_gap_s": FREE_AIR_GAP_S, "rmse_s": round(fit["rmse"], 3)},
         "trend_s_per_lap": round(fit["trend"], 4), "trend_se": round(errors["trend"], 4),
+        "wear_model": wear_model, "wear_cv_rmse_s": cv,
         "tyres": tyres,
         "driver_level_s": {d: round(v, 3) for d, v in fit["levels"].items()},
         "driver_free_air_laps": {d: int(n) for d, n in per_driver.items()},
@@ -238,9 +292,11 @@ def main():
     print("Laps: %(clean)d clean, %(free_air)d free air; residual %(rmse_s).3f s" % result["laps"])
     print("Trend %.4f s/lap (SE %.4f)" % (result["trend_s_per_lap"], result["trend_se"]))
     for compound, t in result["tyres"].items():
-        print("%-6s k0 %+.4f (SE %.4f)  k1 %.4f (SE %.4f)  %d laps, %d stints, age up to %d"
-              % (compound, t["k0_s"], t["k0_se"], t["k1_s_per_lap"], t["k1_se"], t["laps"], t["stints"],
-                 t["max_age"]))
+        print("%-6s k0 %+.4f (SE %.4f)  k1 %.4f (SE %.4f)%s  %d laps, %d stints, age up to %d"
+              % (compound, t["k0_s"], t["k0_se"], t["k1_s_per_lap"], t["k1_se"],
+                 "  k2 %.5f (SE %.5f)" % (t["k2_s_per_lap2"], t["k2_se"]) if "k2_s_per_lap2" in t else "",
+                 t["laps"], t["stints"], t["max_age"]))
+    print("Wear model %s; stint cross-validation RMSE %s" % (result["wear_model"], result["wear_cv_rmse_s"]))
     print("Pit loss: in-lap %(in_lap_loss_s)s s, out-lap %(out_lap_loss_s)s s, %(stops_used)d stops"
           % result["pit"])
     print("Wrote %s" % out)

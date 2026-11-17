@@ -15,6 +15,11 @@
   },
   "trend_s_per_lap": 0.0799,
   "trend_se": 0.0231,
+  "wear_model": "lin",
+  "wear_cv_rmse_s": {
+    "lin": 1.3452,
+    "quad": 1.3445
+  },
   "tyres": {
     "HARD": {
       "k0_s": 0.0,

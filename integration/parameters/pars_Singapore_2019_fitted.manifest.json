@@ -4,7 +4,7 @@
   "tum_file": "pars_Singapore_2019.ini",
   "tum_sha256": "718ed322d6893dae390e1275b96840202ddfe9a033f03506ce0a5b1c52d19cec",
   "fit_file": "notes/evidence/fitted_parameters/Singapore_2019_fit.json",
-  "fit_sha256": "4ff03ea844fb0730a6215d048c39587bf1928e0339016830e3563857871c5b87",
+  "fit_sha256": "5ce1fea2a17bbfb8ee916c3a45b0f9ae0d75ba7443f76c51bc2db29128eafc5c",
   "traffic_file": "notes/evidence/fitted_parameters/Singapore_2019_traffic.json",
   "traffic_sha256": "8df4cdb54fbb767dde6725aff1152894d2688f21d25b610fbf35888f0cfe81ea",
   "groups": [

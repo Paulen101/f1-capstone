@@ -70,6 +70,20 @@ class WriterTests(unittest.TestCase):
             self.assertEqual(new["tireset_pars"][driver]["A4"]["k_1_quad"],
                              self.pars["tireset_pars"][driver]["A4"]["k_1_quad"])
 
+    def test_quadratic_wear_switches_every_driver_to_tum_quad_model(self):
+        fit = make_fit(self.pars)
+        fit["wear_model"] = "quad"
+        for compound, tyre in fit["tyres"].items():
+            tyre["k2_s_per_lap2"] = 0.0015
+        text, changes = build(STOCK, fit, ("tyres", "pace"))
+        new = parse_pars(text)
+        for driver, tyreset in new["tireset_pars"].items():
+            self.assertEqual(tyreset["tire_deg_model"], "quad")
+            self.assertEqual(tyreset["A4"]["k_1_quad"], 0.03)
+            self.assertEqual(tyreset["A4"]["k_2_quad"], 0.0015)
+            self.assertEqual(tyreset["A4"]["k_1_lin"], self.pars["tireset_pars"][driver]["A4"]["k_1_lin"])
+        self.assertEqual(len(text.splitlines()), len(STOCK.splitlines()))
+
     def test_tyres_alone_keep_tum_pace_offsets(self):
         text, changes = build(STOCK, make_fit(self.pars), ("tyres",))
         new = parse_pars(text)

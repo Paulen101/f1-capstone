@@ -4,7 +4,7 @@
   "tum_file": "pars_Austin_2019.ini",
   "tum_sha256": "6960d79eaeac0468aa4a56b87ddf6d0109a1d270c7dc023c767c4eb8b1e8f0c1",
   "fit_file": "notes/evidence/fitted_parameters/Austin_2019_fit.json",
-  "fit_sha256": "9eacc500583402a7314166552377e91274e7a49eb26b118a04cfc21352cbcb89",
+  "fit_sha256": "0fc95f4ca802276b45333def3fb72edef2bf2fba442211c040dc0b140af880a4",
   "traffic_file": "notes/evidence/fitted_parameters/Austin_2019_traffic.json",
   "traffic_sha256": "80fd3fdda0c93b2a67ef6aa1eaee802c67b6f2a1a6970813e9115670b41e6c1b",
   "groups": [

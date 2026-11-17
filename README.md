@@ -31,7 +31,7 @@ Austin (in between).
 | Pit-lap sweep, Austria 2019, 207 runs (`notes/pit_lap_sweep.md`) | Done |
 | FastF1 workbooks for 2019 and 2022-2026 with a full data dictionary | Done |
 | Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`, `notes/fitted_parameters_study_circuits.md`) | Done for 2019: Austria and the four study circuits |
-| Held-out check: unseen tyre ages and traffic values from other races (`notes/heldout_check.md`) | Done; non-linear wear next |
+| Held-out check and quadratic wear where it predicts better (`notes/heldout_check.md`) | Done; Monte Carlo labels next |
 | Label generator, one driver and race (`integration/label_generator.py`) | In progress |
 | Retrained pit-timing network | Planned |
 | Evaluation against the original VSE and real strategies | Planned |

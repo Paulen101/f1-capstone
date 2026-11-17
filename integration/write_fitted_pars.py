@@ -9,7 +9,8 @@ never changed. Every value not listed in the manifest is identical to the TUM fi
 
 Groups (--groups, default all):
     pit     pit-lane drive times on the in-lap and out-lap
-    tyres   k_0 and k_1_lin for every driver, fuel sensitivity, and the lap-time level
+    tyres   k_0 and k_1_lin (or tire_deg_model "quad", k_1_quad, k_2_quad) for every driver, fuel
+            sensitivity, and the lap-time level
     pace    car and driver pace offsets (needs tyres)
     traffic min_t_dist, t_duel, t_overtake_loser and t_gap_overtake, measured from car pairs
 Method and limits: notes/fitted_parameters.md.
@@ -30,6 +31,7 @@ RACE_TRAFFIC = ("min_t_dist", "t_duel", "t_overtake_loser")
 TRACK_TRAFFIC = ("t_gap_overtake",)
 MIN_STOPS = 5
 NUMBER = re.compile(r"-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+STRING = re.compile(r'"[^"]*"')
 
 
 def parse_pars(text: str) -> dict:
@@ -40,14 +42,20 @@ def parse_pars(text: str) -> dict:
             for section in parser.sections()}
 
 
-def set_number(text: str, path: tuple, value: float) -> str:
-    """Change the number at `path` (section, key, key, ...) and leave every other character alone."""
+def set_number(text: str, path: tuple, value) -> str:
+    """Change the number (or, for a str value, the string) at `path` (section, key, key, ...) and
+    leave every other character alone."""
     position = text.index("\n%s = " % path[0])
     for key in path[1:]:
         match = re.compile(r'"%s"\s*:\s*' % re.escape(key)).search(text, position)
         if not match:
             raise KeyError("No %s in %s" % (key, ".".join(path)))
         position = match.end()
+    if isinstance(value, str):
+        match = STRING.match(text, position)
+        if not match:
+            raise ValueError("%s is not a string" % ".".join(path))
+        return text[:position] + json.dumps(value) + text[match.end():]
     match = NUMBER.match(text, position)
     if not match:
         raise ValueError("%s is not a number" % ".".join(path))
@@ -128,18 +136,27 @@ def driver_levels(fit: dict, pars: dict) -> dict:
 def tyre_values(fit: dict, pars: dict, with_pace: bool) -> dict:
     """Tyre model, fuel sensitivity and lap-time level. These depend on each other and go together.
 
-    Our model:  level - trend * (lap - 1) + k0 + k1 * age
+    Our model:  level - trend * (lap - 1) + k0 + k1 * age (+ k2 * age**2)
     TUM:        t_q + t_gap_racepace + t_car + t_driver + k_0 + k_1_lin * age + fuel mass * t_lap_sens_mass
     TUM has no track evolution, so the whole trend becomes fuel sensitivity. The fuel mass falls by
     b_fuel_perlap each lap from m_fuel, which gives level = t_q + t_gap_racepace + t_car + t_driver
     + m_fuel * t_lap_sens_mass.
+    With quadratic wear (fit["wear_model"] == "quad") every driver's tire_deg_model becomes "quad" and
+    k1, k2 go to TUM's k_1_quad, k_2_quad; k_1_lin is then unused by TUM and left as it was.
     """
     values = {}
     codes = compound_codes(fit, pars)
+    quad = fit.get("wear_model", "lin") == "quad"
     for driver in pars["tireset_pars"]:
+        if quad:
+            values[("tireset_pars", driver, "tire_deg_model")] = "quad"
         for name, tyre in fit["tyres"].items():
             values[("tireset_pars", driver, codes[name], "k_0")] = round(tyre["k0_s"], 4)
-            values[("tireset_pars", driver, codes[name], "k_1_lin")] = round(tyre["k1_s_per_lap"], 4)
+            if quad:
+                values[("tireset_pars", driver, codes[name], "k_1_quad")] = round(tyre["k1_s_per_lap"], 4)
+                values[("tireset_pars", driver, codes[name], "k_2_quad")] = round(tyre["k2_s_per_lap2"], 6)
+            else:
+                values[("tireset_pars", driver, codes[name], "k_1_lin")] = round(tyre["k1_s_per_lap"], 4)
     cars = list(pars["car_pars"].values())
     if any((car["m_fuel"], car["b_fuel_perlap"]) != (cars[0]["m_fuel"], cars[0]["b_fuel_perlap"])
            for car in cars):
@@ -195,7 +212,8 @@ def build(stock_text: str, fit: dict, groups: tuple = GROUPS, traffic: dict = No
         if traffic is None:
             raise ValueError("The traffic group needs the output of fit_traffic.py")
         values.update(traffic_values(traffic))
-    values = {path: value + 0.0 for path, value in values.items()}   # -0.0 becomes 0.0
+    values = {path: value if isinstance(value, str) else value + 0.0   # -0.0 becomes 0.0
+              for path, value in values.items()}
     text = stock_text
     for path, value in values.items():
         text = set_number(text, path, value)

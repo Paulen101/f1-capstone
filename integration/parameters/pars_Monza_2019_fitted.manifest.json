@@ -1,10 +1,10 @@
 {
   "race_file": "pars_Monza_2019_fitted.ini",
-  "sha256": "258b5d7a78dd2e171af8eace2ee88aa8b70671a420630d6a8bea93a6aa535979",
+  "sha256": "4dc2ce099b199304857bba66896ab9f18b63c7fdc8997085f50bfdd21f4d4da5",
   "tum_file": "pars_Monza_2019.ini",
   "tum_sha256": "9c1e8b56ea3d1ef8fdfd1e9c05e4bf54a503659bf0c0da8b6f2bb918f49ff5c9",
   "fit_file": "notes/evidence/fitted_parameters/Monza_2019_fit.json",
-  "fit_sha256": "07b0195bb9c6436df65717d23b38a67f9a698505c77ff2744bf66cab9c65b338",
+  "fit_sha256": "bc82ae693ef8c7c27a78ff273738b371bf05f6f2eac3028268a39a4949f069cb",
   "traffic_file": "notes/evidence/fitted_parameters/Monza_2019_traffic.json",
   "traffic_sha256": "c2c0aae9697acdb6503680472223568903d4577f0faa1183f07d1bf792a5fbdd",
   "groups": [
@@ -32,12 +32,12 @@
     {
       "parameter": "track_pars.t_gap_racepace",
       "tum": 2.433,
-      "fitted": 2.98
+      "fitted": 3.098
     },
     {
       "parameter": "track_pars.t_lap_sens_mass",
       "tum": 0.027,
-      "fitted": 0.02529
+      "fitted": 0.02534
     },
     {
       "parameter": "track_pars.t_pitdrive_inlap",
@@ -57,42 +57,42 @@
     {
       "parameter": "car_pars.Mercedes.t_car",
       "tum": 0.023,
-      "fitted": 0.074
+      "fitted": 0.073
     },
     {
       "parameter": "car_pars.Renault.t_car",
       "tum": 0.31,
-      "fitted": 0.966
+      "fitted": 0.988
     },
     {
       "parameter": "car_pars.HaasF1Team.t_car",
       "tum": 0.82,
-      "fitted": 1.704
+      "fitted": 1.726
     },
     {
       "parameter": "car_pars.ToroRosso.t_car",
       "tum": 0.774,
-      "fitted": 1.261
+      "fitted": 1.314
     },
     {
       "parameter": "car_pars.AlfaRomeo.t_car",
       "tum": 0.779,
-      "fitted": 1.492
+      "fitted": 1.503
     },
     {
       "parameter": "car_pars.Ferrari.t_car",
       "tum": 0.03,
-      "fitted": 0.003
+      "fitted": 0.059
     },
     {
       "parameter": "car_pars.RacingPoint.t_car",
       "tum": 0.776,
-      "fitted": 1.018
+      "fitted": 1.042
     },
     {
       "parameter": "car_pars.McLaren.t_car",
       "tum": 0.724,
-      "fitted": 1.085
+      "fitted": 1.131
     },
     {
       "parameter": "car_pars.RedBull.t_car",
@@ -102,7 +102,12 @@
     {
       "parameter": "car_pars.Williams.t_car",
       "tum": 1.674,
-      "fitted": 1.955
+      "fitted": 2.031
+    },
+    {
+      "parameter": "tireset_pars.HAM.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.HAM.A3.k_0",
@@ -110,24 +115,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.HAM.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.HAM.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.HAM.A4.k_1_lin",
-      "tum": 0.0626,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.HAM.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.HAM.A4.k_1_quad",
+      "tum": 0.0514,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.HAM.A4.k_2_quad",
+      "tum": 0.0005,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.HAM.A6.k_0",
       "tum": 0.186,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.HAM.A6.k_1_lin",
-      "tum": 0.0484,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.HAM.A6.k_1_quad",
+      "tum": 0.0378,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.HAM.A6.k_2_quad",
+      "tum": 0.0006,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.RIC.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.RIC.A3.k_0",
@@ -135,9 +160,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.RIC.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.RIC.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.RIC.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.RIC.A4.k_0",
@@ -145,19 +175,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.RIC.A4.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.RIC.A4.k_1_quad",
+      "tum": 0.002,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.RIC.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.RIC.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.RIC.A6.k_1_lin",
-      "tum": 0.0486,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.RIC.A6.k_1_quad",
+      "tum": 0.0323,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.RIC.A6.k_2_quad",
+      "tum": 0.0008,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.MAG.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.MAG.A3.k_0",
@@ -165,24 +210,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.MAG.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.MAG.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.MAG.A4.k_1_lin",
-      "tum": 0.1671,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.MAG.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.MAG.A4.k_1_quad",
+      "tum": 0.1637,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.MAG.A4.k_2_quad",
+      "tum": 0.0003,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.MAG.A6.k_0",
       "tum": 0.7583,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.MAG.A6.k_1_lin",
-      "tum": 0.0606,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.MAG.A6.k_1_quad",
+      "tum": 0.059,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.MAG.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.HUL.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.HUL.A3.k_0",
@@ -190,9 +255,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.HUL.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.HUL.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.HUL.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.HUL.A4.k_0",
@@ -200,19 +270,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.HUL.A4.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.HUL.A4.k_1_quad",
+      "tum": 0.002,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.HUL.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.HUL.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.HUL.A6.k_1_lin",
-      "tum": 0.0486,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.HUL.A6.k_1_quad",
+      "tum": 0.0323,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.HUL.A6.k_2_quad",
+      "tum": 0.0008,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.KVY.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.KVY.A3.k_0",
@@ -220,9 +305,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.KVY.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.KVY.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.KVY.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.KVY.A4.k_0",
@@ -230,19 +320,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.KVY.A4.k_1_lin",
-      "tum": 0.0189,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.KVY.A4.k_1_quad",
+      "tum": 0.0,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.KVY.A4.k_2_quad",
+      "tum": 0.0009,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.KVY.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.KVY.A6.k_1_lin",
-      "tum": 0.0293,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.KVY.A6.k_1_quad",
+      "tum": 0.0035,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.KVY.A6.k_2_quad",
+      "tum": 0.0015,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.RAI.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.RAI.A3.k_0",
@@ -250,9 +355,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.RAI.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.RAI.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.RAI.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.RAI.A4.k_0",
@@ -260,19 +370,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.RAI.A4.k_1_lin",
-      "tum": 0.0652,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.RAI.A4.k_1_quad",
+      "tum": 0.063,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.RAI.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.RAI.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.RAI.A6.k_1_lin",
-      "tum": 0.0515,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.RAI.A6.k_1_quad",
+      "tum": 0.0484,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.RAI.A6.k_2_quad",
+      "tum": 0.0002,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.VET.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.VET.A3.k_0",
@@ -280,9 +405,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.VET.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.VET.A3.k_1_quad",
+      "tum": -0.001,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.VET.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.VET.A4.k_0",
@@ -290,19 +420,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.VET.A4.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.VET.A4.k_1_quad",
+      "tum": -0.001,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.VET.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.VET.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.VET.A6.k_1_lin",
-      "tum": 0.0468,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.VET.A6.k_1_quad",
+      "tum": 0.0333,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.VET.A6.k_2_quad",
+      "tum": 0.0009,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.BOT.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.BOT.A3.k_0",
@@ -310,24 +455,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.BOT.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.BOT.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.BOT.A4.k_1_lin",
-      "tum": 0.0626,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.BOT.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.BOT.A4.k_1_quad",
+      "tum": 0.0514,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.BOT.A4.k_2_quad",
+      "tum": 0.0005,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.BOT.A6.k_0",
       "tum": 0.186,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.BOT.A6.k_1_lin",
-      "tum": 0.0484,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.BOT.A6.k_1_quad",
+      "tum": 0.0378,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.BOT.A6.k_2_quad",
+      "tum": 0.0006,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.PER.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.PER.A3.k_0",
@@ -335,24 +500,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.PER.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.PER.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.PER.A4.k_1_lin",
-      "tum": 0.0489,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.PER.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.PER.A4.k_1_quad",
+      "tum": 0.0468,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.PER.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.PER.A6.k_0",
       "tum": 0.1945,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.PER.A6.k_1_lin",
-      "tum": 0.1213,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.PER.A6.k_1_quad",
+      "tum": 0.1197,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.PER.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.GRO.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.GRO.A3.k_0",
@@ -360,24 +545,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.GRO.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.GRO.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.GRO.A4.k_1_lin",
-      "tum": 0.1671,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.GRO.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.GRO.A4.k_1_quad",
+      "tum": 0.1637,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.GRO.A4.k_2_quad",
+      "tum": 0.0003,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.GRO.A6.k_0",
       "tum": 0.7583,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.GRO.A6.k_1_lin",
-      "tum": 0.0606,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.GRO.A6.k_1_quad",
+      "tum": 0.059,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.GRO.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.SAI.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.SAI.A3.k_0",
@@ -385,24 +590,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.SAI.A3.k_1_lin",
-      "tum": 0.0484,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.SAI.A3.k_1_quad",
+      "tum": 0.0062,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.SAI.A4.k_1_lin",
-      "tum": 0.0875,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.SAI.A3.k_2_quad",
+      "tum": 0.002,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.SAI.A4.k_1_quad",
+      "tum": 0.0478,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.SAI.A4.k_2_quad",
+      "tum": 0.0026,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.SAI.A6.k_0",
       "tum": 0.1497,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.SAI.A6.k_1_lin",
-      "tum": 0.0486,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.SAI.A6.k_1_quad",
+      "tum": 0.0331,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.SAI.A6.k_2_quad",
+      "tum": 0.0008,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.VER.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.VER.A3.k_0",
@@ -410,9 +635,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.VER.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.VER.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.VER.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.VER.A4.k_0",
@@ -420,19 +650,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.VER.A4.k_1_lin",
-      "tum": 0.0227,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.VER.A4.k_1_quad",
+      "tum": -0.001,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.VER.A4.k_2_quad",
+      "tum": 0.0013,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.VER.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.VER.A6.k_1_lin",
-      "tum": 0.0968,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.VER.A6.k_1_quad",
+      "tum": 0.0948,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.VER.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.GIO.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.GIO.A3.k_0",
@@ -440,9 +685,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.GIO.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.GIO.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.GIO.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.GIO.A4.k_0",
@@ -450,19 +700,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.GIO.A4.k_1_lin",
-      "tum": 0.0652,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.GIO.A4.k_1_quad",
+      "tum": 0.063,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.GIO.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.GIO.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.GIO.A6.k_1_lin",
-      "tum": 0.0515,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.GIO.A6.k_1_quad",
+      "tum": 0.0484,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.GIO.A6.k_2_quad",
+      "tum": 0.0002,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.STR.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.STR.A3.k_0",
@@ -470,24 +735,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.STR.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.STR.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.STR.A4.k_1_lin",
-      "tum": 0.0489,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.STR.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.STR.A4.k_1_quad",
+      "tum": 0.0468,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.STR.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.STR.A6.k_0",
       "tum": 0.1945,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.STR.A6.k_1_lin",
-      "tum": 0.1213,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.STR.A6.k_1_quad",
+      "tum": 0.1197,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.STR.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.GAS.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.GAS.A3.k_0",
@@ -495,9 +780,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.GAS.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.GAS.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.GAS.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.GAS.A4.k_0",
@@ -505,19 +795,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.GAS.A4.k_1_lin",
-      "tum": 0.0189,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.GAS.A4.k_1_quad",
+      "tum": 0.0,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.GAS.A4.k_2_quad",
+      "tum": 0.0009,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.GAS.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.GAS.A6.k_1_lin",
-      "tum": 0.0293,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.GAS.A6.k_1_quad",
+      "tum": 0.0035,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.GAS.A6.k_2_quad",
+      "tum": 0.0015,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.LEC.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.LEC.A3.k_0",
@@ -525,9 +830,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.LEC.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.LEC.A3.k_1_quad",
+      "tum": -0.001,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.LEC.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.LEC.A4.k_0",
@@ -535,19 +845,34 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.LEC.A4.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.LEC.A4.k_1_quad",
+      "tum": -0.001,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.LEC.A4.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.LEC.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.LEC.A6.k_1_lin",
-      "tum": 0.0468,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.LEC.A6.k_1_quad",
+      "tum": 0.0333,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.LEC.A6.k_2_quad",
+      "tum": 0.0009,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.NOR.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.NOR.A3.k_0",
@@ -555,24 +880,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.NOR.A3.k_1_lin",
-      "tum": 0.0484,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.NOR.A3.k_1_quad",
+      "tum": 0.0062,
+      "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.NOR.A4.k_1_lin",
-      "tum": 0.0875,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.NOR.A3.k_2_quad",
+      "tum": 0.002,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.NOR.A4.k_1_quad",
+      "tum": 0.0478,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.NOR.A4.k_2_quad",
+      "tum": 0.0026,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.NOR.A6.k_0",
       "tum": 0.1497,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.NOR.A6.k_1_lin",
-      "tum": 0.0486,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.NOR.A6.k_1_quad",
+      "tum": 0.0331,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.NOR.A6.k_2_quad",
+      "tum": 0.0008,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.ALB.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
     },
     {
       "parameter": "tireset_pars.ALB.A3.k_0",
@@ -580,9 +925,14 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.ALB.A3.k_1_lin",
-      "tum": 0.01,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.ALB.A3.k_1_quad",
+      "tum": 0.0002,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.ALB.A3.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.ALB.A4.k_0",
@@ -590,24 +940,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.ALB.A4.k_1_lin",
-      "tum": 0.0227,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.ALB.A4.k_1_quad",
+      "tum": -0.001,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.ALB.A4.k_2_quad",
+      "tum": 0.0013,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.ALB.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.ALB.A6.k_1_lin",
-      "tum": 0.0968,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.ALB.A6.k_1_quad",
+      "tum": 0.0948,
+      "fitted": 0.0149
     },
     {
-      "parameter": "tireset_pars.RUS.A3.k_1_lin",
-      "tum": 0.0328,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.ALB.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.RUS.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
+    },
+    {
+      "parameter": "tireset_pars.RUS.A3.k_1_quad",
+      "tum": 0.0103,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.RUS.A3.k_2_quad",
+      "tum": 0.0011,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.RUS.A4.k_0",
@@ -615,24 +985,44 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.RUS.A4.k_1_lin",
-      "tum": 0.0271,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.RUS.A4.k_1_quad",
+      "tum": 0.0232,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.RUS.A4.k_2_quad",
+      "tum": 0.0002,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.RUS.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.RUS.A6.k_1_lin",
-      "tum": 0.0431,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.RUS.A6.k_1_quad",
+      "tum": 0.0412,
+      "fitted": 0.0149
     },
     {
-      "parameter": "tireset_pars.KUB.A3.k_1_lin",
-      "tum": 0.0328,
-      "fitted": 0.0302
+      "parameter": "tireset_pars.RUS.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
+    },
+    {
+      "parameter": "tireset_pars.KUB.tire_deg_model",
+      "tum": "lin",
+      "fitted": "quad"
+    },
+    {
+      "parameter": "tireset_pars.KUB.A3.k_1_quad",
+      "tum": 0.0103,
+      "fitted": 0.0
+    },
+    {
+      "parameter": "tireset_pars.KUB.A3.k_2_quad",
+      "tum": 0.0011,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.KUB.A4.k_0",
@@ -640,29 +1030,39 @@
       "fitted": 0.0
     },
     {
-      "parameter": "tireset_pars.KUB.A4.k_1_lin",
-      "tum": 0.0271,
-      "fitted": 0.0303
+      "parameter": "tireset_pars.KUB.A4.k_1_quad",
+      "tum": 0.0232,
+      "fitted": 0.0022
+    },
+    {
+      "parameter": "tireset_pars.KUB.A4.k_2_quad",
+      "tum": 0.0002,
+      "fitted": 0.000977
     },
     {
       "parameter": "tireset_pars.KUB.A6.k_0",
       "tum": 0.0,
-      "fitted": -0.1739
+      "fitted": -0.135
     },
     {
-      "parameter": "tireset_pars.KUB.A6.k_1_lin",
-      "tum": 0.0431,
-      "fitted": 0.0449
+      "parameter": "tireset_pars.KUB.A6.k_1_quad",
+      "tum": 0.0412,
+      "fitted": 0.0149
+    },
+    {
+      "parameter": "tireset_pars.KUB.A6.k_2_quad",
+      "tum": 0.0001,
+      "fitted": 0.000977
     },
     {
       "parameter": "driver_pars.HAM.t_driver",
       "tum": 0.0,
-      "fitted": 0.773
+      "fitted": 0.724
     },
     {
       "parameter": "driver_pars.RIC.t_driver",
       "tum": 0.0,
-      "fitted": 0.036
+      "fitted": 0.041
     },
     {
       "parameter": "driver_pars.HUL.t_driver",
@@ -672,12 +1072,12 @@
     {
       "parameter": "driver_pars.RAI.t_driver",
       "tum": 0.0,
-      "fitted": 0.348
+      "fitted": 0.392
     },
     {
       "parameter": "driver_pars.VET.t_driver",
       "tum": 0.188,
-      "fitted": 0.6
+      "fitted": 0.538
     },
     {
       "parameter": "driver_pars.BOT.t_driver",
@@ -692,12 +1092,7 @@
     {
       "parameter": "driver_pars.GRO.t_driver",
       "tum": 0.168,
-      "fitted": 0.601
-    },
-    {
-      "parameter": "driver_pars.SAI.t_driver",
-      "tum": 0.0,
-      "fitted": 0.017
+      "fitted": 0.594
     },
     {
       "parameter": "driver_pars.VER.t_driver",
@@ -712,27 +1107,27 @@
     {
       "parameter": "driver_pars.STR.t_driver",
       "tum": 0.0,
-      "fitted": 0.018
+      "fitted": 0.022
     },
     {
       "parameter": "driver_pars.GAS.t_driver",
       "tum": 0.14,
-      "fitted": 0.313
+      "fitted": 0.285
     },
     {
       "parameter": "driver_pars.NOR.t_driver",
       "tum": 0.55,
-      "fitted": 0.0
+      "fitted": 0.011
     },
     {
       "parameter": "driver_pars.ALB.t_driver",
       "tum": 0.0,
-      "fitted": 0.501
+      "fitted": 0.562
     },
     {
       "parameter": "driver_pars.KUB.t_driver",
       "tum": 0.556,
-      "fitted": 1.03
+      "fitted": 0.971
     }
   ]
 }

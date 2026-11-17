@@ -30,15 +30,15 @@ Changes made to run these races:
 
 ## Fitted values
 
-| Track | Free-air laps | Lap RMSE | Trend s/lap | k1 hard / medium / soft, s/lap | k0 medium / soft vs hard, s | In-lap / out-lap loss, s |
-|---|---:|---:|---:|---|---|---|
-| Spielberg | 625 | 0.39 | 0.030 | 0.018 / 0.018 / 0.018 | 0.00 / −0.06 | 3.4 / 17.8 |
-| Barcelona | 508 | 0.55 | 0.058 | 0.038 / 0.038 / 0.038 | −0.49 / −0.56 | 4.0 / 19.5 |
-| Monza | 434 | 0.47 | 0.053 | 0.030 / 0.030 / 0.045 | 0.00 / −0.17 | 4.5 / 20.4 |
-| Singapore | 323 | 1.14 | 0.080 | 0.058 / 0.096 / 0.096 | 0.00 / 0.00 | 7.9 / 19.9 |
-| Austin | 469 | 0.56 | 0.067 | 0.090 / 0.127 / 0.127 | −0.21 / −0.21 | 0.6 / 20.4 |
+| Track | Free-air laps | Lap RMSE | Trend s/lap | Wear | k1 hard / medium / soft, s/lap | k0 medium / soft vs hard, s | In-lap / out-lap loss, s |
+|---|---:|---:|---:|---|---|---|---|
+| Spielberg | 625 | 0.39 | 0.030 | linear | 0.018 / 0.018 / 0.018 | 0.00 / −0.06 | 3.4 / 17.8 |
+| Barcelona | 508 | 0.53 | 0.058 | quadratic, k2 0.0015 | 0.000 / 0.000 / 0.000 | −0.47 / −0.54 | 4.0 / 19.5 |
+| Monza | 434 | 0.47 | 0.053 | quadratic, k2 0.0010 | 0.000 / 0.002 / 0.015 | 0.00 / −0.14 | 4.5 / 20.4 |
+| Singapore | 323 | 1.14 | 0.080 | linear | 0.058 / 0.096 / 0.096 | 0.00 / 0.00 | 7.9 / 19.9 |
+| Austin | 469 | 0.56 | 0.067 | linear | 0.090 / 0.127 / 0.127 | −0.21 / −0.21 | 0.6 / 20.4 |
 
-All values with standard errors: `evidence/fitted_parameters/<Track>_2019_fit.json`.
+All values with standard errors: `evidence/fitted_parameters/<Track>_2019_fit.json`. k2 is in s/lap², the same for all compounds at both tracks because the ordering rule binds. Quadratic wear is chosen per race by cross-validation over stints, see [heldout_check.md](heldout_check.md#3-non-linear-wear).
 
 - **Compounds separate better than at Spielberg.** Barcelona gives medium and soft about 0.5 s faster than hard when new; Monza and Singapore give the soft or medium faster wear; Austin both. The ordering rule still binds for some pairs, and standard errors on k0 are 0.2–0.7 s.
 - **Trends are about twice the fuel effect** (0.05–0.08 s/lap against about 0.03). Spielberg matched the fuel effect; at these races track evolution adds to it. TUM puts the whole trend into fuel sensitivity, which is right for lap times but means the car gets faster for the wrong reason.
@@ -67,7 +67,7 @@ All values with standard errors: `evidence/fitted_parameters/<Track>_2019_fit.js
 | Track | TUM RMSE, free-air laps | Fitted RMSE | TUM mean error | Fitted mean error |
 |---|---:|---:|---:|---:|
 | Spielberg | 0.57 s | 0.40 s | −0.20 s | 0.00 s |
-| Barcelona | 1.56 s | 0.55 s | −1.35 s | 0.00 s |
+| Barcelona | 1.56 s | 0.53 s | −1.35 s | 0.00 s |
 | Monza | 0.82 s | 0.47 s | −0.25 s | 0.00 s |
 | Singapore | 1.61 s | 1.14 s | −0.62 s | 0.00 s |
 | Austin | 1.47 s | 0.56 s | −1.13 s | 0.00 s |
@@ -81,16 +81,17 @@ TUM's formula predicts laps that are too fast at every track, by more than a sec
 | Track | Passes: real / TUM / ours | Position MAE: TUM / no traffic / ours | Rank correlation: TUM / ours | Race-time error: TUM / ours |
 |---|---|---|---|---|
 | Spielberg | 40 / 1 / 37 | 2.8 / 2.9 / 1.8 | 0.78 / 0.91 | −8 s / +2 s |
-| Barcelona | 17 / 4 / 21 | 1.8 / 1.4 / 2.0 | 0.91 / 0.89 | −101 s / −54 s |
-| Monza | 27 / 20 / 26 | 1.1 / 1.8 / 1.5 | 0.96 / 0.90 | +1 s / −6 s |
+| Barcelona | 17 / 4 / 21 | 1.8 / 1.8 / 1.8 | 0.91 / 0.90 | −101 s / −54 s |
+| Monza | 27 / 20 / 21 | 1.1 / 1.1 / 1.5 | 0.96 / 0.90 | +1 s / −1 s |
 | Singapore | 23 / 13 / 22 | 1.2 / 2.3 / 2.3 | 0.95 / 0.85 | −132 s / −56 s |
 | Austin | 43 / 44 / 47 | 2.2 / 0.9 / 1.0 | 0.85 / 0.95 | −15 s / −5 s |
-| Mean | | 1.8 / 1.9 / 1.7 | 0.89 / 0.90 | |
+| Mean | | 1.8 / 1.8 / 1.7 | 0.89 / 0.90 | |
 
 - **Passes match at every track** with our values (21–47 against 17–43 real). TUM's files give too few at four of five.
 - **Finishing order is about even with TUM's.** Clear gains at Spielberg and Austin, losses at Singapore and Monza. Single deterministic races move on small margins, as the Spielberg grid showed.
 - **Race times at the safety-car races are far off for both files** (Barcelona, Singapore). TUM is 101 and 132 s too fast, ours about 55 s. The cause is in TUM's safety-car handling and is not fitted here.
-- The traffic group alone does not always help finishing order (Barcelona 1.4 → 2.0), but it is what makes the pass counts right.
+- The traffic group alone does not always help finishing order (Monza 1.1 → 1.5), but it is what makes the pass counts right.
+- With quadratic wear Barcelona's top two are right (HAM, BOT); with linear wear its position MAE was 2.0.
 
 ## Check 3: pit-lap labels
 
@@ -98,9 +99,9 @@ Deterministic, one stop onto the driver's real second compound, every candidate 
 
 | Track | Driver | Real stop | Best, TUM | Best, fitted | Within 2 s, fitted |
 |---|---|---:|---:|---:|---|
-| Monza | LEC | 20 | 41 | 30 | 30 |
-| Monza | BOT | 27 | 28 | 30 | 30 |
-| Monza | RIC | 30 | 25 | 30 | 28–30 |
+| Monza | LEC | 20 | 41 | 30 | 28–30 |
+| Monza | BOT | 27 | 28 | 30 | 28–30 |
+| Monza | RIC | 30 | 25 | 28 | 28 |
 | Singapore | VET | 19 | 19 | 22 | 19–37 |
 | Singapore | LEC | 20 | 22 | 27 | 24–27 |
 | Singapore | VER | 19 | 28 | 22 | 19–37 |
@@ -108,9 +109,9 @@ Deterministic, one stop onto the driver's real second compound, every candidate 
 | Austin | HAM | 24 | 30 | 22 | 22–24 |
 | Austin | RIC | 21 | 39 | 20 | 20–21 |
 | Austin | SAI | 18 | 25 | 22 | 22 |
-| Mean distance from the real stop | | | 7.9 | 3.7 | |
+| Mean distance from the real stop | | | 7.9 | 3.9 | |
 
-- **The fitted files put the best stop much closer to the real one**: 3.7 laps on average, against 7.9 with TUM's files.
+- **The fitted files put the best stop much closer to the real one**: 3.9 laps on average, against 7.9 with TUM's files. Monza uses quadratic wear here; its labels hardly moved because the VSC on lap 30 dominates.
 - **These labels use hindsight about safety cars.** A deterministic run replays the recorded safety cars, so stopping under one is cheap. At Monza all three drivers come out at lap 30, the lap of the second VSC; at Singapore HAM's best with TUM's file is lap 36, the first safety car. Monte Carlo runs with sampled events remove this, and are needed before any of these become training labels.
 - Many windows are 1–3 laps wide, so the deterministic optimum is still sharp.
 - **Barcelona has no labels.** Every top finisher stopped twice, partly under the safety car, and the label generator handles one stop only.
@@ -120,4 +121,4 @@ Deterministic, one stop onto the driver's real second compound, every candidate 
 - **Fitted and checked on the same races.** The next check is a race the fit has not seen.
 - **Singapore's fit is weak** (few free-air laps, four drivers on fallback pace).
 - **Two-stop races cannot be labelled yet.**
-- **Linear wear, trend treated as fuel**, and TUM's safety-car model, as before.
+- **Trend treated as fuel**, and TUM's safety-car model, as before. Wear is quadratic at Barcelona and Monza, linear elsewhere.

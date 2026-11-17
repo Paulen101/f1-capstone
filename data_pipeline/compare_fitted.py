@@ -38,11 +38,19 @@ def predict(pars: dict, laps: pd.DataFrame, codes: dict) -> np.ndarray:
     times = []
     for lap in laps.itertuples():
         car = pars["car_pars"][pars["driver_pars"][lap.Driver]["team"]]
-        tyre = pars["tireset_pars"][lap.Driver][codes[lap.Compound]]
+        tyreset = pars["tireset_pars"][lap.Driver]
+        tyre = tyreset[codes[lap.Compound]]
+        age = lap.TyreLife - 1
+        if tyreset["tire_deg_model"] == "quad":
+            wear = tyre["k_1_quad"] * age + tyre["k_2_quad"] * age ** 2
+        elif tyreset["tire_deg_model"] == "lin":
+            wear = tyre["k_1_lin"] * age
+        else:
+            raise ValueError("Tyre model %s not supported" % tyreset["tire_deg_model"])
         fuel = car["m_fuel"] - car["b_fuel_perlap"] * (lap.LapNumber - 1)
         times.append(track["t_q"] + track["t_gap_racepace"] + car["t_car"]
                      + pars["driver_pars"][lap.Driver]["t_driver"] + tyre["k_0"]
-                     + tyre["k_1_lin"] * (lap.TyreLife - 1) + fuel * track["t_lap_sens_mass"])
+                     + wear + fuel * track["t_lap_sens_mass"])
     return np.array(times)
 
 

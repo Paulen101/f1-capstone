@@ -1,16 +1,26 @@
 Track,Model,TrainLaps,TestLaps,RMSE_s,MeanError_s
 Spielberg,held-out fit,417,208,0.421,0.018
+Spielberg,"held-out fit, quad",417,208,0.421,0.018
 Spielberg,in-sample fit,625,208,0.373,0.011
+Spielberg,"in-sample fit, quad",625,208,0.37,0.016
 Spielberg,tum,0,208,0.53,-0.173
 Catalunya,held-out fit,337,171,0.735,-0.397
+Catalunya,"held-out fit, quad",337,171,0.683,-0.338
 Catalunya,in-sample fit,508,171,0.527,-0.103
+Catalunya,"in-sample fit, quad",508,171,0.496,-0.058
 Catalunya,tum,0,171,1.57,-1.41
 Monza,held-out fit,270,164,0.663,-0.177
+Monza,"held-out fit, quad",270,164,0.663,-0.177
 Monza,in-sample fit,434,164,0.557,-0.026
+Monza,"in-sample fit, quad",434,164,0.55,-0.016
 Monza,tum,0,164,0.883,-0.19
 Singapore,held-out fit,199,124,1.454,0.097
+Singapore,"held-out fit, quad",199,124,1.454,0.097
 Singapore,in-sample fit,323,124,1.159,-0.081
+Singapore,"in-sample fit, quad",323,124,1.138,-0.071
 Singapore,tum,0,124,1.699,-0.853
 Austin,held-out fit,297,172,0.716,0.076
+Austin,"held-out fit, quad",297,172,0.716,0.076
 Austin,in-sample fit,469,172,0.646,0.04
+Austin,"in-sample fit, quad",469,172,0.644,0.042
 Austin,tum,0,172,1.557,-1.165

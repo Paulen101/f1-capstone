@@ -4,7 +4,7 @@
   "tum_file": "pars_Spielberg_2019.ini",
   "tum_sha256": "d92cbfea6a919cdacf7418f5a896740ee7b5ea2f7d42cd1fe48893e26c083944",
   "fit_file": "notes/evidence/fitted_parameters/Spielberg_2019_fit.json",
-  "fit_sha256": "41134ae21d1adb2cc9562649a92b739a6cc946e1fd16fd7f2b8e03c1fc3b6cf9",
+  "fit_sha256": "cfb88ab8fe09b19f160e7cd9faa0b5ea3ddc322141a21ab6939dd271e7a1a30f",
   "traffic_file": "notes/evidence/fitted_parameters/Spielberg_2019_traffic.json",
   "traffic_sha256": "cd2961de07c000f83a1056d6cd14ac4ff711665eee431fb6d4781c9976b525f0",
   "groups": [
