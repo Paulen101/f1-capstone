@@ -4,3 +4,6 @@
 
 # TUM snapshot stays byte-identical to notes/tum_upstream_manifest.json on every platform.
 race-simulation/** -text
+
+# Fitted race files: keep LF so the hashes in their manifests stay valid on every machine.
+integration/parameters/*.ini text eol=lf

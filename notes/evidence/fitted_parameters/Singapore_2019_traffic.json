@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 15,
+    "event": "Singapore Grand Prix",
+    "location": "Singapore"
+  },
+  "tum_file": "pars_Singapore_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.576,
+      "se": 0.029,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": -0.034,
+      "se": 0.153,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 2.556,
+      "se": 1.103,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 2.566,
+      "se": 0.129,
+      "tum": 3.75
+    }
+  },
+  "counts": {
+    "pairs": 748,
+    "close_pairs": 358,
+    "passes": 23,
+    "duel_laps": 56,
+    "passes_clear_ahead": 10
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 112,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 47,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 22,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 28,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 19,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 22,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 42,
+      "passes": 3
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 66,
+      "passes": 18
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 14,
+    "event": "Italian Grand Prix",
+    "location": "Monza"
+  },
+  "tum_file": "pars_Monza_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.385,
+      "se": 0.039,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": 0.139,
+      "se": 0.101,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 0.735,
+      "se": 0.192,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 1.17,
+      "se": 0.063,
+      "tum": 1.755
+    }
+  },
+  "counts": {
+    "pairs": 663,
+    "close_pairs": 175,
+    "passes": 27,
+    "duel_laps": 50,
+    "passes_clear_ahead": 20
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 54,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 26,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 8,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 12,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 5,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 10,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 24,
+      "passes": 5
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 36,
+      "passes": 19
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

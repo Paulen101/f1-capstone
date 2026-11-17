@@ -1,0 +1,17 @@
+Parameters,Driver,RealPitLap,LabelPitLap,FastestPitLap,Within2s_First,Within2s_Last,Within2s_Laps
+tum,VER,31,23,52,43,61,19
+tum,LEC,22,25,25,16,29,14
+tum,HAM,30,11,17,17,17,1
+tum,BOT,21,32,36,33,44,12
+pit_tyres,VER,31,28,34,29,42,14
+pit_tyres,LEC,22,28,28,23,30,8
+pit_tyres,HAM,30,34,34,26,45,20
+pit_tyres,BOT,21,31,34,32,40,9
+fitted_notraffic,VER,31,18,18,18,18,1
+fitted_notraffic,LEC,22,20,20,18,20,3
+fitted_notraffic,HAM,30,23,21,21,21,1
+fitted_notraffic,BOT,21,18,27,27,48,18
+fitted,VER,31,42,42,37,47,11
+fitted,LEC,22,31,34,30,46,15
+fitted,HAM,30,31,31,26,34,8
+fitted,BOT,21,34,34,25,45,21

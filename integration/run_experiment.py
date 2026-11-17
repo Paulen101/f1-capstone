@@ -24,7 +24,8 @@ def write_csv(path, rows):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=["baseline", "fixed", "realstrategy"])
-    parser.add_argument("--race", default="pars_Spielberg_2019.ini")
+    parser.add_argument("--race", default="pars_Spielberg_2019.ini",
+                        help="TUM race file name, or the path of one of our fitted files")
     parser.add_argument("--driver", default="VER")
     parser.add_argument("--pit-lap", type=int, default=25)
     parser.add_argument("--compound", default="A3")
@@ -42,13 +43,18 @@ def main():
     from racesim.src.import_pars import import_pars
     from racesim.src.race import Race
     from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
+    from integration.race_files import allow_recorded_fcy, is_tum_file, resolve_race_file
 
     random.seed(0)
     np.random.seed(0)
-    out = args.out or ROOT / "integration" / "output" / args.mode
+    source = resolve_race_file(args.race)
+    # Our fitted files get their own folder, so they never overwrite the TUM-parameter outputs.
+    folder = args.mode if is_tum_file(source) else "%s_%s" % (args.mode, source.stem.replace("pars_", ""))
+    out = args.out or ROOT / "integration" / "output" / folder
     out.mkdir(parents=True, exist_ok=True)
     pars, paths = import_pars(use_print=True, use_vse=args.mode != "baseline",
-                             race_pars_file=args.race, mcs_pars_file="pars_mcs.ini")
+                             race_pars_file=str(source), mcs_pars_file="pars_mcs.ini")
+    fcy_changes = allow_recorded_fcy(pars)
     if pars["race_pars"]["season"] != 2019:
         parser.error("Week 2 experiments are restricted to the 2019 validation season")
     if any(row[1] in ("I", "W") for d in pars["driver_pars"].values()
@@ -95,10 +101,10 @@ def main():
         if "pitinlap" not in actual[0]["InLapInfluence"] or "pitoutlap" not in actual[0]["OutLapInfluence"]:
             raise AssertionError("Pit entry/exit were not executed by the simulator")
         print("Verified actual simulator pit stop:", actual[0])
-    source = TUM / "racesim" / "input" / "parameters" / args.race
-    manifest = {"mode": args.mode, "python": sys.version, "race_file": args.race,
+    manifest = {"mode": args.mode, "python": sys.version, "race_file": source.name,
                 "race_file_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-                "result_status": int(race.result_status), "laps": race.cur_lap,
+                "result_status": int(race.result_status),
+                "fcy_min_dist_lowered": fcy_changes, "laps": race.cur_lap,
                 "drivers": race.no_drivers, "use_prob_infl": False, "create_rand_events": False,
                 "vse": "disabled (original strategy_info)" if args.mode == "baseline" else "realstrategy",
                 "tensorflow_import": "deferred; neural-network VSEs unused",

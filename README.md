@@ -30,8 +30,10 @@ Austin (in between).
 | Simulator vs real result, Austria 2019 (`notes/sim_vs_real_2019.md`) | Done |
 | Pit-lap sweep, Austria 2019, 207 runs (`notes/pit_lap_sweep.md`) | Done |
 | FastF1 workbooks for 2019 and 2022-2026 with a full data dictionary | Done |
-| Own fitted parameters written into TUM parameter files | Next |
-| Label generator and retrained pit-timing network | Planned |
+| Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`, `notes/fitted_parameters_study_circuits.md`) | Done for 2019: Austria and the four study circuits |
+| Held-out check and quadratic wear where it predicts better (`notes/heldout_check.md`) | Done; Monte Carlo labels next |
+| Label generator, one driver and race (`integration/label_generator.py`) | In progress |
+| Retrained pit-timing network | Planned |
 | Evaluation against the original VSE and real strategies | Planned |
 
 ## Layout
@@ -43,7 +45,7 @@ data_pipeline/          results export and the 2019 simulator-vs-real comparison
 integration/            our code that plugs into TUM (policies, experiment runner, sweep)
 race-simulation/        TUM's simulator, unmodified snapshot (LGPL-3.0)
 notes/                  findings, parameter mapping, environment setup, evidence logs
-f1_data/                generated workbooks (not in git)
+f1_data/                generated workbooks (not in git); ../f1-race-data/ is also searched
 fastf1_cache/           FastF1 download cache (not in git)
 ```
 
@@ -93,7 +95,7 @@ powershell -ExecutionPolicy Bypass -File integration/setup_windows.ps1
   meaning, unit and use; the DataDictionary and Legend sheets explain every column and code.
 - A race is excluded as WET/MIXED if any lap used intermediate or wet tyres, or if any rain was
   recorded during the race. Excluded races stay listed in the Races sheet with the reason.
-- Seasons after 2022 need an F1TV subscription token:
+- Every season except 2021 and 2022 needs an F1TV subscription token, 2019 included:
   `python -m fastf1 auth f1tv --authenticate`. Tokens expire after a few days.
 - Rate limits: if races show FAILED, re-run the same command. Cached races load quickly.
 
@@ -105,12 +107,32 @@ powershell -ExecutionPolicy Bypass -File integration/setup_windows.ps1
 .venv-tum/bin/python integration/run_experiment.py realstrategy
 integration/run_sweep.sh
 
+# label generator: every candidate pit lap, one driver (see notes/label_generator.md)
+.venv-tum/bin/python integration/label_generator.py --driver VER --compound A3 --deterministic
+.venv-tum/bin/python integration/label_generator.py --driver VER --compound A3 --runs 10
+
+# our fitted parameters: fit from the workbook, write the fitted race file, then pass its path
+# with --race (see notes/fitted_parameters.md)
+.venv-data/bin/python data_pipeline/fit_parameters.py --year 2019 --round 9
+.venv-data/bin/python data_pipeline/fit_traffic.py --year 2019 --round 9
+.venv-tum/bin/python integration/write_fitted_pars.py --fit notes/evidence/fitted_parameters/Spielberg_2019_fit.json
+.venv-tum/bin/python integration/run_experiment.py realstrategy --race integration/parameters/pars_Spielberg_2019_fitted.ini
+.venv-tum/bin/python integration/label_generator.py --race integration/parameters/pars_Spielberg_2019_fitted.ini --driver VER --compound A3 --deterministic
+.venv-data/bin/python data_pipeline/compare_fitted.py
+.venv-tum/bin/python integration/tune_traffic.py --loser 0.3 0.8 1.33
+# all five 2019 races (see notes/fitted_parameters_study_circuits.md)
+.venv-data/bin/python data_pipeline/check_lap_model.py
+.venv-tum/bin/python integration/check_races.py
+# held-out check (see notes/heldout_check.md)
+.venv-data/bin/python data_pipeline/heldout_tyres.py
+.venv-tum/bin/python integration/heldout_traffic.py
+
 # needs real TensorFlow, so not on Apple Silicon: TUM's stock simulator and neural-network VSEs
 .venv-tum/bin/python -X utf8 race-simulation/main_racesim.py
 .venv-tum/bin/python integration/demo_vse.py
 
-.venv-tum/bin/python -m unittest integration.test_policy -v
-.venv-data/bin/python -m unittest data_pipeline.test_comparison -v
+.venv-tum/bin/python -m unittest integration.test_policy integration.test_label_generator integration.test_write_fitted_pars integration.test_heldout_traffic -v
+.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic data_pipeline.test_heldout_tyres -v
 ```
 
 Any change to TUM's files is logged in `notes/tum_changes.md`.
