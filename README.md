@@ -30,7 +30,8 @@ Austin (in between).
 | Simulator vs real result, Austria 2019 (`notes/sim_vs_real_2019.md`) | Done |
 | Pit-lap sweep, Austria 2019, 207 runs (`notes/pit_lap_sweep.md`) | Done |
 | FastF1 workbooks for 2019 and 2022-2026 with a full data dictionary | Done |
-| Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`, `notes/fitted_parameters_study_circuits.md`) | Done for 2019: Austria and the four study circuits; held-out check next |
+| Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`, `notes/fitted_parameters_study_circuits.md`) | Done for 2019: Austria and the four study circuits |
+| Held-out check: unseen tyre ages and traffic values from other races (`notes/heldout_check.md`) | Done; non-linear wear next |
 | Label generator, one driver and race (`integration/label_generator.py`) | In progress |
 | Retrained pit-timing network | Planned |
 | Evaluation against the original VSE and real strategies | Planned |
@@ -122,13 +123,16 @@ integration/run_sweep.sh
 # all five 2019 races (see notes/fitted_parameters_study_circuits.md)
 .venv-data/bin/python data_pipeline/check_lap_model.py
 .venv-tum/bin/python integration/check_races.py
+# held-out check (see notes/heldout_check.md)
+.venv-data/bin/python data_pipeline/heldout_tyres.py
+.venv-tum/bin/python integration/heldout_traffic.py
 
 # needs real TensorFlow, so not on Apple Silicon: TUM's stock simulator and neural-network VSEs
 .venv-tum/bin/python -X utf8 race-simulation/main_racesim.py
 .venv-tum/bin/python integration/demo_vse.py
 
-.venv-tum/bin/python -m unittest integration.test_policy integration.test_label_generator integration.test_write_fitted_pars -v
-.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic -v
+.venv-tum/bin/python -m unittest integration.test_policy integration.test_label_generator integration.test_write_fitted_pars integration.test_heldout_traffic -v
+.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic data_pipeline.test_heldout_tyres -v
 ```
 
 Any change to TUM's files is logged in `notes/tum_changes.md`.
