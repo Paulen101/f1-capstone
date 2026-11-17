@@ -19,6 +19,7 @@ import argparse
 import configparser
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import statistics
@@ -161,7 +162,16 @@ def tyre_values(fit: dict, pars: dict, with_pace: bool) -> dict:
     if any((car["m_fuel"], car["b_fuel_perlap"]) != (cars[0]["m_fuel"], cars[0]["b_fuel_perlap"])
            for car in cars):
         raise ValueError("Cars differ in fuel load or consumption; one fuel sensitivity cannot fit all")
-    sensitivity = round(fit["trend_s_per_lap"] / cars[0]["b_fuel_perlap"], 5)
+    burn = cars[0]["b_fuel_perlap"]
+    laps = pars["race_pars"]["tot_no_laps"]
+    if cars[0]["m_fuel"] < burn * laps:
+        # TUM's Monza 2019 file: 110 kg at 2.076 kg/lap lasts 52.99 of 53 laps, so a race without a
+        # safety car runs dry on the last lap and TUM stops it. Real cars finished: burn the most that
+        # still covers the distance.
+        burn = math.floor(cars[0]["m_fuel"] / laps * 1000) / 1000
+        for team in pars["car_pars"]:
+            values[("car_pars", team, "b_fuel_perlap")] = burn
+    sensitivity = round(fit["trend_s_per_lap"] / burn, 5)
     values[("track_pars", "t_lap_sens_mass")] = sensitivity
     levels = driver_levels(fit, pars)
     base = pars["track_pars"]["t_q"] + cars[0]["m_fuel"] * sensitivity

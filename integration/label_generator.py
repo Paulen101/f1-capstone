@@ -49,6 +49,34 @@ def clear_recorded_events(event_pars: dict) -> None:
     event_pars["retire_data"]["retirements"] = []
 
 
+def complete_background_strategies(pars: dict, target: str) -> list:
+    """Give background drivers who really retired a strategy TUM accepts when they now finish.
+
+    With sampled events a driver who really retired drives to the end on the stops made before
+    retiring. TUM rejects a race in which a finisher used only one compound, so every run fails
+    (Monza 2019: SAI stopped soft to soft; Austin 2019: VET retired before stopping). Such a driver's
+    last stop goes onto the compound most other drivers used last, on new tyres; a driver with no stop
+    gets one at the median first-stop lap of the others. Returns the changes.
+    """
+    strategies = pars["vse_pars"]["real_strategy"]
+    complete = {d: s for d, s in strategies.items() if len({stint[1] for stint in s}) > 1}
+    changes = []
+    for driver, strategy in strategies.items():
+        if driver == target or driver in complete:
+            continue
+        finals = [s[-1][1] for s in complete.values() if s[-1][1] != strategy[0][1]]
+        compound = max(sorted(set(finals)), key=finals.count)
+        if len(strategy) > 1:
+            new = strategy[:-1] + [[strategy[-1][0], compound, 0, strategy[-1][3]]]
+        else:
+            lap = int(statistics.median(s[1][0] for s in complete.values()))
+            new = strategy + [[lap, compound, 0, 0.0]]
+        changes.append({"driver": driver, "real": strategy, "used": new})
+        strategies[driver] = new
+        pars["driver_pars"][driver]["strategy_info"] = [list(stint) for stint in new]
+    return changes
+
+
 def check_stop(stops: list, pit_lap: int, compound: str, finished: bool) -> bool:
     """Return whether the requested stop ran; raise if the simulator did anything else."""
     if not stops and not finished:
@@ -144,8 +172,12 @@ def write_csv(path, rows):
         writer.writerows(rows)
 
 
-def simulate_run(race_class, pars, paths, driver, policy, policy_vse, seed, stochastic):
-    """Simulate one race; return its target-driver outcome and whether TUM marked it valid."""
+def simulate_run(race_class, pars, paths, driver, policy, policy_vse, seed, stochastic, situation_laps=()):
+    """Simulate one race; return its target-driver outcome and whether TUM marked it valid.
+
+    For every lap in `situation_laps` the driver was still racing at, the result also carries the race
+    situation at that decision lap (integration/situations.py) under "_situations".
+    """
     import numpy as np
     # Seed before building the race: TUM draws random events in the constructor.
     random.seed(seed)
@@ -160,9 +192,19 @@ def simulate_run(race_class, pars, paths, driver, policy, policy_vse, seed, stoc
     finished = bool(race.bool_driving[-1, idx])
     stops = [(stop[0], stop[1]) for stop in race.drivers_list[idx].strategy_info[1:]]
     laps = float(race.progress[idx])
-    return {"Position": int(race.positions[-1, idx]), "SimulatedLaps": laps,
-            "RaceTime_s": round(float(race.racetimes[int(laps), idx]), 3), "Finished": finished,
-            "StopExecuted": check_stop(stops, policy.pit_lap, policy.compound, finished)}, 0
+    result = {"Position": int(race.positions[-1, idx]), "SimulatedLaps": laps,
+              "RaceTime_s": round(float(race.racetimes[int(laps), idx]), 3), "Finished": finished,
+              "StopExecuted": check_stop(stops, policy.pit_lap, policy.compound, finished)}
+    if situation_laps:
+        from integration.situations import features
+        track, team = pars["track_pars"], pars["driver_pars"][driver]["team"]
+        pit_loss = (track["t_pitdrive_inlap"] + track["t_pitdrive_outlap"] + track["t_pit_tirechange_min"]
+                    + pars["car_pars"][team]["t_pit_tirechange_add"])
+        result["_situations"] = [
+            features(race, idx, lap, pars["vse_pars"]["param_dry_compounds"],
+                     pars["vse_pars"]["location_cat"], round(pit_loss, 3))
+            for lap in situation_laps if lap >= 2 and race.bool_driving[lap - 1, idx]]
+    return result, 0
 
 
 def parse_args():
@@ -182,6 +224,9 @@ def parse_args():
     parser.add_argument("--last-lap", type=int, help="default: second-to-last lap of the race")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--jobs", type=int, default=1, help="worker processes; results do not depend on it")
+    parser.add_argument("--situations", action="store_true",
+                        help="also write situations.csv: the race situation at every candidate lap of every "
+                             "run (notes/situation_sampling.md)")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     if sys.version_info[:2] != (3, 8):
@@ -216,7 +261,10 @@ def load(args):
     pars["vse_pars"]["vse_type"] = dict.fromkeys(pars["race_pars"]["participants"], "realstrategy")
     if not args.deterministic and args.events == "sampled":
         clear_recorded_events(pars["event_pars"])
-    return source, pars, paths, fcy_changes
+        strategy_changes = complete_background_strategies(pars, args.driver)
+    else:
+        strategy_changes = []
+    return source, pars, paths, fcy_changes, strategy_changes
 
 
 def simulate_laps(task):
@@ -226,18 +274,22 @@ def simulate_laps(task):
     setup()
     from racesim.src.race import Race
     from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
-    source, pars, paths, _ = load(args)
+    source, pars, paths, _, _ = load(args)
     stochastic = not args.deterministic
     runs = 1 if args.deterministic else args.runs
-    rows, invalid = [], 0
+    tot_no_laps = pars["race_pars"]["tot_no_laps"]
+    last_lap = args.last_lap if args.last_lap is not None else tot_no_laps - 1
+    rows, invalid, situations = [], 0, []
     started = time.perf_counter()
     for pit_lap in pit_laps:
         policy = FixedLapPolicy(pit_lap, args.compound)
+        # the latest candidate's race has no stop before any other candidate: record situations there
+        situation_laps = range(args.first_lap, last_lap + 1) if args.situations and pit_lap == last_lap else ()
         for run in range(runs):
             for attempt in range(MAX_ATTEMPTS):
                 seed = run_seed(args.seed, run, attempt)
                 result, status = simulate_run(Race, pars, paths, args.driver, policy, FixedLapVSE,
-                                              seed, stochastic)
+                                              seed, stochastic, situation_laps)
                 if result is not None:
                     break
                 if not stochastic:
@@ -246,16 +298,17 @@ def simulate_laps(task):
             else:
                 raise RuntimeError("No valid race in %d attempts: lap %d, run %d"
                                    % (MAX_ATTEMPTS, pit_lap, run))
+            situations += [{"Run": run, "Seed": seed, **f} for f in result.pop("_situations", [])]
             rows.append({"Race": source.name, "Driver": args.driver, "Compound": args.compound,
                          "PitLap": pit_lap, "Run": run, "Seed": seed, **result})
         print("lap %d done (%.0f s)" % (pit_lap, time.perf_counter() - started), flush=True)
-    return rows, invalid
+    return rows, invalid, situations
 
 
 def main():
     parser, args = parse_args()
     setup()
-    source, pars, paths, fcy_changes = load(args)
+    source, pars, paths, fcy_changes, strategy_changes = load(args)
     stochastic = not args.deterministic
     runs = 1 if args.deterministic else args.runs
     events = "file" if args.deterministic else args.events
@@ -290,8 +343,9 @@ def main():
         with ProcessPoolExecutor(jobs) as pool:
             results = list(pool.map(simulate_laps, tasks))
     elapsed = time.perf_counter() - started
-    rows = sorted((row for part, _ in results for row in part), key=lambda r: (r["PitLap"], r["Run"]))
-    invalid = sum(part for _, part in results)
+    rows = sorted((row for part, _, _ in results for row in part), key=lambda r: (r["PitLap"], r["Run"]))
+    invalid = sum(part for _, part, _ in results)
+    situations = sorted((row for _, _, part in results for row in part), key=lambda r: (r["Run"], r["Lap"]))
 
     summary = summarize(rows, tot_no_laps)
     label = pick_label(summary)
@@ -302,13 +356,17 @@ def main():
     close = close_to_label(paired)
     write_csv(out / "runs.csv", rows)
     write_csv(out / "summary.csv", summary)
+    if situations:
+        write_csv(out / "situations.csv", [{"Race": source.name, "Driver": args.driver,
+                                             "StopCompound": args.compound, **row} for row in situations])
     manifest = {"race_file": source.name,
                 "race_file_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
                 "python": sys.version, "driver": args.driver, "compound": args.compound,
                 "first_lap": args.first_lap, "last_lap": last_lap, "runs_per_lap": runs,
                 "use_prob_infl": stochastic, "create_rand_events": stochastic, "events": events,
                 "background_vse": "realstrategy",
-                "fcy_min_dist_lowered": fcy_changes, "seed": args.seed, "races_simulated": len(rows),
+                "fcy_min_dist_lowered": fcy_changes, "background_strategies_completed": strategy_changes,
+                "seed": args.seed, "races_simulated": len(rows), "situations": len(situations),
                 "invalid_races_rerun": invalid, "jobs": jobs, "runtime_s": round(elapsed, 1),
                 "ms_per_race": round(elapsed / len(rows) * 1000, 1),
                 "label_pit_lap": label, "fastest_pit_lap": fastest,

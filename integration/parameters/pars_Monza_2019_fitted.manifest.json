@@ -1,6 +1,6 @@
 {
   "race_file": "pars_Monza_2019_fitted.ini",
-  "sha256": "4dc2ce099b199304857bba66896ab9f18b63c7fdc8997085f50bfdd21f4d4da5",
+  "sha256": "2ede3fd40ae1fa2b6124de2391706910e162ef4590d660e713cf154b29162738",
   "tum_file": "pars_Monza_2019.ini",
   "tum_sha256": "9c1e8b56ea3d1ef8fdfd1e9c05e4bf54a503659bf0c0da8b6f2bb918f49ff5c9",
   "fit_file": "notes/evidence/fitted_parameters/Monza_2019_fit.json",
@@ -32,12 +32,12 @@
     {
       "parameter": "track_pars.t_gap_racepace",
       "tum": 2.433,
-      "fitted": 3.098
+      "fitted": 3.096
     },
     {
       "parameter": "track_pars.t_lap_sens_mass",
       "tum": 0.027,
-      "fitted": 0.02534
+      "fitted": 0.02535
     },
     {
       "parameter": "track_pars.t_pitdrive_inlap",
@@ -60,9 +60,19 @@
       "fitted": 0.073
     },
     {
+      "parameter": "car_pars.Mercedes.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
+    },
+    {
       "parameter": "car_pars.Renault.t_car",
       "tum": 0.31,
       "fitted": 0.988
+    },
+    {
+      "parameter": "car_pars.Renault.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
     },
     {
       "parameter": "car_pars.HaasF1Team.t_car",
@@ -70,9 +80,19 @@
       "fitted": 1.726
     },
     {
+      "parameter": "car_pars.HaasF1Team.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
+    },
+    {
       "parameter": "car_pars.ToroRosso.t_car",
       "tum": 0.774,
       "fitted": 1.314
+    },
+    {
+      "parameter": "car_pars.ToroRosso.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
     },
     {
       "parameter": "car_pars.AlfaRomeo.t_car",
@@ -80,9 +100,19 @@
       "fitted": 1.503
     },
     {
+      "parameter": "car_pars.AlfaRomeo.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
+    },
+    {
       "parameter": "car_pars.Ferrari.t_car",
       "tum": 0.03,
       "fitted": 0.059
+    },
+    {
+      "parameter": "car_pars.Ferrari.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
     },
     {
       "parameter": "car_pars.RacingPoint.t_car",
@@ -90,9 +120,19 @@
       "fitted": 1.042
     },
     {
+      "parameter": "car_pars.RacingPoint.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
+    },
+    {
       "parameter": "car_pars.McLaren.t_car",
       "tum": 0.724,
       "fitted": 1.131
+    },
+    {
+      "parameter": "car_pars.McLaren.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
     },
     {
       "parameter": "car_pars.RedBull.t_car",
@@ -100,9 +140,19 @@
       "fitted": 0.0
     },
     {
+      "parameter": "car_pars.RedBull.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
+    },
+    {
       "parameter": "car_pars.Williams.t_car",
       "tum": 1.674,
       "fitted": 2.031
+    },
+    {
+      "parameter": "car_pars.Williams.b_fuel_perlap",
+      "tum": 2.076,
+      "fitted": 2.075
     },
     {
       "parameter": "tireset_pars.HAM.tire_deg_model",

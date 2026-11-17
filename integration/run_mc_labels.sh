@@ -33,7 +33,13 @@ mkdir -p integration/output/labels
 echo "$LABELS" | while read -r track driver compound; do
   [ -n "$track" ] || continue
   log="integration/output/labels/${track}_2019_fitted_${driver}_mc${RUNS}.log"
+  if [ -f "integration/output/labels/${track}_2019_fitted_${driver}_mc${RUNS}/manifest.json" ]; then
+    echo "$track $driver: already done"
+    continue
+  fi
+  # stdin from /dev/null: the label list is this loop's stdin, and Python must not read it
   "$PY" integration/label_generator.py --race "integration/parameters/pars_${track}_2019_fitted.ini" \
-    --driver "$driver" --compound "$compound" --runs "$RUNS" --jobs "$JOBS" > "$log" 2>&1
+    --driver "$driver" --compound "$compound" --runs "$RUNS" --jobs "$JOBS" > "$log" 2>&1 < /dev/null \
+    || { echo "$track $driver: FAILED, see $log"; continue; }
   echo "$track $driver: $(tail -1 "$log" | cut -c1-120)"
 done

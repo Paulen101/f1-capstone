@@ -1,0 +1,15 @@
+Track,Driver,RealPitLap,MonteCarloLabel,FastestPitLap,Within2SE_First,Within2SE_Last,Within2SE_Laps,RealWithin2SE,DeterministicLabel,FinishedRunsShare,Runs
+Austin,HAM,24,23,23.0,22,25,4,True,22,0.932,500
+Austin,RIC,21,22,,20,23,4,True,20,0.86,500
+Austin,SAI,18,22,,19,24,6,False,22,0.892,500
+Monza,BOT,27,23,27.0,22,26,5,False,30,0.92,500
+Monza,LEC,20,22,24.0,21,28,8,False,30,0.88,500
+Monza,RIC,30,21,24.0,20,22,3,False,28,0.86,500
+Singapore,HAM,26,18,22.0,15,20,6,False,18,0.932,500
+Singapore,LEC,20,21,23.0,18,23,5,False,27,0.88,500
+Singapore,VER,19,15,18.0,15,18,4,False,22,0.896,500
+Singapore,VET,19,14,17.0,13,16,4,False,22,0.886,500
+Spielberg,BOT,21,37,27.0,34,41,8,False,34,0.918,500
+Spielberg,HAM,30,37,37.0,31,39,8,False,31,0.934,500
+Spielberg,LEC,22,37,38.0,31,40,10,False,31,0.88,500
+Spielberg,VER,31,28,32.0,22,41,20,True,42,0.9,500
