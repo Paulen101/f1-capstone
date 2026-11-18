@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) and round 6 (v4's timing with a compound head: the best policy so far) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) round 6 (v4's timing with a compound head: the best policy so far) and round 7 (safety-car headroom: not worth training) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -282,11 +282,34 @@ What this shows:
 - **A per-driver rule does as well.** It is even 0.007 places better than the head. With one stored compound and one other per driver, choosing the tyre comes down to "this driver should use the other tyre at this track". The head learns that and little more.
 - **The compound was not TUM's safety-car edge.** The compound gains as much in green races as in safety-car races (−0.05 each). TUM still leads by +0.31 and +0.34 places in safety-car races at Monza and Spielberg. TUM's VSE makes its first stop under a safety car or VSC in 10–12 % of races; v4 does in 3–5 %. What remains is **when** to stop around a safety car. Round 2's labels could not reward waiting for one, because one compound per driver left nothing to gain. With both compounds now in the runs, that can be retested.
 
+## Round 7: is safety-car timing worth training?
+
+After round 6, TUM's VSE still leads in safety-car races at Monza (+0.31 places) and Spielberg (+0.34). In those races it stops under a safety car or VSC in 22 % and 18 % of races; v4 + compound head does in 6 % and 5 %. In green races TUM stops later (Monza lap 26 vs 24, Spielberg 36 vs 30), which keeps the window open for a safety car. Before training anything, `data_pipeline/safety_car_headroom.py` measures what reacting to safety cars could add, exactly on the stored runs with both compounds, against v4 + compound head on the held-out runs 40–49 (38 % of them have a safety car or VSC before the last lap; [table](evidence/pit_network/safety_car_headroom.csv), [rule grid](evidence/pit_network/safety_car_headroom_grid.json)):
+
+| Minus v4 + compound head (held-out) | All races | SC/VSC races |
+|---|---:|---:|
+| Hindsight, any plan (bound for any policy) | −0.80 ± 0.04 | −1.17 ± 0.08 |
+| Hindsight, changing only what it does on SC/VSC laps | −0.16 ± 0.02 | −0.45 ± 0.05 |
+| … stop under an SC before the planned stop | −0.08 | −0.21 |
+| … wait past the planned stop for a later SC | −0.06 | −0.17 |
+| … second stop under an SC | −0.04 | −0.11 |
+| Rule: stop at once under SC/VSC once progress ≥ p (best p = 0.2) | 0.00 | 0.00 |
+| Rule: second stop under SC/VSC with ≥ r laps left (best: never) | 0.00 | 0.00 |
+| Rule: when v4 says pit, wait up to k laps for an SC (best k = 1) | +0.01 ± 0.03 | −0.05 ± 0.06 |
+| Rule: under SC/VSC, pit if v4's predicted advantage < θ (best θ = 0) | +0.02 ± 0.01 | +0.05 ± 0.02 |
+
+Rule settings were chosen on the training runs 0–39.
+
+What this shows:
+
+- **The bound is real but needs hindsight.** Reaching −0.45 places in safety-car races means knowing *which* safety car is worth a stop (how long it lasts, where the car rejoins) or that one is coming. No rule that only knows the present gains anything on held-out runs. Waiting longer, or lowering the bar under a safety car, gets steadily worse (holding 10 laps: +0.57 places).
+- **Per track it does not hold up either.** Waiting 1–4 laps looks slightly better at Austin and Spielberg (−0.02 to −0.09 ± 0.05 on held-out runs) and worse at Monza and Singapore. Choosing the wait per track on the training runs gives Austin −0.04, Monza +0.04, Singapore 0 and Spielberg +0.06 on the held-out runs: no gain.
+- **v4 already knows about safety cars.** It sees the SC and VSC flags, and policy iteration trained it on exact labels for stopping under them. What these situation features can say about safety cars is already in it. **A separate safety-car round is not worth training.** TUM's remaining lead at Monza and Spielberg is a different trade-off (later stops that pay off when a safety car comes) that our replay does not find better on average. Testing that needs either more runs per driver or features describing the safety car itself (laps since it came out, the field's gaps under it).
+
 ## Next
 
-1. Safety-car timing: with both compounds in the runs, measure what stopping under a safety car (onto either compound) is worth in the replay, and train v4's timing on it if the bound is large enough.
-2. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
-3. More tracks before claiming anything about new tracks.
+1. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
+2. More tracks before claiming anything about new tracks.
 
 ## Reproduce
 
@@ -318,4 +341,6 @@ What this shows:
 .venv-train/Scripts/python.exe data_pipeline/train_compound_head.py
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_two_stop.npz --policies network_head network_rule --out integration/output/evaluation/pit_compound_head_v1_mc100
 .venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_tracks_head_mc100 --base network_head
+# round 7 (safety-car headroom)
+.venv-train/Scripts/python.exe data_pipeline/safety_car_headroom.py
 ```

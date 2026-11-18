@@ -41,6 +41,7 @@ Austin (in between).
 | One two-stop network for all four tracks (`notes/pit_network.md`, round 4) | Done: beats TUM's VSE by 0.15 places and 1.7 s, and the real strategies by 0.73 places; TUM still wins safety-car races at Monza and Spielberg |
 | Lap and compound chosen together (`notes/pit_network.md`, round 5) | Done: helps at Spielberg (0.15 places) and Monza, costs as much at Austin and Singapore; no overall change, v4 stays best |
 | v4's timing with a compound head (`notes/pit_network.md`, round 6) | Done: best policy so far, beats TUM's VSE by 0.20 places and 2.2 s and the real strategies by 0.78 places; TUM still leads in safety-car races at Monza and Spielberg |
+| Safety-car headroom (`notes/pit_network.md`, round 7) | Done: hindsight bound −0.45 places in safety-car races, but no rule that only knows the present gains on held-out runs; not worth a training round |
 
 ## Layout
 
