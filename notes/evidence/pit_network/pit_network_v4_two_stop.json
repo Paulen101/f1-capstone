@@ -1,0 +1,208 @@
+{
+ "Name": "pit_network_v4_two_stop",
+ "Tracks": [
+  "Austin",
+  "Monza",
+  "Singapore",
+  "Spielberg"
+ ],
+ "DriverRaces": 80,
+ "HeldOutFirstRun": 40,
+ "Settings": {
+  "tracks": [
+   "Austin",
+   "Monza",
+   "Singapore",
+   "Spielberg"
+  ],
+  "runs": 50,
+  "start": "E:\\Seminar\\f1-capstone\\integration\\models\\pit_network_v1.npz",
+  "name": "pit_network_v4_two_stop",
+  "iterations": 4,
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16,
+  "device": "auto"
+ },
+ "References": [
+  {
+   "Policy": "fixed best plan",
+   "MeanStopLap": 25.815,
+   "TwoStopShare": 0.23625,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.15353260869565216,
+    "PosDiff_SE": 0.021222735315331635,
+    "TimeDiff_s": -1.5817696629213398,
+    "TimeDiff_s_SE": 0.2471807801242528,
+    "Runs": 800
+   }
+  },
+  {
+   "Policy": "start (v1, one stop)",
+   "MeanStopLap": 26.01625,
+   "TwoStopShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.005434782608695652,
+    "PosDiff_SE": 0.029096439968169473,
+    "TimeDiff_s": -0.7464832402234434,
+    "TimeDiff_s_SE": 0.23921212479900605,
+    "Runs": 800
+   }
+  }
+ ],
+ "Iterations": [
+  {
+   "Policy": "iteration 1",
+   "MeanStopLap": 28.88125,
+   "TwoStopShare": 0.13625,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.042119565217391304,
+    "PosDiff_SE": 0.03164423153752438,
+    "TimeDiff_s": 0.37598571428570854,
+    "TimeDiff_s_SE": 0.30816557714741716,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.1956521739130435,
+    "PosDiff_SE": 0.03460562039429975,
+    "TimeDiff_s": 2.0540129310344657,
+    "TimeDiff_s_SE": 0.2758289445477053,
+    "Runs": 800
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": 0.04755434782608696,
+    "PosDiff_SE": 0.03180857919283874,
+    "TimeDiff_s": 1.094470170454514,
+    "TimeDiff_s_SE": 0.330617240007691,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.9714673913043478,
+    "PosDiff_SE": 0.04667280908294041,
+    "TimeDiff_s": 6.973724505327219,
+    "TimeDiff_s_SE": 0.4182561185858825,
+    "Runs": 800
+   },
+   "Iteration": 1,
+   "TrainRows": 2126996,
+   "Epochs": 13
+  },
+  {
+   "Policy": "iteration 2",
+   "MeanStopLap": 24.58625,
+   "TwoStopShare": 0.24625,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.08831521739130435,
+    "PosDiff_SE": 0.03350461146369218,
+    "TimeDiff_s": -0.9095685997170844,
+    "TimeDiff_s_SE": 0.25432892060046025,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.06521739130434782,
+    "PosDiff_SE": 0.03225680186672632,
+    "TimeDiff_s": 0.7855762237762478,
+    "TimeDiff_s_SE": 0.22715434036363455,
+    "Runs": 800
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": -0.08288043478260869,
+    "PosDiff_SE": 0.030942752926377774,
+    "TimeDiff_s": -0.32943422913718895,
+    "TimeDiff_s_SE": 0.3071523955740389,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.8410326086956522,
+    "PosDiff_SE": 0.043685930718836516,
+    "TimeDiff_s": 5.736810447761212,
+    "TimeDiff_s_SE": 0.34902988583041206,
+    "Runs": 800
+   },
+   "Iteration": 2,
+   "TrainRows": 2126996,
+   "Epochs": 12
+  },
+  {
+   "Policy": "iteration 3",
+   "MeanStopLap": 23.845,
+   "TwoStopShare": 0.28125,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.15489130434782608,
+    "PosDiff_SE": 0.03235615881415461,
+    "TimeDiff_s": -1.9135648414985487,
+    "TimeDiff_s_SE": 0.3132112571807285,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": -0.001358695652173913,
+    "PosDiff_SE": 0.029192228245367942,
+    "TimeDiff_s": -0.1960155807365448,
+    "TimeDiff_s_SE": 0.20628830848666196,
+    "Runs": 800
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": -0.14945652173913043,
+    "PosDiff_SE": 0.031523237070345135,
+    "TimeDiff_s": -1.2129045584045686,
+    "TimeDiff_s_SE": 0.34574539564795653,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.7744565217391305,
+    "PosDiff_SE": 0.04209466185200082,
+    "TimeDiff_s": 4.842313343328334,
+    "TimeDiff_s_SE": 0.35379631564050673,
+    "Runs": 800
+   },
+   "Iteration": 3,
+   "TrainRows": 2126996,
+   "Epochs": 12
+  },
+  {
+   "Policy": "iteration 4",
+   "MeanStopLap": 24.05375,
+   "TwoStopShare": 0.2825,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.13722826086956522,
+    "PosDiff_SE": 0.03671325316287387,
+    "TimeDiff_s": -1.684115714285716,
+    "TimeDiff_s_SE": 0.32143349078116273,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.016304347826086956,
+    "PosDiff_SE": 0.03346444419252727,
+    "TimeDiff_s": -0.05216573033708863,
+    "TimeDiff_s_SE": 0.2272524687840085,
+    "Runs": 800
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": -0.13179347826086957,
+    "PosDiff_SE": 0.03498785103637055,
+    "TimeDiff_s": -1.021597457627142,
+    "TimeDiff_s_SE": 0.36371219725921117,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.7921195652173914,
+    "PosDiff_SE": 0.044249181265438996,
+    "TimeDiff_s": 5.008278026905814,
+    "TimeDiff_s_SE": 0.4075960620435794,
+    "Runs": 800
+   },
+   "Iteration": 4,
+   "TrainRows": 2126996,
+   "Epochs": 12
+  }
+ ],
+ "Best": 3,
+ "Seconds": 119
+}

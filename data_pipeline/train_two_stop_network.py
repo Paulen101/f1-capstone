@@ -1,8 +1,10 @@
 """Train a pit-timing network that may stop twice, by policy iteration on exact replays (.venv-train).
 
-    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --track Austin
+    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin --name pit_network_v3_two_stop
+    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py      # every track with two-stop runs
 
-Input: integration/output/two_stop/<Track>_2019_fitted_*_mc<runs>/ (integration/two_stop_generator.py).
+Input: integration/output/two_stop/<Track>_2019_fitted_*_mc<runs>/ (integration/two_stop_generator.py), for
+every track in --tracks that has them.
 The start policy is pit_network_v1 for the first stop and no second stop. Each iteration replays the current
 network on every stored run (data_pipeline/two_stop_labels.py), builds targets for both stints (pitting now
 minus following the network from the next lap), trains a fresh network on the training runs, and scores it
@@ -58,10 +60,10 @@ def summary(name, outcome, references):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--track", default="Austin")
+    parser.add_argument("--tracks", nargs="+", default=["Austin", "Monza", "Singapore", "Spielberg"])
     parser.add_argument("--runs", type=int, default=50)
     parser.add_argument("--start", type=Path, default=ROOT / "integration/models/pit_network_v1.npz")
-    parser.add_argument("--name", default="pit_network_v3_two_stop")
+    parser.add_argument("--name", default="pit_network_v4_two_stop")
     parser.add_argument("--iterations", type=int, default=4)
     parser.add_argument("--hidden", type=int, nargs="+", default=[64, 64])
     parser.add_argument("--epochs", type=int, default=40)
@@ -74,15 +76,16 @@ def main():
     args = parser.parse_args()
 
     started = time.perf_counter()
-    folders = sorted(p for p in TWO_STOP.glob("%s_2019_fitted_*_mc%d" % (args.track, args.runs))
+    folders = sorted(p for track in args.tracks for p in TWO_STOP.glob("%s_2019_fitted_*_mc%d" % (track, args.runs))
                      if (p / "manifest.json").is_file())
+    tracks = sorted({p.name.split("_")[0] for p in folders})
     t1, t2 = load_folders(folders)
     x1, x2 = features(t1), features(t2)
     has1, has2 = t1.HasSituation.to_numpy(), t2.HasSituation.to_numpy()
     first_val = int(args.runs * 0.8)
     val1, val2 = (t1.Run >= first_val).to_numpy(), (t2.Run >= first_val).to_numpy()
-    print("%d driver-races; %d first-stint and %d second-stint rows (%.0f s)"
-          % (len(folders), len(t1), len(t2), time.perf_counter() - started), flush=True)
+    print("%s: %d driver-races; %d first-stint and %d second-stint rows (%.0f s)"
+          % (" ".join(tracks), len(folders), len(t1), len(t2), time.perf_counter() - started), flush=True)
 
     def held_out(out):
         return out[out.Run >= first_val].reset_index(drop=True)
@@ -94,7 +97,7 @@ def main():
     refs["start (v1, one stop)"] = held_out(outcomes(t1, t2, pit1, pit2))
     upper = hindsight(t1, t2)
     refs["hindsight"] = upper[upper.Run >= first_val].reset_index(drop=True)
-    report = {"Name": args.name, "Track": args.track, "DriverRaces": len(folders), "HeldOutFirstRun": first_val,
+    report = {"Name": args.name, "Tracks": tracks, "DriverRaces": len(folders), "HeldOutFirstRun": first_val,
               "Settings": {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()},
               "References": [summary(n, refs[n], {"fixed one-stop": refs["fixed one-stop"]})
                              for n in ("fixed best plan", "start (v1, one stop)")],

@@ -38,6 +38,7 @@ Austin (in between).
 | Evaluation against the original VSE and real strategies | First round done, with TUM's compound choice: beats real strategies by 0.58 places, ties TUM's VSE (better in green races, worse with safety cars) |
 | Labels that value waiting (policy iteration on exact replays) | Done: no gain; TUM's edge is choosing lap and compound together, which needs runs with every compound |
 | Two-stop decisions (`notes/pit_network.md`, round 3) | Done for Austin: beats TUM's VSE by 0.11 places and the real strategies by 0.49 |
+| One two-stop network for all four tracks (`notes/pit_network.md`, round 4) | Done: beats TUM's VSE by 0.15 places and 1.7 s, and the real strategies by 0.73 places; TUM still wins safety-car races at Monza and Spielberg |
 
 ## Layout
 
