@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -104,9 +104,31 @@ The network has learned what a safety car is worth: switching the flag of green 
 - **It ties TUM's VSE overall**: better in green races (−0.31 places), worse in safety-car races (+0.27). At Austin TUM's VSE also makes **two stops in 64 %** of races, which the network cannot.
 - **It is no better than the best fixed lap**, for the same reason: without a label that values waiting, reacting adds little.
 
+## Round 2: a label that values waiting
+
+The first label compares pitting now with pitting on one fixed later lap. Staying out is then never credited with what a good decision later can gain, such as a cheap stop under a later safety car.
+
+**Exact replay.** In every stored Monte Carlo run every candidate pit lap shares the same random race up to its stop (same seed; no race was re-run, which the loader checks). So any policy that decides lap by lap can be scored exactly on the stored runs: it stops on the first lap it says pit, and its outcome is that lap's stored outcome in that run (`data_pipeline/stopping_labels.py`).
+
+**Policy iteration** (`data_pipeline/train_stopping_network.py`): replay the current network on every run; new target = pitting now minus *following the current network from the next lap*, in the same run; train a fresh network (runs 0–159); score it exactly on runs 160–199; repeat. Started from v1, four iterations, about 50 s on the GPU. The best iteration is saved as `integration/models/pit_network_v2.npz` ([report](evidence/pit_network/pit_network_v2.json)).
+
+| Held-out runs, places vs best fixed lap | All | SC or VSC races | Green races |
+|---|---:|---:|---:|
+| Hindsight: best lap of each run, knowing the future (upper bound) | −0.80 ± 0.02 | −1.04 ± 0.03 | −0.42 ± 0.02 |
+| Wait for SC: stop under SC/VSC from 5 laps before the fixed lap, else on it | −0.02 ± 0.01 | −0.04 ± 0.02 | 0.00 |
+| Same, but wait 4 laps longer without one | +0.07 ± 0.02 | 0.00 ± 0.03 | +0.19 ± 0.02 |
+| Network v1 | 0.00 ± 0.02 | −0.03 ± 0.03 | +0.04 ± 0.02 |
+| **Network v2** (4 iterations) | −0.03 ± 0.02 | −0.07 ± 0.03 | +0.04 ± 0.02 |
+
+(`data_pipeline/stopping_headroom.py`, [evidence](evidence/pit_network/stopping_headroom.csv).) Each iteration moved the stops later (mean lap 25.3 → 26.3) and gained a little, but only 0.03 places in total.
+
+**In the simulator** (100 new races per driver-race, same seeds as before, [evidence](evidence/pit_network/comparison_v1_v2_mc100_summary.csv)): v2 with TUM's compound choice stops 1.9 laps later than v1 and is **−0.006 ± 0.010 places** against it, no measurable change. Against TUM's VSE it is still −0.33 places in green races and +0.27 in safety-car races.
+
+**Why waiting cannot pay here.** Even a hand-made "wait for a safety car" rule gains at most 0.04 places on the stored runs: with one stop onto one fixed compound per driver, an early or late stop has nothing to gain from a cheap pit stop. Yet TUM's VSE gains up to half a place in safety-car races. `integration/check_tum_as_fixed.py` re-simulates TUM's races as fixed stops on TUM's lap and compound with the same seed: **30 of 30 Spielberg races are identical** (Austin: 18 of 20; the other two are retirements with the same position). TUM's advantage is therefore entirely *which lap and which compound* it picks in each race, for example a late stop onto softs (Spielberg: lap 41 on A6 in 29 % of races). Our stored runs hold one compound per driver, so no label built from them can learn that combination, however it values waiting.
+
 ## Next
 
-1. **A label that values waiting** (optimal stopping). For every run every candidate lap's outcome is already known, and the history up to the stop is shared, so any lap-by-lap policy can be scored exactly on the stored runs. The value of staying out at lap L is then the expected outcome of deciding well from L + 1 on, not of one fixed lap; it can be built backwards from the last lap with the network itself (fitted Q-iteration). This credits staying out with the chance of a later safety car.
+1. **Store every legal stop compound** in the Monte Carlo runs (each candidate lap × the two compounds other than the start one), then let the network choose lap and compound together, with the replay labels above. This is about two to three times the simulation of the first batch (4 hours at 200 runs on this laptop; 100 runs would halve it).
 2. Two-stop decisions: situations in the second stint, needed for Austin and Barcelona.
 3. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
 4. More tracks before claiming anything about new tracks.
@@ -118,4 +140,9 @@ The network has learned what a safety car is worth: switching the flag of green 
 .venv-train/Scripts/python.exe data_pipeline/train_pit_network.py --holdout-track Monza --name pit_network_noMonza
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --runs 100 --jobs 28
 .venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/pit_network_v1_mc100 --base network_tum
+# round 2
+.venv-train/Scripts/python.exe data_pipeline/train_stopping_network.py --iterations 4
+.venv-train/Scripts/python.exe data_pipeline/stopping_headroom.py
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v2.npz --policies network network_tum --out integration/output/evaluation/pit_network_v2_mc100
+.venv-tum/Scripts/python.exe integration/check_tum_as_fixed.py --track Spielberg --races 30
 ```
