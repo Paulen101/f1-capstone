@@ -59,7 +59,7 @@ def main():
     runs = pd.read_csv(args.folder / "runs.csv")
     runs["FirstStopLap"] = pd.to_numeric(runs.FirstStopLap, errors="coerce")
     name = args.folder.name
-    order = ["real", "tum", "fixed", "network", "network_tum", "network_two", "network_choice"]
+    order = ["real", "tum", "fixed", "network", "network_tum", "network_two", "network_choice", "network_head", "network_rule"]
     others = sorted((p for p in set(runs.Policy) if p != args.base), key=lambda p: (order + [p]).index(p))
 
     if "FirstStopFlag" in runs:

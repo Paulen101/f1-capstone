@@ -154,6 +154,17 @@ class CompoundChoiceTests(unittest.TestCase):
             pair = [tuple(pred[start]), tuple(pred[start + 1])]
             self.assertEqual(chosen[start:start + 2].tolist(), [best_choice(pair) == 0, best_choice(pair) == 1])
 
+    def test_compound_head_moves_the_stop_to_the_other_compound(self):
+        from data_pipeline.train_compound_head import pairs, switch
+        stored, other = pairs(self.t1)
+        self.assertEqual(self.t1.StopCompound.to_numpy()[stored].tolist(), ["A3"] * 8)
+        self.assertEqual(self.t1.Lap.to_numpy()[stored].tolist(), self.t1.Lap.to_numpy()[other].tolist())
+        pit = self.pit1(3, "A3")                                # the timing network stops on lap 3
+        moved = switch(pit, stored, other, np.ones(len(stored), bool))
+        self.assertEqual(outcomes(self.t1, self.t2, moved, self.never).PitPosition.tolist(), [6, 3])   # B on 3
+        kept = switch(pit, stored, other, np.zeros(len(stored), bool))
+        self.assertEqual(outcomes(self.t1, self.t2, kept, self.never).PitPosition.tolist(), [6, 5])    # A3 on 3
+
     def test_best_fixed_plans(self):
         policies = best_plan(self.t1, self.t2, lambda t: np.ones(len(t), bool))
         expected = {"fixed one-stop": [6, 5], "fixed one-stop, any compound": [6, 3], "fixed best plan": [6, 3]}

@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) and round 5 (lap and compound together) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) and round 6 (v4's timing with a compound head: the best policy so far) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -246,9 +246,45 @@ What this shows:
 - **Retraining costs as much elsewhere.** At Austin v5 makes two stops in 73 % of races instead of 88 %. A first stop onto the other compound (10 %) rules out a second stop, and the retrained timing is a little worse: +0.17 places. At Singapore, where it never changes compound, it is 0.09 places worse.
 - **Overall: no change.** v5 is +0.02 ± 0.01 places against v4 and −0.14 against TUM's VSE (v4: −0.15). **v4 stays the best network**; v5 shows the compound gain is real but local.
 
+## Round 6: v4's timing with a compound head
+
+Round 5 retrained the whole network and lost at Austin and Singapore what the compound gained elsewhere. Here v4 stays exactly as it raced: it decides on the stored compound when to stop and whether to stop again. Only when it stops does a small second network, the compound head, choose the tyre.
+
+**Head** (`data_pipeline/train_compound_head.py`, 1 minute on the GPU): the same 64-64 network shape. It sees the situation with the other compound's tyre features. Its label is exact on the stored runs: a stop onto the other compound minus a stop onto the stored compound followed by v4's second-stint decisions, in the same run and on the same lap. It is trained on all 233,000 first-stint laps of runs 0–39, and it switches when pit_now() says the other compound is better. Saved as `integration/models/pit_compound_head_v1.npz` ([report](evidence/pit_network/pit_compound_head_v1.json)). For comparison, a **per-driver rule** always or never switches, whichever was better on v4's stop laps in the training runs. It switches for 15 Monza drivers, 12 Spielberg drivers and 1 Singapore driver.
+
+| Held-out runs (40–49), minus v4 | All | Austin | Monza | Singapore | Spielberg |
+|---|---:|---:|---:|---:|---:|
+| v4 + compound head | −0.04 ± 0.01 | 0 | −0.07 | 0 | −0.10 |
+| v4 + per-driver rule | −0.05 ± 0.01 | 0 | −0.09 | −0.02 | −0.09 |
+| v4 + better compound in hindsight (bound) | −0.07 ± 0.01 | 0 | −0.11 | −0.02 | −0.16 |
+| v5 (round 5) | −0.03 ± 0.03 | +0.08 | −0.08 | −0.07 | −0.07 |
+
+**In the simulator** (policies `network_head` and `network_rule`, 100 new races per driver-race, the same seeds as every other policy; [evidence](evidence/pit_network/all_tracks_head_mc100_summary.csv)):
+
+| v4 + compound head minus | Places | Race time | Green races | SC/VSC races |
+|---|---:|---:|---:|---:|
+| Real 2019 strategy | **−0.78 ± 0.02** | **−6.8 ± 0.2 s** | −0.79 | −0.77 |
+| **TUM's VSE** | **−0.20 ± 0.02** | **−2.2 ± 0.1 s** | −0.48 | +0.03 ± 0.03 |
+| v4 (stored compound) | −0.05 ± 0.004 | −0.5 s | −0.05 | −0.05 |
+| v5 (round 5) | −0.07 ± 0.01 | −0.6 s | −0.05 | −0.08 |
+| v4 + per-driver rule | +0.007 ± 0.002 | +0.05 s | +0.005 | +0.009 |
+
+| By track | − v4 | − TUM | − TUM, SC/VSC races | Drivers better / worse than TUM (2 SE) |
+|---|---:|---:|---:|---|
+| Austin | 0 | −0.10 | +0.07 | 4 / 8 |
+| Monza | −0.07 ± 0.01 | +0.09 | +0.31 | 0 / 3 |
+| Singapore | 0 | −0.94 | −0.59 | 17 / 0 |
+| Spielberg | −0.13 ± 0.01 | +0.14 | +0.34 | 0 / 7 |
+
+What this shows:
+
+- **The head keeps every gain and loses nothing.** It changes nothing at Austin and Singapore and gains 0.13 places at Spielberg and 0.07 at Monza. That is 0.05 places and 0.5 s overall, better than v4 for 20 driver-races and worse for 2. **v4 + compound head is now the best policy:** 0.20 places and 2.2 s ahead of TUM's VSE and 0.78 places ahead of the real strategies.
+- **A per-driver rule does as well.** It is even 0.007 places better than the head. With one stored compound and one other per driver, choosing the tyre comes down to "this driver should use the other tyre at this track". The head learns that and little more.
+- **The compound was not TUM's safety-car edge.** The compound gains as much in green races as in safety-car races (−0.05 each). TUM still leads by +0.31 and +0.34 places in safety-car races at Monza and Spielberg. TUM's VSE makes its first stop under a safety car or VSC in 10–12 % of races; v4 does in 3–5 %. What remains is **when** to stop around a safety car. Round 2's labels could not reward waiting for one, because one compound per driver left nothing to gain. With both compounds now in the runs, that can be retested.
+
 ## Next
 
-1. Keep v4's timing and learn only the compound on top of it, so the Spielberg and Monza gains come without the losses at Austin and Singapore. The replay can score this exactly before any racing.
+1. Safety-car timing: with both compounds in the runs, measure what stopping under a safety car (onto either compound) is worth in the replay, and train v4's timing on it if the bound is large enough.
 2. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
 3. More tracks before claiming anything about new tracks.
 
@@ -278,4 +314,8 @@ What this shows:
 .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --iterations 4
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v5_compound.npz --policies network_choice --out integration/output/evaluation/pit_network_v5_mc100
 .venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_tracks_compound_mc100 --base network_choice
+# round 6 (compound head on v4); then append its runs.csv as all_tracks_head_mc100/runs.csv
+.venv-train/Scripts/python.exe data_pipeline/train_compound_head.py
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_two_stop.npz --policies network_head network_rule --out integration/output/evaluation/pit_compound_head_v1_mc100
+.venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_tracks_head_mc100 --base network_head
 ```

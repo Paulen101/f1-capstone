@@ -1,0 +1,339 @@
+{
+ "Name": "pit_compound_head_v1",
+ "Timing": "E:\\Seminar\\f1-capstone\\integration\\models\\pit_network_v4_two_stop.npz",
+ "Rows": {
+  "Train": 161148,
+  "Val": 42136
+ },
+ "Epochs": 30,
+ "Policies": [
+  {
+   "Policy": "v4 (stored compound)",
+   "OtherCompoundShare": 0.0,
+   "TwoStopShare": 0.28125,
+   "Vs v4": {
+    "all": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 800
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.0,
+    "Austin": 0.0,
+    "Monza": 0.0,
+    "Singapore": 0.0,
+    "Spielberg": 0.0
+   }
+  },
+  {
+   "Policy": "v4 + per-driver rule",
+   "OtherCompoundShare": 0.33,
+   "TwoStopShare": 0.24875,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.04891304347826087,
+     "PosDiff_SE": 0.0126261111355318,
+     "TimeDiff_s": -0.5309215955983538,
+     "TimeDiff_s_SE": 0.06870710135922746,
+     "Runs": 800
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.08695652173913043,
+     "PosDiff_SE": 0.028111067416842505,
+     "TimeDiff_s": -0.8289101123595317,
+     "TimeDiff_s_SE": 0.14832720659369666,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": -0.016304347826086956,
+     "PosDiff_SE": 0.016304347826086956,
+     "TimeDiff_s": -0.03847282608695502,
+     "TimeDiff_s_SE": 0.038472826086955014,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.09239130434782608,
+     "PosDiff_SE": 0.03831404313337541,
+     "TimeDiff_s": -1.2782044198895406,
+     "TimeDiff_s_SE": 0.2170739978612499,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.33,
+    "Austin": 0.0,
+    "Monza": 0.715,
+    "Singapore": 0.045,
+    "Spielberg": 0.56
+   }
+  },
+  {
+   "Policy": "v4 + head",
+   "OtherCompoundShare": 0.34875,
+   "TwoStopShare": 0.245,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.042119565217391304,
+     "PosDiff_SE": 0.012288907744223278,
+     "TimeDiff_s": -0.4912585969738683,
+     "TimeDiff_s_SE": 0.06874493486665915,
+     "Runs": 800
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.028749999999999803,
+     "TimeDiff_s_SE": 0.028749999999999803,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.07065217391304347,
+     "PosDiff_SE": 0.029889279397490268,
+     "TimeDiff_s": -0.856547486033505,
+     "TimeDiff_s_SE": 0.1514666570981561,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.09782608695652174,
+     "PosDiff_SE": 0.03862661051962357,
+     "TimeDiff_s": -1.1617388888889157,
+     "TimeDiff_s_SE": 0.21837835624943563,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.34875,
+    "Austin": 0.005,
+    "Monza": 0.82,
+    "Singapore": 0.005,
+    "Spielberg": 0.565
+   }
+  },
+  {
+   "Policy": "v4 + hindsight compound",
+   "OtherCompoundShare": 0.29,
+   "TwoStopShare": 0.26375,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.07065217391304347,
+     "PosDiff_SE": 0.011401858577593524,
+     "TimeDiff_s": -0.7676248294679423,
+     "TimeDiff_s_SE": 0.1215784476685644,
+     "Runs": 800
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": -0.41054347826086934,
+     "TimeDiff_s_SE": 0.41054347826086957,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.10869565217391304,
+     "PosDiff_SE": 0.02660062892396872,
+     "TimeDiff_s": -1.0197868852458774,
+     "TimeDiff_s_SE": 0.13349433413144093,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": -0.016304347826086956,
+     "PosDiff_SE": 0.016304347826086956,
+     "TimeDiff_s": -0.03847282608695502,
+     "TimeDiff_s_SE": 0.038472826086955014,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.15760869565217392,
+     "PosDiff_SE": 0.031976427519453066,
+     "TimeDiff_s": -1.6122472527472882,
+     "TimeDiff_s_SE": 0.20240711877332868,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.29,
+    "Austin": 0.005,
+    "Monza": 0.645,
+    "Singapore": 0.005,
+    "Spielberg": 0.505
+   }
+  },
+  {
+   "Policy": "v5",
+   "OtherCompoundShare": 0.35375,
+   "TwoStopShare": 0.20875,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.033967391304347824,
+     "PosDiff_SE": 0.029730339841667862,
+     "TimeDiff_s": -0.4039390934844161,
+     "TimeDiff_s_SE": 0.20104872164837365,
+     "Runs": 800
+    },
+    "Austin": {
+     "PosDiff": 0.08152173913043478,
+     "PosDiff_SE": 0.05551578222718415,
+     "TimeDiff_s": 1.7814971098265768,
+     "TimeDiff_s_SE": 0.44183198906559035,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.08152173913043478,
+     "PosDiff_SE": 0.04069994258563917,
+     "TimeDiff_s": -0.8382598870056257,
+     "TimeDiff_s_SE": 0.2289836547130495,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": -0.06521739130434782,
+     "PosDiff_SE": 0.07295509365980406,
+     "TimeDiff_s": -1.0834111111111018,
+     "TimeDiff_s_SE": 0.529418383937228,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.07065217391304347,
+     "PosDiff_SE": 0.06357188984730384,
+     "TimeDiff_s": -1.420420454545463,
+     "TimeDiff_s_SE": 0.2860922401934534,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.35375,
+    "Austin": 0.1,
+    "Monza": 0.74,
+    "Singapore": 0.0,
+    "Spielberg": 0.575
+   }
+  }
+ ],
+ "PerDriverRule": {
+  "Austin ALB": false,
+  "Austin BOT": false,
+  "Austin GAS": false,
+  "Austin GIO": false,
+  "Austin GRO": false,
+  "Austin HAM": false,
+  "Austin HUL": false,
+  "Austin KUB": false,
+  "Austin KVY": false,
+  "Austin LEC": false,
+  "Austin MAG": false,
+  "Austin NOR": false,
+  "Austin PER": false,
+  "Austin RAI": false,
+  "Austin RIC": false,
+  "Austin RUS": false,
+  "Austin SAI": false,
+  "Austin STR": false,
+  "Austin VER": false,
+  "Austin VET": false,
+  "Monza ALB": true,
+  "Monza BOT": true,
+  "Monza GAS": true,
+  "Monza GIO": true,
+  "Monza GRO": true,
+  "Monza HAM": true,
+  "Monza HUL": true,
+  "Monza KUB": true,
+  "Monza KVY": true,
+  "Monza LEC": false,
+  "Monza MAG": true,
+  "Monza NOR": true,
+  "Monza PER": false,
+  "Monza RAI": true,
+  "Monza RIC": true,
+  "Monza RUS": false,
+  "Monza SAI": true,
+  "Monza STR": true,
+  "Monza VER": false,
+  "Monza VET": false,
+  "Singapore ALB": false,
+  "Singapore BOT": false,
+  "Singapore GAS": true,
+  "Singapore GIO": false,
+  "Singapore GRO": false,
+  "Singapore HAM": false,
+  "Singapore HUL": false,
+  "Singapore KUB": false,
+  "Singapore KVY": false,
+  "Singapore LEC": false,
+  "Singapore MAG": false,
+  "Singapore NOR": false,
+  "Singapore PER": false,
+  "Singapore RAI": false,
+  "Singapore RIC": false,
+  "Singapore RUS": false,
+  "Singapore SAI": false,
+  "Singapore STR": false,
+  "Singapore VER": false,
+  "Singapore VET": false,
+  "Spielberg ALB": true,
+  "Spielberg BOT": true,
+  "Spielberg GAS": false,
+  "Spielberg GIO": false,
+  "Spielberg GRO": true,
+  "Spielberg HAM": true,
+  "Spielberg HUL": true,
+  "Spielberg KUB": true,
+  "Spielberg KVY": true,
+  "Spielberg LEC": false,
+  "Spielberg MAG": false,
+  "Spielberg NOR": false,
+  "Spielberg PER": true,
+  "Spielberg RAI": false,
+  "Spielberg RIC": false,
+  "Spielberg RUS": true,
+  "Spielberg SAI": true,
+  "Spielberg STR": true,
+  "Spielberg VER": true,
+  "Spielberg VET": false
+ },
+ "Seconds": 62
+}

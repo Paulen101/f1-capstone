@@ -10,8 +10,8 @@ from pathlib import Path
 
 import numpy as np
 
-from integration.pit_network import (FEATURES, NetworkVSE, PitNetwork, best_choice, degradation, feature_vector,
-                                     pit_now, tyre_features)
+from integration.pit_network import (FEATURES, FixedHead, NetworkVSE, PitNetwork, best_choice, degradation,
+                                     feature_vector, pit_now, tyre_features)
 
 ROOT = Path(__file__).resolve().parents[1]
 QUAD = {"tire_deg_model": "quad", "A3": {"k_0": 0.0, "k_1_quad": 0.02, "k_2_quad": 0.001},
@@ -118,14 +118,15 @@ class SimulatorTests(unittest.TestCase):
         cls.source, cls.pars, cls.paths, _, _ = load(args)
         cls.tot = cls.pars["race_pars"]["tot_no_laps"]
 
-    def race(self, network, seed=3, compound_choice=None, second_compound=None, other_compounds=None):
+    def race(self, network, seed=3, compound_choice=None, second_compound=None, other_compounds=None, head=None):
         from racesim.src.race import Race
         random.seed(seed)
         np.random.seed(seed)
         race = Race(**self.pars, vse_paths=self.paths, use_prob_infl=True, create_rand_events=True)
         race.vse = NetworkVSE(race.vse, race, "VER", network, None if compound_choice else "A3",
                               self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice,
-                              second_compound=second_compound, other_compounds=other_compounds)
+                              second_compound=second_compound, other_compounds=other_compounds,
+                              compound_head=head)
         race.simulate_race()
         self.assertEqual(race.result_status, 0)
         return race, race.vse
@@ -182,6 +183,18 @@ class SimulatorTests(unittest.TestCase):
         network = ChoiceStub(self.tot, pit_from=30)
         race, _ = self.race(network, second_compound="A6", other_compounds=[])
         self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])
+
+    def test_compound_head_only_picks_the_tyre(self):
+        # the timing network decides on the stored compound alone; the head is asked only when it stops
+        timing = StubNetwork(self.tot, pit_from=30)
+        race, vse = self.race(timing, second_compound="A6", other_compounds=["A6"], head=FixedHead(True))
+        self.assertEqual(self.stops(race), [(30, "A6")])
+        self.assertEqual(vse.decisions[-1]["Compound"], "A6")
+        stop_feature = FEATURES.index("StopWearRate_s")
+        self.assertTrue(all(x[stop_feature] == timing.inputs[0][stop_feature] for x in timing.inputs[:5]))
+        race, _ = self.race(StubNetwork(self.tot, pit_from=30), second_compound="A6", other_compounds=["A6"],
+                            head=FixedHead(False))
+        self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])      # kept: the second stop is allowed
 
     def compound_choice(self):
         from integration.tum_compound_choice import TumCompoundChoice

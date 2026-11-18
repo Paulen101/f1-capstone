@@ -146,6 +146,18 @@ def best_choice(predictions) -> int:
     return min(close, key=lambda i: predictions[i][1])
 
 
+class FixedHead:
+    """A compound head that always (or never) prefers the other compound: the per-driver rule of
+    data_pipeline/train_compound_head.py, in the shape of a network."""
+
+    def __init__(self, use_other: bool):
+        self.use_other = bool(use_other)
+        self.features = FEATURES
+
+    def predict(self, x) -> np.ndarray:
+        return np.full((len(np.atleast_2d(x)), 2), -1.0 if self.use_other else 1.0)
+
+
 class NetworkVSE:
     """One driver's single stop is timed by the network; other drivers delegate to TUM's realstrategy.
 
@@ -166,11 +178,16 @@ class NetworkVSE:
     well: it predicts the advantage of a stop onto `stop_compound` and onto each other compound, takes the best
     (best_choice) and pits if that one says pit. The forced last-lap stop goes onto `stop_compound`, and a
     second stop only follows a first stop onto it, as in the runs it was trained on.
+
+    With `other_compounds` and `compound_head` (data_pipeline/train_compound_head.py) the network times the stop
+    on `stop_compound` as without a choice; only when it stops does the head predict the other compounds' advantage
+    over `stop_compound` and the stop goes onto the best one if pit_now() says it is better.
     """
 
     def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: Optional[str],
                  location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None,
-                 second_compound: Optional[str] = None, min_stint: int = 10, other_compounds=None):
+                 second_compound: Optional[str] = None, min_stint: int = 10, other_compounds=None,
+                 compound_head=None):
         if (stop_compound is None) == (compound_choice is None):
             raise ValueError("Give either a fixed stop compound or a compound choice")
         if original_vse is None:
@@ -190,6 +207,7 @@ class NetworkVSE:
         self.second_compound = second_compound
         self.min_stint = min_stint
         self.other_compounds = list(other_compounds or [])
+        self.compound_head = compound_head
         if self.other_compounds and stop_compound is None:
             raise ValueError("Compound choice by the network needs the stored stop compound")
         self.dry_compounds = original_vse.param_dry_compounds
@@ -222,6 +240,8 @@ class NetworkVSE:
             return self.compound_for(lap)
         if lap < self.first_lap:
             return None
+        if self.other_compounds and self.compound_head is not None:
+            return self.ask_head(lap)
         if self.other_compounds:
             return self.ask_choice(lap, [self.stop_compound] + self.other_compounds)
         return self.ask(lap, self.compound_for(lap))
@@ -243,6 +263,18 @@ class NetworkVSE:
                                "PredTime_s": round(float(prediction[1]), 3), "Pit": pit, "Compound": compound,
                                "StopsMade": situation["StopsMade"]})
         return compound if pit else None
+
+    def ask_head(self, lap: int) -> Optional[str]:
+        if self.ask(lap, self.stop_compound) is None:
+            return None
+        features = getattr(self.compound_head, "features", FEATURES)
+        rows = [feature_vector(self.situation(lap, c), features) for c in self.other_compounds]
+        predictions = [(float(p[0]), float(p[1])) for p in self.compound_head.predict(rows)]
+        best = best_choice(predictions)
+        compound = self.other_compounds[best] if pit_now(*predictions[best]) else self.stop_compound
+        self.decisions[-1].update({"Compound": compound, "Head": {c: [round(v, 3) for v in p]
+                                                                  for c, p in zip(self.other_compounds, predictions)}})
+        return compound
 
     def ask_choice(self, lap: int, compounds: list) -> Optional[str]:
         features = getattr(self.network, "features", FEATURES)
