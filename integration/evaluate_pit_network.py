@@ -11,6 +11,8 @@ real strategy, as in the training data:
               (integration/tum_compound_choice.py), as the project scope plans
     network_two  the network may also make a second stop (window and compound as in
               integration/two_stop_generator.py); needs a network trained with StopsMade
+    network_choice  as network_two, and the network also chooses the first stop's compound among the legal
+              ones (integration/compound_runs.py); a second stop only after a stop onto the stored compound
     real      the driver's real 2019 strategy (pit laps and compounds)
     tum       TUM's supervised VSE (nn_supervised_tirechange + compoundchoice) for this driver
     fixed     one stop on the Monte Carlo label lap (best mean position over the training runs), same compound
@@ -36,7 +38,7 @@ from integration.label_generator import (MAX_ATTEMPTS, complete_background_strat
 from integration.run_situations import stop_compounds  # noqa: E402
 from integration.write_fitted_pars import parse_pars  # noqa: E402
 
-POLICIES = ["network", "network_tum", "network_two", "real", "tum", "fixed"]
+POLICIES = ["network", "network_tum", "network_two", "network_choice", "real", "tum", "fixed"]
 YEAR = 2019
 SITUATIONS = ROOT / "integration/output/situations"
 
@@ -80,10 +82,13 @@ def simulate(task):
     pit_loss = round(track_pars["t_pitdrive_inlap"] + track_pars["t_pitdrive_outlap"]
                      + track_pars["t_pit_tirechange_min"] + pars["car_pars"][team]["t_pit_tirechange_add"], 3)
     network = PitNetwork(settings["model"]) if policy.startswith("network") else None
-    choice, second = None, None
-    if policy == "network_two":
+    choice, second, others = None, None, None
+    if policy in ("network_two", "network_choice"):
         from integration.two_stop_generator import second_stop_compounds
         second = second_stop_compounds(parse_pars(source.read_bytes().decode("utf-8")))[driver]
+    if policy == "network_choice":
+        from integration.compound_runs import other_compounds
+        others = other_compounds(parse_pars(source.read_bytes().decode("utf-8")))[driver]
     if policy == "network_tum":
         from integration.tum_compound_choice import TumCompoundChoice
         choice = TumCompoundChoice(paths, track_pars["name"], pars["vse_pars"]["available_compounds"],
@@ -101,7 +106,8 @@ def simulate(task):
             if policy.startswith("network"):
                 race.vse = NetworkVSE(race.vse, race, driver, network, None if choice else stop,
                                       pars["vse_pars"]["location_cat"], pit_loss, compound_choice=choice,
-                                      second_compound=second, min_stint=settings["min_stint"])
+                                      second_compound=second, min_stint=settings["min_stint"],
+                                      other_compounds=others)
             elif policy == "fixed":
                 race.vse = FixedLapVSE(race.vse, driver, FixedLapPolicy(fixed_lap, stop))
             race.simulate_race()

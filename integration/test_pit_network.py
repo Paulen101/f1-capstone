@@ -10,8 +10,8 @@ from pathlib import Path
 
 import numpy as np
 
-from integration.pit_network import (FEATURES, NetworkVSE, PitNetwork, degradation, feature_vector, pit_now,
-                                     tyre_features)
+from integration.pit_network import (FEATURES, NetworkVSE, PitNetwork, best_choice, degradation, feature_vector,
+                                     pit_now, tyre_features)
 
 ROOT = Path(__file__).resolve().parents[1]
 QUAD = {"tire_deg_model": "quad", "A3": {"k_0": 0.0, "k_1_quad": 0.02, "k_2_quad": 0.001},
@@ -32,7 +32,30 @@ class StubNetwork:
         return np.array([[-1.0, -1.0] if lap >= self.pit_from else [1.0, 1.0]])
 
 
+class ChoiceStub:
+    """From `pit_from` on: pit, and the last candidate compound is better (-1 place) than the first (-0.5)."""
+
+    def __init__(self, tot_no_laps: int, pit_from: int):
+        self.tot, self.pit_from = tot_no_laps, pit_from
+        self.batches = []
+
+    def predict(self, x):
+        x = np.atleast_2d(x)
+        self.batches.append(x)
+        lap = round(x[0][FEATURES.index("RaceProgress")] * self.tot)
+        if lap < self.pit_from:
+            return np.ones((len(x), 2))
+        out = np.full((len(x), 2), [-0.5, 0.0])
+        out[-1] = [-1.0, 0.0]
+        return out
+
+
 class FeatureTests(unittest.TestCase):
+    def test_best_choice(self):
+        self.assertEqual(best_choice([(0.0, 0.0), (-0.5, 3.0)]), 1)          # clearly better position
+        self.assertEqual(best_choice([(0.0, 1.0), (-0.05, 2.0)]), 0)         # tie in position: faster wins
+        self.assertEqual(best_choice([(0.2, 0.0), (0.2, 0.0)]), 0)           # full tie: the stored compound
+
     def test_degradation_matches_tum(self):
         from integration.label_generator import setup
         setup()
@@ -95,14 +118,14 @@ class SimulatorTests(unittest.TestCase):
         cls.source, cls.pars, cls.paths, _, _ = load(args)
         cls.tot = cls.pars["race_pars"]["tot_no_laps"]
 
-    def race(self, network, seed=3, compound_choice=None, second_compound=None):
+    def race(self, network, seed=3, compound_choice=None, second_compound=None, other_compounds=None):
         from racesim.src.race import Race
         random.seed(seed)
         np.random.seed(seed)
         race = Race(**self.pars, vse_paths=self.paths, use_prob_infl=True, create_rand_events=True)
         race.vse = NetworkVSE(race.vse, race, "VER", network, None if compound_choice else "A3",
                               self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice,
-                              second_compound=second_compound)
+                              second_compound=second_compound, other_compounds=other_compounds)
         race.simulate_race()
         self.assertEqual(race.result_status, 0)
         return race, race.vse
@@ -143,6 +166,22 @@ class SimulatorTests(unittest.TestCase):
     def test_no_second_stop_without_second_compound(self):
         race, _ = self.race(StubNetwork(self.tot, pit_from=30))
         self.assertEqual(self.stops(race), [(30, "A3")])
+
+    def test_network_chooses_the_compound(self):
+        network = ChoiceStub(self.tot, pit_from=30)
+        race, vse = self.race(network, second_compound="A6", other_compounds=["A6"])
+        # onto the better candidate; no second stop after a stop onto a compound other than the stored one
+        self.assertEqual(self.stops(race), [(30, "A6")])
+        self.assertEqual(vse.decisions[-1]["Candidates"].keys(), {"A3", "A6"})
+        # one row per candidate, differing only in the stop compound's tyre features
+        rows = network.batches[-1]
+        differ = {name for name, a, b in zip(FEATURES, rows[0], rows[1]) if a != b}
+        self.assertTrue(differ and differ <= {"TyreDelta_s", "StopWearRate_s", "StayCost_s"}, differ)
+
+    def test_choice_keeps_second_stop_after_stored_compound(self):
+        network = ChoiceStub(self.tot, pit_from=30)
+        race, _ = self.race(network, second_compound="A6", other_compounds=[])
+        self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])
 
     def compound_choice(self):
         from integration.tum_compound_choice import TumCompoundChoice

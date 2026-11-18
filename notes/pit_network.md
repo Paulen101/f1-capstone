@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) and round 5 (lap and compound together) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -205,9 +205,50 @@ What this shows:
 - **TUM's VSE still wins at Monza and Spielberg, and only in safety-car races** (+0.38 and +0.47 places; green races −0.11 and +0.03). Neither TUM nor the network two-stops there, so this is the round-2 finding again: TUM picks lap and compound together when a safety car comes out, and our runs hold one compound per driver.
 - The network stops earlier than TUM at every track (first stop 16.4 vs 21.9 laps at Austin, 19.7 vs 27.1 at Singapore, 30.5 vs 33.9 at Spielberg).
 
+## Round 5: choosing lap and compound together
+
+Round 4 left TUM's VSE ahead only in safety-car races at Monza and Spielberg, where it picks lap and compound together. Every stored run so far stopped onto one compound per driver.
+
+**Runs** (`integration/compound_runs.py`): a driver has three dry compounds and must use two, so a single stop can go onto one more compound than the stored one (the dry compound that is neither the start compound nor the stored stop compound; for example the soft A6 for most Spielberg drivers). For every driver and run (the same seeds 0–49), a stop on every lap onto that compound: 80 driver-races in 35 minutes, none re-run. Before the stop nothing differs from the stored runs, so the recorded first-stint situations apply to these races too. A check re-simulated 9 stored races with this code and the stored compound: all 9 identical.
+
+**Replay with compound choice** (`data_pipeline/two_stop_labels.py`): the first-stint table gets one row per lap and compound. On each lap a policy predicts both compounds and takes the better one (`choose_compound`: best position advantage; within 0.1 places, best time). It pits if that one says pit. The forced last-lap stop and any second stop stay with the stored compound, because only those runs exist. The simulator adapter does the same (`NetworkVSE(other_compounds=...)`, `best_choice`), and a test checks that both rules agree.
+
+**Training** (`train_two_stop_network.py`, default since this round): starts from v4 as it raced, on the stored compound only. Letting v4 choose between compounds from the start is worse than the fixed one-stop plan (+0.08 places): it was never trained on the other compound, picks it in 43 % of runs and loses its two-stop plans. Four iterations, 3 minutes on the GPU; iteration 3 is best and is saved as `integration/models/pit_network_v5_compound.npz` ([report](evidence/pit_network/pit_network_v5_compound.json)).
+
+| Held-out runs (40–49), places vs best fixed one-stop lap on the stored compound | Places | Other compound |
+|---|---:|---:|
+| Hindsight upper bound | −1.00 | |
+| Best fixed one-stop lap and compound | −0.07 ± 0.01 | 37 % |
+| Best fixed plan of all (one or two stops, either compound) | −0.20 ± 0.02 | 35 % |
+| Start: v4, stored compound | −0.16 ± 0.03 | 0 % |
+| **Network v5** (iteration 3) | **−0.19 ± 0.04** | 35 % |
+
+The offline gain over v4 is small (−0.03 ± 0.03 places), and the iterations swing (−0.06 to −0.19).
+
+**In the simulator** (policy `network_choice`, 100 new races per driver-race, the same seeds as every other policy; [evidence](evidence/pit_network/all_tracks_compound_mc100_summary.csv)):
+
+| Network v5 minus | Places | Race time | Green races | SC/VSC races |
+|---|---:|---:|---:|---:|
+| Real 2019 strategy | **−0.72 ± 0.02** | **−6.3 ± 0.2 s** | −0.74 | −0.69 |
+| TUM's VSE | **−0.14 ± 0.02** | **−1.6 ± 0.2 s** | −0.43 | +0.11 |
+| Network v4 (stored compound) | +0.02 ± 0.01 | +0.1 ± 0.1 s | +0.00 | +0.02 |
+
+| By track | v5 − v4 places | v5 − v4 time | v5 − TUM places | v5 − TUM in SC/VSC races (v4) | Other compound: v5 / TUM | Two stops: v5 / v4 |
+|---|---:|---:|---:|---:|---|---|
+| Austin | +0.17 ± 0.02 | +2.2 s | +0.07 | +0.27 (+0.07) | 10 / 23 % | 73 / 88 % |
+| Monza | −0.05 ± 0.02 | −0.6 s | +0.11 | +0.31 (+0.38) | 74 / 26 % | 1 / 3 % |
+| Singapore | +0.09 ± 0.03 | +0.1 s | −0.85 | −0.49 (−0.59) | 0 / 12 % | 1 / 0 % |
+| Spielberg | **−0.15 ± 0.02** | **−1.3 s** | +0.13 | +0.33 (+0.47) | 56 / 51 % | 1 / 3 % |
+
+What this shows:
+
+- **Choosing the compound helps where TUM's edge was.** At Spielberg the network now takes the other compound in 56 % of races (TUM: 51 %) and gains 0.15 places and 1.3 s on v4. At Monza it gains 0.05 places. In safety-car races TUM's lead shrinks from +0.47 to +0.33 places at Spielberg and from +0.38 to +0.31 at Monza, but it does not close.
+- **Retraining costs as much elsewhere.** At Austin v5 makes two stops in 73 % of races instead of 88 %. A first stop onto the other compound (10 %) rules out a second stop, and the retrained timing is a little worse: +0.17 places. At Singapore, where it never changes compound, it is 0.09 places worse.
+- **Overall: no change.** v5 is +0.02 ± 0.01 places against v4 and −0.14 against TUM's VSE (v4: −0.15). **v4 stays the best network**; v5 shows the compound gain is real but local.
+
 ## Next
 
-1. Store every legal stop compound in the runs and choose lap and compound together. This is TUM's remaining edge (safety-car races at Monza and Spielberg).
+1. Keep v4's timing and learn only the compound on top of it, so the Spielberg and Monza gains come without the losses at Austin and Singapore. The replay can score this exactly before any racing.
 2. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
 3. More tracks before claiming anything about new tracks.
 
@@ -225,11 +266,16 @@ What this shows:
 .venv-tum/Scripts/python.exe integration/check_tum_as_fixed.py --track Spielberg --races 30
 # round 3 (two stops, Austin)
 .venv-tum/Scripts/python.exe integration/two_stop_generator.py --track Austin --runs 50 --jobs 28
-.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin --name pit_network_v3_two_stop --iterations 4
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v3_two_stop --iterations 4
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v3_two_stop.npz --tracks Austin --policies network_two --out integration/output/evaluation/pit_network_v3_austin_mc100
 # round 4 (two stops, all tracks); then append its runs.csv to pit_network_v1_mc100/runs.csv as all_tracks_two_stop_mc100/runs.csv
 .venv-tum/Scripts/python.exe integration/two_stop_generator.py --track Singapore --runs 50 --jobs 28        # and Monza, Spielberg
-.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --iterations 4
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v4_two_stop --iterations 4
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_two_stop.npz --policies network_two --out integration/output/evaluation/pit_network_v4_mc100
 .venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_tracks_two_stop_mc100 --base network_two
+# round 5 (compound choice); then append its runs.csv to those of v1 and v4 as all_tracks_compound_mc100/runs.csv
+.venv-tum/Scripts/python.exe integration/compound_runs.py --runs 50 --jobs 28
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --iterations 4
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v5_compound.npz --policies network_choice --out integration/output/evaluation/pit_network_v5_mc100
+.venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_tracks_compound_mc100 --base network_choice
 ```

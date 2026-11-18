@@ -137,6 +137,15 @@ def pit_now(advantage_position: float, advantage_time: float) -> bool:
     return advantage_time <= 0.0
 
 
+def best_choice(predictions) -> int:
+    """Index of the compound to stop onto, from one (position, time) prediction per candidate: the best
+    position advantage; candidates within POSITION_TIE of it are decided by time; the first on a full tie.
+    data_pipeline/two_stop_labels.choose_compound is the same rule over the stored runs."""
+    best_position = min(p[0] for p in predictions)
+    close = [i for i, p in enumerate(predictions) if p[0] <= best_position + POSITION_TIE]
+    return min(close, key=lambda i: predictions[i][1])
+
+
 class NetworkVSE:
     """One driver's single stop is timed by the network; other drivers delegate to TUM's realstrategy.
 
@@ -152,11 +161,16 @@ class NetworkVSE:
     With `second_compound` the network may also make an optional second stop onto it, on laps at least
     `min_stint` after the first stop and at least `min_stint` before the end, as in the two-stop runs
     (integration/two_stop_generator.py). The first stop is then no longer forced to be the only one.
+
+    With `other_compounds` (integration/compound_runs.py) the network chooses the first stop's compound as
+    well: it predicts the advantage of a stop onto `stop_compound` and onto each other compound, takes the best
+    (best_choice) and pits if that one says pit. The forced last-lap stop goes onto `stop_compound`, and a
+    second stop only follows a first stop onto it, as in the runs it was trained on.
     """
 
     def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: Optional[str],
                  location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None,
-                 second_compound: Optional[str] = None, min_stint: int = 10):
+                 second_compound: Optional[str] = None, min_stint: int = 10, other_compounds=None):
         if (stop_compound is None) == (compound_choice is None):
             raise ValueError("Give either a fixed stop compound or a compound choice")
         if original_vse is None:
@@ -175,6 +189,9 @@ class NetworkVSE:
         self.first_lap = first_lap
         self.second_compound = second_compound
         self.min_stint = min_stint
+        self.other_compounds = list(other_compounds or [])
+        if self.other_compounds and stop_compound is None:
+            raise ValueError("Compound choice by the network needs the stored stop compound")
         self.dry_compounds = original_vse.param_dry_compounds
         self.decisions = []
 
@@ -205,11 +222,15 @@ class NetworkVSE:
             return self.compound_for(lap)
         if lap < self.first_lap:
             return None
+        if self.other_compounds:
+            return self.ask_choice(lap, [self.stop_compound] + self.other_compounds)
         return self.ask(lap, self.compound_for(lap))
 
     def decide_second(self, lap: int, tot_no_laps: int) -> Optional[str]:
-        first = self.race.drivers_list[self.idx].strategy_info[1][0]
+        first, first_compound = self.race.drivers_list[self.idx].strategy_info[1][:2]
         if self.second_compound is None or not first + self.min_stint <= lap <= tot_no_laps - self.min_stint:
+            return None
+        if self.other_compounds and first_compound != self.stop_compound:
             return None
         return self.ask(lap, self.second_compound)
 
@@ -222,6 +243,18 @@ class NetworkVSE:
                                "PredTime_s": round(float(prediction[1]), 3), "Pit": pit, "Compound": compound,
                                "StopsMade": situation["StopsMade"]})
         return compound if pit else None
+
+    def ask_choice(self, lap: int, compounds: list) -> Optional[str]:
+        features = getattr(self.network, "features", FEATURES)
+        rows = [feature_vector(self.situation(lap, c), features) for c in compounds]
+        predictions = [(float(p[0]), float(p[1])) for p in self.network.predict(rows)]
+        best = best_choice(predictions)
+        pit = pit_now(*predictions[best])
+        self.decisions.append({"Lap": lap, "PredPosition": round(predictions[best][0], 3),
+                               "PredTime_s": round(predictions[best][1], 3), "Pit": pit,
+                               "Compound": compounds[best], "StopsMade": 0,
+                               "Candidates": {c: [round(v, 3) for v in p] for c, p in zip(compounds, predictions)}})
+        return compounds[best] if pit else None
 
     def decide_pitstop(self, **state):
         decisions = list(self.original_vse.decide_pitstop(**state))

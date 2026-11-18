@@ -9,6 +9,14 @@ Outcome (finishing position) of each plan in runs 0 and 1:
     3          6      5
     4          7      4
     5          9      6
+
+With compound runs, a first stop may also go onto B (one stop only):
+
+    B on lap   run 0  run 1
+    2          5      9
+    3          6      3
+    4          2      10
+    5          9      9
 """
 import tempfile
 import unittest
@@ -17,9 +25,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from data_pipeline.two_stop_labels import TERMINAL, best_plan, load_folders, outcomes, targets
+from data_pipeline.two_stop_labels import TERMINAL, best_plan, choose_compound, load_folders, outcomes, targets
 
 PLANS = {(2, 0): (8, 9), (2, 4): (3, 12), (3, 0): (6, 5), (4, 0): (7, 4), (5, 0): (9, 6)}
+OTHER = {2: (5, 9), 3: (6, 3), 4: (2, 10), 5: (9, 9)}
 
 
 def write_folder(folder: Path):
@@ -31,6 +40,14 @@ def write_folder(folder: Path):
     situations += [{"Run": run, "Seed": run, "L1": 2, "Lap": 4, "Position": 5} for run in (0, 1)]
     pd.DataFrame(runs).to_csv(folder / "runs.csv", index=False)
     pd.DataFrame(situations).to_csv(folder / "situations.csv", index=False)
+
+
+def write_extra(folder: Path):
+    runs = [{"Race": "R", "Driver": "D", "Run": run, "Seed": run, "L1": l1, "L2": 0, "C1": "B", "C2": "",
+             "Position": pos[run], "SimulatedLaps": 50.0, "RaceTime_s": 1000.0 + pos[run], "Finished": True}
+            for l1, pos in OTHER.items() for run in (0, 1)]
+    pd.DataFrame(runs).to_csv(folder / "runs.csv", index=False)
+    (folder / "manifest.json").write_text("{}")
 
 
 class TwoStopReplayTests(unittest.TestCase):
@@ -77,6 +94,71 @@ class TwoStopReplayTests(unittest.TestCase):
         self.assertEqual(outcomes(self.t1, self.t2, pit1, pit2).PitPosition.tolist(), [6, 5])     # lap 3: 5.5
         pit1, pit2 = policies["fixed best plan"]
         self.assertEqual(outcomes(self.t1, self.t2, pit1, pit2).PitPosition.tolist(), [6, 5])     # (2,4): 7.5
+
+
+
+class CompoundChoiceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        root = Path(cls.tmp.name)
+        (root / "runs" / "R_D").mkdir(parents=True)
+        (root / "extra" / "R_D").mkdir(parents=True)
+        write_folder(root / "runs" / "R_D")
+        write_extra(root / "extra" / "R_D")
+        cls.t1, cls.t2 = load_folders([root / "runs" / "R_D"], root / "extra")
+        cls.never = np.zeros(len(cls.t2), bool)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def pit1(self, lap, compound):
+        return ((self.t1.Lap == lap) & (self.t1.StopCompound == compound)).to_numpy()
+
+    def test_tables(self):
+        self.assertEqual(self.t1.Lap.tolist(), [2, 2, 3, 3, 4, 4, 5, 5] * 2)
+        self.assertEqual(self.t1.StopCompound.tolist(), ["A3", "B"] * 8)      # stored compound first
+        self.assertTrue(self.t1.HasSituation.all())                            # same situation for both
+
+    def test_outcomes_with_compound(self):
+        out = outcomes(self.t1, self.t2, self.pit1(3, "B"), self.never)
+        self.assertEqual(out.PitPosition.tolist(), [6, 3])
+        self.assertEqual(out.StopCompound.tolist(), ["B", "B"])
+        # never pitting: the forced last-lap stop goes onto the stored compound, not B
+        out = outcomes(self.t1, self.t2, np.zeros(len(self.t1), bool), self.never)
+        self.assertEqual(out.PitPosition.tolist(), [9, 6])
+        self.assertEqual(out.StopCompound.tolist(), ["A3", "A3"])
+
+    def test_targets_compare_with_the_next_lap(self):
+        y1, _, use1, _ = targets(self.t1, self.t2, self.pit1(4, "A3"), self.never)
+        # run 0: B on lap 2 is worth 5; following from lap 3 stops on 4 onto A3: 7
+        self.assertEqual(y1.AdvantagePosition[1], 5 - 7)
+        self.assertEqual(y1.AdvantagePosition[0], 8 - 7)
+        self.assertEqual(y1.AdvantagePosition[3], 6 - 7)
+        self.assertEqual(use1.tolist(), [True] * 6 + [False] * 2 + [True] * 6 + [False] * 2)
+
+    def test_choose_compound(self):
+        pred = np.zeros((len(self.t1), 2))
+        pred[:, 0] = [0.0, -0.05, 0.0, -0.5, 0.0, 0.2, 0.0, 0.0] * 2    # B: tie on 2, better on 3, worse on 4
+        pred[:, 1] = [1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 2       # the tie goes to the faster A3
+        chosen = choose_compound(self.t1, pred, 0.1)
+        self.assertEqual(chosen.tolist(), [True, False, False, True, True, False, True, False] * 2)
+
+    def test_choice_equals_the_simulator_rule(self):
+        from integration.pit_network import POSITION_TIE, best_choice
+        rng = np.random.default_rng(1)
+        pred = np.round(rng.normal(scale=0.2, size=(len(self.t1), 2)), 2)
+        chosen = choose_compound(self.t1, pred, POSITION_TIE)
+        for start in range(0, len(self.t1), 2):
+            pair = [tuple(pred[start]), tuple(pred[start + 1])]
+            self.assertEqual(chosen[start:start + 2].tolist(), [best_choice(pair) == 0, best_choice(pair) == 1])
+
+    def test_best_fixed_plans(self):
+        policies = best_plan(self.t1, self.t2, lambda t: np.ones(len(t), bool))
+        expected = {"fixed one-stop": [6, 5], "fixed one-stop, any compound": [6, 3], "fixed best plan": [6, 3]}
+        for name, positions in expected.items():
+            self.assertEqual(outcomes(self.t1, self.t2, *policies[name]).PitPosition.tolist(), positions, name)
 
 
 if __name__ == "__main__":

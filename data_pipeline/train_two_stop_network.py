@@ -1,11 +1,15 @@
 """Train a pit-timing network that may stop twice, by policy iteration on exact replays (.venv-train).
 
-    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin --name pit_network_v3_two_stop
-    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py      # every track with two-stop runs
+    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v3_two_stop
+    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v4_two_stop
+    .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py      # v5: lap and compound together
 
 Input: integration/output/two_stop/<Track>_2019_fitted_*_mc<runs>/ (integration/two_stop_generator.py), for
-every track in --tracks that has them.
-The start policy is pit_network_v1 for the first stop and no second stop. Each iteration replays the current
+every track in --tracks that has them, and with --compounds all (default) the one-stop runs onto every other
+legal compound (integration/compound_runs.py, integration/output/compound_runs/).
+The policy then chooses the compound of the first stop as well (two_stop_labels.choose_compound); a second stop
+follows only a first stop onto the stored compound. The start policy is --start (v4) as it raced, on the stored
+compound only: it was never trained on the other compounds, and letting it choose them loses its two-stop plans. Each iteration replays the current
 network on every stored run (data_pipeline/two_stop_labels.py), builds targets for both stints (pitting now
 minus following the network from the next lap), trains a fresh network on the training runs, and scores it
 exactly on the held-out runs (the last fifth). The best iteration is saved as integration/models/<name>.npz;
@@ -25,10 +29,22 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data_pipeline.train_pit_network import TIME_CLIP_S, add_tyre_features, save, train  # noqa: E402
 from data_pipeline.train_stopping_network import decisions  # noqa: E402
-from data_pipeline.two_stop_labels import G1, best_plan, compare, load_folders, outcomes, targets  # noqa: E402
-from integration.pit_network import FEATURES, PitNetwork, feature_vector  # noqa: E402
+from data_pipeline.two_stop_labels import (G1, best_plan, choose_compound, compare, load_folders,  # noqa: E402
+                                           outcomes, targets)
+from integration.pit_network import FEATURES, POSITION_TIE, PitNetwork, feature_vector  # noqa: E402
 
 TWO_STOP = ROOT / "integration/output/two_stop"
+COMPOUND_RUNS = ROOT / "integration/output/compound_runs"
+
+
+def first_stint_decisions(network, x1, t1, stored_only=False) -> np.ndarray:
+    """Stint-1 rows the policy stops on: pit_now() on the compound it chooses, before the forced last lap.
+    stored_only: the stored compound only, as before the compound runs."""
+    has = t1.HasSituation.to_numpy() & (t1.Default.to_numpy(bool) | (not stored_only))
+    pred = np.zeros((len(x1), 2))
+    pred[has] = network.predict(x1[has])
+    chosen = choose_compound(t1.assign(HasSituation=has), pred, POSITION_TIE)
+    return decisions(network, x1, has) & chosen & (t1.Lap < t1.LastLap).to_numpy()
 
 
 def features(table: pd.DataFrame) -> np.ndarray:
@@ -52,7 +68,8 @@ def hindsight(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
 
 def summary(name, outcome, references):
     entry = {"Policy": name, "MeanStopLap": float(outcome.StopLap.mean()),
-             "TwoStopShare": float((outcome.SecondStop < 10 ** 4).mean())}
+             "TwoStopShare": float((outcome.SecondStop < 10 ** 4).mean()),
+             "OtherCompoundShare": float((outcome.StopCompound != outcome.StoredCompound).mean())}
     for ref_name, ref in references.items():
         entry["Vs " + ref_name] = compare(outcome, ref)
     return entry
@@ -62,8 +79,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--tracks", nargs="+", default=["Austin", "Monza", "Singapore", "Spielberg"])
     parser.add_argument("--runs", type=int, default=50)
-    parser.add_argument("--start", type=Path, default=ROOT / "integration/models/pit_network_v1.npz")
-    parser.add_argument("--name", default="pit_network_v4_two_stop")
+    parser.add_argument("--start", type=Path, default=ROOT / "integration/models/pit_network_v4_two_stop.npz")
+    parser.add_argument("--name", default="pit_network_v5_compound")
+    parser.add_argument("--compounds", choices=["all", "stored"], default="all",
+                        help="all: also the compound runs, so the policy chooses the compound")
     parser.add_argument("--iterations", type=int, default=4)
     parser.add_argument("--hidden", type=int, nargs="+", default=[64, 64])
     parser.add_argument("--epochs", type=int, default=40)
@@ -79,32 +98,39 @@ def main():
     folders = sorted(p for track in args.tracks for p in TWO_STOP.glob("%s_2019_fitted_*_mc%d" % (track, args.runs))
                      if (p / "manifest.json").is_file())
     tracks = sorted({p.name.split("_")[0] for p in folders})
-    t1, t2 = load_folders(folders)
+    t1, t2 = load_folders(folders, COMPOUND_RUNS if args.compounds == "all" else None)
     x1, x2 = features(t1), features(t2)
-    has1, has2 = t1.HasSituation.to_numpy(), t2.HasSituation.to_numpy()
+    has2 = t2.HasSituation.to_numpy()
     first_val = int(args.runs * 0.8)
     val1, val2 = (t1.Run >= first_val).to_numpy(), (t2.Run >= first_val).to_numpy()
-    print("%s: %d driver-races; %d first-stint and %d second-stint rows (%.0f s)"
-          % (" ".join(tracks), len(folders), len(t1), len(t2), time.perf_counter() - started), flush=True)
+    print("%s: %d driver-races; %d first-stint rows (%d onto other compounds) and %d second-stint rows (%.0f s)"
+          % (" ".join(tracks), len(folders), len(t1), (~t1.Default).sum(), len(t2), time.perf_counter() - started),
+          flush=True)
+    stored = t1[t1.Default].groupby(["Race", "Driver"]).StopCompound.first().rename("StoredCompound").reset_index()
 
     def held_out(out):
+        out = out.merge(stored, on=["Race", "Driver"], how="left", validate="many_to_one")
         return out[out.Run >= first_val].reset_index(drop=True)
 
     fixed = best_plan(t1, t2, lambda t: (t.Run < first_val).to_numpy())
     refs = {name: held_out(outcomes(t1, t2, *pits)) for name, pits in fixed.items()}
     network = PitNetwork(args.start)
-    pit1, pit2 = decisions(network, x1, has1), np.zeros(len(t2), bool)
-    refs["start (v1, one stop)"] = held_out(outcomes(t1, t2, pit1, pit2))
+    pit2 = decisions(network, x2, has2) if "StopsMade" in network.features else np.zeros(len(t2), bool)
+    start_name = "start (%s)" % args.start.stem
+    refs[start_name + ", choosing compound"] = held_out(outcomes(t1, t2, first_stint_decisions(network, x1, t1), pit2))
+    pit1 = first_stint_decisions(network, x1, t1, stored_only=True)
+    refs[start_name] = held_out(outcomes(t1, t2, pit1, pit2))
     upper = hindsight(t1, t2)
     refs["hindsight"] = upper[upper.Run >= first_val].reset_index(drop=True)
     report = {"Name": args.name, "Tracks": tracks, "DriverRaces": len(folders), "HeldOutFirstRun": first_val,
               "Settings": {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()},
               "References": [summary(n, refs[n], {"fixed one-stop": refs["fixed one-stop"]})
-                             for n in ("fixed best plan", "start (v1, one stop)")],
+                             for n in ("fixed one-stop, any compound", "fixed best plan", start_name,
+                                       start_name + ", choosing compound")],
               "Iterations": []}
     for r in report["References"]:
-        print("%-22s - fixed one-stop %+.3f places; two-stop share %.2f"
-              % (r["Policy"], r["Vs fixed one-stop"]["PosDiff"], r["TwoStopShare"]))
+        print("%-50s - fixed one-stop %+.3f places; two-stop %.2f, other compound %.2f"
+              % (r["Policy"], r["Vs fixed one-stop"]["PosDiff"], r["TwoStopShare"], r["OtherCompoundShare"]))
     print("hindsight - fixed one-stop %+.3f places" % compare(refs["hindsight"], refs["fixed one-stop"])["PosDiff"])
 
     best_key, best_path = None, None
@@ -119,14 +145,16 @@ def main():
         path = ROOT / "integration/models" / ("%s_iter%d.npz" % (args.name, iteration))
         save(model, mean, std, path)
         network = PitNetwork(path)
-        pit1, pit2 = decisions(network, x1, has1), decisions(network, x2, has2)
+        pit1, pit2 = first_stint_decisions(network, x1, t1), decisions(network, x2, has2)
         outcome = held_out(outcomes(t1, t2, pit1, pit2))
         entry = summary("iteration %d" % iteration, outcome, refs)
         entry.update({"Iteration": iteration, "TrainRows": int((keep & ~val).sum()), "Epochs": len(history)})
         report["Iterations"].append(entry)
-        print("iteration %d: - fixed one-stop %+.3f, - fixed best plan %+.3f, - start %+.3f places; two-stop %.2f"
+        print("iteration %d: - fixed one-stop %+.3f, - fixed best plan %+.3f, - start %+.3f places; "
+              "two-stop %.2f, other compound %.2f"
               % (iteration, entry["Vs fixed one-stop"]["PosDiff"], entry["Vs fixed best plan"]["PosDiff"],
-                 entry["Vs start (v1, one stop)"]["PosDiff"], entry["TwoStopShare"]), flush=True)
+                 entry["Vs " + start_name]["PosDiff"], entry["TwoStopShare"], entry["OtherCompoundShare"]),
+              flush=True)
         key = (round(entry["Vs fixed one-stop"]["PosDiff"], 4), entry["Vs fixed one-stop"]["TimeDiff_s"])
         if best_key is None or key < best_key:
             best_key, best_path, report["Best"] = key, path, iteration
