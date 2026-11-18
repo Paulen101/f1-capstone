@@ -2,6 +2,7 @@
 import unittest
 
 from integration.label_generator import (check_stop, clear_recorded_events, close_to_label,
+                                         complete_background_strategies,
                                          paired_differences, pick_fastest, pick_label, run_seed,
                                          summarize)
 
@@ -68,6 +69,30 @@ class PairedTests(unittest.TestCase):
         rows = self.runs(10, [1, 1], [5000.0] * 2) + [dict(row(11, 20, laps=30.0, finished=False), Run=0),
                                                       dict(row(11, 2), Run=1)]
         self.assertEqual(paired_differences(rows, 10, 71)[11]["PairedRuns"], 1)
+
+
+class BackgroundStrategyTests(unittest.TestCase):
+    def pars(self, strategies):
+        return {"vse_pars": {"real_strategy": strategies},
+                "driver_pars": {d: {"strategy_info": [list(x) for x in s]} for d, s in strategies.items()}}
+
+    def test_one_compound_finishers_get_the_most_common_last_compound(self):
+        pars = self.pars({"AAA": [[0, "A4", 2, 0.0], [20, "A3", 0, 0.0]],
+                          "BBB": [[0, "A4", 2, 0.0], [24, "A3", 0, 0.0]],
+                          "CCC": [[0, "A6", 2, 0.0], [30, "A4", 0, 0.0]],
+                          "SAI": [[0, "A6", 2, 0.0], [27, "A6", 29, 0.0]],
+                          "VET": [[0, "A4", 2, 0.0]]})
+        changes = complete_background_strategies(pars, "AAA")
+        strategies = pars["vse_pars"]["real_strategy"]
+        self.assertEqual(strategies["SAI"], [[0, "A6", 2, 0.0], [27, "A3", 0, 0.0]])
+        self.assertEqual(strategies["VET"], [[0, "A4", 2, 0.0], [24, "A3", 0, 0.0]])
+        self.assertEqual(pars["driver_pars"]["VET"]["strategy_info"], strategies["VET"])
+        self.assertEqual([c["driver"] for c in changes], ["SAI", "VET"])
+
+    def test_target_driver_and_complete_strategies_are_left_alone(self):
+        pars = self.pars({"AAA": [[0, "A4", 2, 0.0]], "BBB": [[0, "A4", 2, 0.0], [24, "A3", 0, 0.0]]})
+        self.assertEqual(complete_background_strategies(pars, "AAA"), [])
+        self.assertEqual(pars["vse_pars"]["real_strategy"]["AAA"], [[0, "A4", 2, 0.0]])
 
 
 class StopCheckTests(unittest.TestCase):
