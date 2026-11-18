@@ -35,7 +35,7 @@ Austin (in between).
 | Label generator: Monte Carlo per-lap scores for 14 one-stop drivers (`notes/label_generator.md`) | Done |
 | Race situation sampling, methodology step 4: 860,000 situations from 80 driver-races (`notes/situation_sampling.md`) | Done for the four one-stop 2019 races |
 | Pit-timing network trained on the situations (`notes/pit_network.md`) | Done: v1, one stop, four 2019 races |
-| Evaluation against the original VSE and real strategies | First round done: beats real strategies by 0.57 places, ties TUM's VSE |
+| Evaluation against the original VSE and real strategies | First round done, with TUM's compound choice: beats real strategies by 0.58 places, ties TUM's VSE (better in green races, worse with safety cars) |
 
 ## Layout
 

@@ -8,7 +8,8 @@ Every policy raced the same seeds, so each comparison is paired by (track, drive
     race time  race-time difference, over runs where both completed the same number of laps (a lapped
                driver's time is that of their last completed lap, as in the training rows)
 
-Negative means the first policy (the network, unless --base says otherwise) is better. Output next to
+Negative means the first policy (the network, unless --base says otherwise) is better. If runs.csv has the
+safety-car columns, every comparison is also split into races with and without a safety car or VSC. Output next to
 the input and in notes/evidence/pit_network/: <name>_summary.csv (all tracks and per track) and
 <name>_by_driver.csv (one row per driver-race and comparison).
 """
@@ -28,7 +29,9 @@ def paired(runs: pd.DataFrame, base: str, other: str) -> pd.DataFrame:
     both = a.join(b, lsuffix="_a", rsuffix="_b", how="inner")
     finished = both.Finished_a & both.Finished_b
     same_laps = finished & (both.SimulatedLaps_a == both.SimulatedLaps_b)
+    events = (both.SCPhases_a + both.VSCPhases_a > 0) if "SCPhases_a" in both else pd.Series(np.nan, both.index)
     return pd.DataFrame({
+        "Neutralised": events.map({True: "SC or VSC", False: "green only"}),
         "PosDiff": np.where(finished, both.Position_a - both.Position_b, np.nan),
         "TimeDiff_s": np.where(same_laps, both.RaceTime_s_a - both.RaceTime_s_b, np.nan),
         "StopDiff": both.FirstStopLap_a - both.FirstStopLap_b,
@@ -56,18 +59,27 @@ def main():
     runs = pd.read_csv(args.folder / "runs.csv")
     runs["FirstStopLap"] = pd.to_numeric(runs.FirstStopLap, errors="coerce")
     name = args.folder.name
-    others = [p for p in ["real", "tum", "fixed", "network"] if p != args.base and p in set(runs.Policy)]
+    others = [p for p in ["real", "tum", "fixed", "network", "network_tum"] if p != args.base and p in set(runs.Policy)]
 
+    if "FirstStopFlag" in runs:
+        runs["StopUnderSCorVSC"] = runs.FirstStopFlag.isin(["SC", "VSC"])
+    else:
+        runs["StopUnderSCorVSC"] = np.nan
     policies = runs.groupby("Policy").agg(
         MeanPosition=("Position", lambda s: s[runs.loc[s.index, "Finished"]].mean()),
-        Finished=("Finished", "mean"), MeanFirstStop=("FirstStopLap", "mean"), MeanStops=("Stops", "mean"))
+        Finished=("Finished", "mean"), MeanFirstStop=("FirstStopLap", "mean"), MeanStops=("Stops", "mean"),
+        FirstStopUnderSCorVSC=("StopUnderSCorVSC", "mean"))
     print(policies.round(3).to_string(), "\n")
 
     summary, by_driver = [], []
     for other in others:
         diffs = paired(runs, args.base, other)
         for track, part in [("all", diffs)] + list(diffs.groupby("Track")):
-            summary.append({"Comparison": "%s - %s" % (args.base, other), "Track": track, **describe(part)})
+            summary.append({"Comparison": "%s - %s" % (args.base, other), "Track": track, "Races": "all",
+                            **describe(part)})
+            for events, sub in part.groupby("Neutralised"):
+                summary.append({"Comparison": "%s - %s" % (args.base, other), "Track": track, "Races": events,
+                                **describe(sub)})
         for (track, driver), part in diffs.groupby(["Track", "Driver"]):
             by_driver.append({"Comparison": "%s - %s" % (args.base, other), "Track": track, "Driver": driver,
                               **describe(part)})

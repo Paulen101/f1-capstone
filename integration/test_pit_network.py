@@ -95,12 +95,13 @@ class SimulatorTests(unittest.TestCase):
         cls.source, cls.pars, cls.paths, _, _ = load(args)
         cls.tot = cls.pars["race_pars"]["tot_no_laps"]
 
-    def race(self, network, seed=3):
+    def race(self, network, seed=3, compound_choice=None):
         from racesim.src.race import Race
         random.seed(seed)
         np.random.seed(seed)
         race = Race(**self.pars, vse_paths=self.paths, use_prob_infl=True, create_rand_events=True)
-        race.vse = NetworkVSE(race.vse, race, "VER", network, "A3", self.pars["vse_pars"]["location_cat"], 20.0)
+        race.vse = NetworkVSE(race.vse, race, "VER", network, None if compound_choice else "A3",
+                              self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice)
         race.simulate_race()
         self.assertEqual(race.result_status, 0)
         return race, race.vse
@@ -127,6 +128,43 @@ class SimulatorTests(unittest.TestCase):
             recorded = feature_vector(vse.situation(lap))
             for name, a, b in zip(FEATURES, x, recorded):
                 self.assertTrue(math.isclose(a, b, abs_tol=1e-9), "lap %d %s: live %s, after %s" % (lap, name, a, b))
+
+    def compound_choice(self):
+        from integration.tum_compound_choice import TumCompoundChoice
+        vse = self.pars["vse_pars"]
+        return TumCompoundChoice(self.paths, self.pars["track_pars"]["name"], vse["available_compounds"],
+                                 vse["param_dry_compounds"])
+
+    def test_tum_compound_choice_equals_tum_vse(self):
+        """Same network output as TUM's own VSE_SUPERVISED pipeline, for every compound and race phase."""
+        from racesim.src.vse_supervised import VSE_SUPERVISED
+        choice = self.compound_choice()
+        tum = VSE_SUPERVISED(self.paths["supervised_preprocessor_cc"], self.paths["supervised_preprocessor_tc"],
+                             self.paths["supervised_nnmodel_cc"], self.paths["supervised_nnmodel_tc"])
+        interpreter = tum.nnmodel_cc["interpreter"]
+        for compound in ("A3", "A4", "A6"):
+            for progress in (0.1, 0.4, 0.7):
+                tum.reset()
+                tum.preprocess_features(tireageprogress_corr_zeroinchange=[0.3], raceprogress=progress, position=[5],
+                                        rel_compound_num_nl=[choice.rel_compound(compound)], fcy_stat_nl=[0],
+                                        remainingtirechanges_nl=[1], tirechange_pursuer=[0], location_cat=2,
+                                        close_ahead_prevlap=[0], location="Spielberg", used_2compounds_nl=[False],
+                                        no_avail_dry_compounds=3)
+                interpreter.set_tensor(tum.nnmodel_cc["input_index"], tum.X_conv_cc[:1])
+                interpreter.invoke()
+                expected = interpreter.get_tensor(tum.nnmodel_cc["output_index"])[0]
+                np.testing.assert_allclose(choice.probabilities(compound, progress), expected, rtol=1e-6)
+                chosen = choice.choose(compound, progress)
+                self.assertIn(chosen, ("A3", "A4", "A6"))
+                self.assertNotEqual(chosen, compound)
+
+    def test_stop_mounts_tum_compound(self):
+        choice = self.compound_choice()
+        race, vse = self.race(StubNetwork(self.tot, pit_from=30), compound_choice=choice)
+        start = race.drivers_list[vse.idx].strategy_info[0][1]
+        expected = choice.choose(start, 29 / self.tot)
+        self.assertEqual(self.stops(race), [(30, expected)])
+        self.assertEqual(vse.decisions[-1]["Compound"], expected)
 
 
 if __name__ == "__main__":

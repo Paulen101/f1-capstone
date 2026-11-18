@@ -7,6 +7,8 @@ safety cars, retirements and lap-time noise) once per policy for that driver; ev
 real strategy, as in the training data:
 
     network   integration/pit_network.py decides each lap; one stop onto the driver's training stop compound
+    network_tum  the same network for the timing, the compound from TUM's compound-choice network
+              (integration/tum_compound_choice.py), as the project scope plans
     real      the driver's real 2019 strategy (pit laps and compounds)
     tum       TUM's supervised VSE (nn_supervised_tirechange + compoundchoice) for this driver
     fixed     one stop on the Monte Carlo label lap (best mean position over the training runs), same compound
@@ -32,7 +34,7 @@ from integration.label_generator import (MAX_ATTEMPTS, complete_background_strat
 from integration.run_situations import stop_compounds  # noqa: E402
 from integration.write_fitted_pars import parse_pars  # noqa: E402
 
-POLICIES = ["network", "real", "tum", "fixed"]
+POLICIES = ["network", "network_tum", "real", "tum", "fixed"]
 YEAR = 2019
 SITUATIONS = ROOT / "integration/output/situations"
 
@@ -75,7 +77,12 @@ def simulate(task):
     track_pars = pars["track_pars"]
     pit_loss = round(track_pars["t_pitdrive_inlap"] + track_pars["t_pitdrive_outlap"]
                      + track_pars["t_pit_tirechange_min"] + pars["car_pars"][team]["t_pit_tirechange_add"], 3)
-    network = PitNetwork(settings["model"]) if policy == "network" else None
+    network = PitNetwork(settings["model"]) if policy.startswith("network") else None
+    choice = None
+    if policy == "network_tum":
+        from integration.tum_compound_choice import TumCompoundChoice
+        choice = TumCompoundChoice(paths, track_pars["name"], pars["vse_pars"]["available_compounds"],
+                                   pars["vse_pars"]["param_dry_compounds"])
     fixed_lap = label_lap(track, driver) if policy == "fixed" else None
     tot = pars["race_pars"]["tot_no_laps"]
     rows, invalid = [], 0
@@ -86,9 +93,9 @@ def simulate(task):
             np.random.seed(seed % 2 ** 32)
             race = Race(**pars, vse_paths=paths, use_prob_infl=True, create_rand_events=True)
             # CAPSTONE HOOK: public property injection; upstream source stays unchanged.
-            if policy == "network":
-                race.vse = NetworkVSE(race.vse, race, driver, network, stop,
-                                      pars["vse_pars"]["location_cat"], pit_loss)
+            if policy.startswith("network"):
+                race.vse = NetworkVSE(race.vse, race, driver, network, None if choice else stop,
+                                      pars["vse_pars"]["location_cat"], pit_loss, compound_choice=choice)
             elif policy == "fixed":
                 race.vse = FixedLapVSE(race.vse, driver, FixedLapPolicy(fixed_lap, stop))
             race.simulate_race()
@@ -106,7 +113,11 @@ def simulate(task):
                      "RaceTime_s": round(float(race.racetimes[int(laps), idx]), 3),
                      "Finished": bool(race.bool_driving[-1, idx]), "Stops": len(stops),
                      "FirstStopLap": stops[0][0] if stops else "",
-                     "StopPlan": " ".join("%d:%s" % s for s in stops)})
+                     "StopPlan": " ".join("%d:%s" % s for s in stops),
+                     # random events of this race (the same for every policy with this seed)
+                     "SCPhases": sum(1 for p in race.fcy_data["phases"] if p[2] == "SC"),
+                     "VSCPhases": sum(1 for p in race.fcy_data["phases"] if p[2] == "VSC"),
+                     "FirstStopFlag": race.flagstates[stops[0][0]] if stops else ""})
     return rows, invalid
 
 

@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -52,39 +52,61 @@ The tyre features come from the driver's degradation model in the fitted race fi
 
 ## Racing it in the simulator
 
-`integration/evaluate_pit_network.py --runs 100 --jobs 28`: every driver of the four races (80 driver-races), 100 new Monte Carlo races each (seeds from 500,000; training used 0–199), the same seeds for every policy, so the comparisons are paired. Only the target driver's policy changes; everyone else keeps their real strategy, as in the training data. 32,000 races, about 5 minutes, none rejected. `data_pipeline/summarise_evaluation.py` compares them ([evidence](evidence/pit_network/)):
+`integration/evaluate_pit_network.py --runs 100 --jobs 28`: every driver of the four races (80 driver-races), 100 new Monte Carlo races each (seeds from 500,000; training used 0–199), the same seeds for every policy, so the comparisons are paired (checked: with the same seed the safety cars, retirements and lap-time noise are identical under every policy until the target driver's decisions differ). Only the target driver's policy changes; everyone else keeps their real strategy, as in the training data. Five policies, 40,000 races, about 6 minutes, none rejected. `data_pipeline/summarise_evaluation.py` compares them ([evidence](evidence/pit_network/)):
 
-| Policy | Mean finishing position | Mean first stop (lap) | Mean stops |
-|---|---:|---:|---:|
-| Real 2019 strategy | 9.52 | 21.3 | 1.36 |
-| TUM's supervised VSE | 8.94 | 27.0 | 1.15 |
-| Best fixed lap (Monte Carlo label) | 8.90 | 26.1 | 0.95 |
-| **Network** | **8.95** | 24.9 | 0.95 |
+| Policy | Mean finishing position | Mean first stop (lap) | Mean stops | Stop under SC/VSC |
+|---|---:|---:|---:|---:|
+| Real 2019 strategy | 9.52 | 21.3 | 1.36 | 5.4 % |
+| TUM's supervised VSE | 8.94 | 27.0 | 1.15 | **11.2 %** |
+| Best fixed lap (Monte Carlo label) | 8.90 | 26.1 | 0.95 | 3.9 % |
+| Network, training compound | 8.95 | 24.9 | 0.95 | 4.3 % |
+| **Network, TUM's compound choice** | **8.94** | 24.9 | 0.95 | 4.4 % |
 
-(Stops below 1: retirements before the stop. 10.4 % of races end in a retirement under every policy.)
+(Stops below 1: retirements before the stop. 10.4 % of races end in a retirement under every policy. A safety car or VSC comes out in 57 % of races.)
 
-Paired differences, network minus the other policy (negative: the network is better), with standard errors:
+### Compound from TUM's network
+
+The project scope gives compound choice to TUM's network. `integration/tum_compound_choice.py` runs TUM's `nn_supervised_compoundchoice` on its own, with TUM's preprocessor and TUM's rule for walking down the ranking, told that one tyre change remains (our network makes one stop; with one change left TUM never mounts the current compound again). A test checks that its output equals TUM's own `VSE_SUPERVISED` pipeline. When our network asks "pit now?", the tyre features describe the compound TUM would mount on that lap.
+
+It changes almost nothing: −0.005 ± 0.003 places and −0.16 s against the training compound. At Spielberg TUM's network mounts the hard (A3) in 66 % of stops and the medium (A4) in 34 %, never the soft our earlier reading blamed; at Singapore it picks the same compound as the training rows in every race. **Compound choice was not why TUM's VSE wins at Spielberg.**
+
+### Against the other policies
+
+Paired differences, network with TUM's compound choice minus the other policy (negative: the network is better), with standard errors:
 
 | | All | Austin | Monza | Singapore | Spielberg |
 |---|---:|---:|---:|---:|---:|
-| **vs real**, places | **−0.57 ± 0.02** | +0.09 | −0.97 | −1.15 | −0.25 |
-| vs real, race time (s) | **−4.5 ± 0.2** | +0.8 | −7.4 | −10.4 | −1.4 |
-| **vs TUM's VSE**, places | **+0.01 ± 0.02** | +0.47 | +0.14 | −0.83 | +0.25 |
-| vs TUM's VSE, race time (s) | **0.0 ± 0.2** | +5.8 | +1.4 | −9.1 | +1.7 |
-| vs best fixed lap, places | +0.05 ± 0.01 | 0.00 | 0.00 | +0.16 | +0.03 |
-| vs best fixed lap, race time (s) | 0.0 ± 0.1 | −0.2 | +0.1 | −0.2 | +0.2 |
+| **vs real**, places | **−0.58 ± 0.02** | +0.06 | −0.97 | −1.15 | −0.24 |
+| vs real, race time (s) | **−4.6 ± 0.2** | +0.1 | −7.4 | −10.4 | −1.3 |
+| **vs TUM's VSE**, places | **0.00 ± 0.02** | +0.43 | +0.15 | −0.83 | +0.26 |
+| vs TUM's VSE, race time (s) | **−0.2 ± 0.2** | +5.0 | +1.4 | −9.1 | +1.8 |
+| vs best fixed lap, places | +0.04 ± 0.01 | −0.04 | 0.00 | +0.16 | +0.05 |
+| vs best fixed lap, race time (s) | −0.2 ± 0.1 | −0.9 | +0.2 | −0.2 | +0.4 |
 
-Per driver-race (2 standard errors): better than the real strategy in 33 of 80, worse in 10; better than TUM's VSE in 21, worse in 30.
+Per driver-race (2 standard errors): better than the real strategy in 32 of 80, worse in 10; better than TUM's VSE in 20, worse in 31.
 
-What this says:
+### Where TUM's VSE wins: safety cars
 
-- **It beats the real strategies** by about half a place and 4.5 s per race, most at Singapore and Monza. This is inside our simulator, which also produced the training labels, so it measures how well the network learned the simulator, not that it would have beaten the teams. The real strategies were also made against reacting rivals.
-- **It ties TUM's VSE overall, but the tracks differ.** It is clearly better at Singapore (−0.83 places) and worse at Austin (+0.47), Spielberg (+0.25) and Monza (+0.14). Where it loses, TUM's VSE is doing something the network is not allowed to do: at Austin it makes **two stops in 64 %** of races; at Spielberg it chooses the compound (A6 or A4 in 56 % of races) where the network always mounts the driver's real second compound (A3). The network decides only *when* to make one stop.
-- **It is no better than the best fixed lap.** It learned where the best stop is on average, but reacting to the race situation (safety cars, gaps) does not yet gain anything on top. Background drivers who cannot react, and a label that compares with one fixed later lap, give it little to react to.
+Split by whether the race had a safety car or VSC:
+
+| Network − TUM's VSE, places | All | Austin | Monza | Singapore | Spielberg |
+|---|---:|---:|---:|---:|---:|
+| Green races only | **−0.31 ± 0.02** | +0.06 | −0.10 | −1.20 | −0.01 |
+| Races with SC or VSC | **+0.27 ± 0.03** | +0.75 | +0.35 | −0.52 | +0.49 |
+
+Without neutralisations the network is as good as or better than TUM's VSE at every track. With them, TUM's VSE gains up to three quarters of a place. It makes its stop under a safety car or VSC in 11.2 % of races; the network in 4.4 %, hardly more than the fixed lap (3.9 %).
+
+The network has learned what a safety car is worth: switching the flag of green validation situations to SC moves its predicted advantage by −0.75 places and −5.9 s, close to the data (−0.65 places, −5.1 s for the same race, driver and lap). It does pit when a safety car comes in its window. What it does not do is **wait for one**. The training label compares pitting now with pitting at one fixed later lap (the best on average), so staying out is never credited with the chance of a cheap stop under a later safety car. TUM's VSE, imitating teams, stops later in general (lap 27.0 against 24.9), so in more races a safety car comes out while it is still on its first set.
+
+### What this says
+
+- **It beats the real strategies** by about half a place and 4.6 s per race, most at Singapore and Monza. This is inside our simulator, which also produced the training labels, so it measures how well the network learned the simulator, not that it would have beaten the teams. The real strategies were also made against reacting rivals.
+- **It ties TUM's VSE overall**: better in green races (−0.31 places), worse in safety-car races (+0.27). At Austin TUM's VSE also makes **two stops in 64 %** of races, which the network cannot.
+- **It is no better than the best fixed lap**, for the same reason: without a label that values waiting, reacting adds little.
 
 ## Next
 
-1. Let TUM's compound-choice network pick the compound when our network pits (the project scope already says compound choice uses TUM's network); this removes the Spielberg handicap.
+1. **A label that values waiting** (optimal stopping). For every run every candidate lap's outcome is already known, and the history up to the stop is shared, so any lap-by-lap policy can be scored exactly on the stored runs. The value of staying out at lap L is then the expected outcome of deciding well from L + 1 on, not of one fixed lap; it can be built backwards from the last lap with the network itself (fitted Q-iteration). This credits staying out with the chance of a later safety car.
 2. Two-stop decisions: situations in the second stint, needed for Austin and Barcelona.
 3. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
 4. More tracks before claiming anything about new tracks.
@@ -95,5 +117,5 @@ What this says:
 .venv-train/Scripts/python.exe data_pipeline/train_pit_network.py                  # GPU if the CUDA build is installed
 .venv-train/Scripts/python.exe data_pipeline/train_pit_network.py --holdout-track Monza --name pit_network_noMonza
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --runs 100 --jobs 28
-.venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/pit_network_v1_mc100
+.venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/pit_network_v1_mc100 --base network_tum
 ```

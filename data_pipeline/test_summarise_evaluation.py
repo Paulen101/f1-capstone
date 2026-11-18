@@ -26,6 +26,13 @@ class PairedTests(unittest.TestCase):
         self.assertEqual(diffs.PosDiff.tolist(), [-1])
         self.assertTrue(diffs.TimeDiff_s.isna().all())
 
+    def test_safety_car_races_are_labelled(self):
+        runs = pd.DataFrame([dict(run("network", 0, 2), SCPhases=1, VSCPhases=0),
+                             dict(run("real", 0, 3), SCPhases=1, VSCPhases=0),
+                             dict(run("network", 1, 2), SCPhases=0, VSCPhases=0),
+                             dict(run("real", 1, 2), SCPhases=0, VSCPhases=0)])
+        self.assertEqual(paired(runs, "network", "real").Neutralised.tolist(), ["SC or VSC", "green only"])
+
     def test_describe(self):
         diffs = pd.DataFrame({"PosDiff": [-1.0, 1.0, -2.0], "TimeDiff_s": [-3.0, 1.0, float("nan")],
                               "StopDiff": [1, 2, 3]})

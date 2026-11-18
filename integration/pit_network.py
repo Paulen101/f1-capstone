@@ -131,12 +131,18 @@ class NetworkVSE:
 
     Install after Race construction, before simulate_race(), through the public Race.vse property, like
     FixedLapVSE. The adapter keeps the Race object to read the situation the way situations.py does. It
-    stops at most once, onto `stop_compound`, from `first_lap` on, and stops on the last possible lap
-    (tot_no_laps - 1) if it has not yet, because TUM requires two compounds.
+    stops at most once, from `first_lap` on, and stops on the last possible lap (tot_no_laps - 1) if it has
+    not yet, because TUM requires two compounds.
+
+    The compound is `stop_compound` (a fixed compound, as in the training rows), or, with `compound_choice`
+    (integration/tum_compound_choice.py), what TUM's compound-choice network would mount if the driver pitted
+    on this lap. The tyre features then describe that compound, so the network weighs the stop it would make.
     """
 
-    def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: str,
-                 location_cat: int, pit_loss_s: float, first_lap: int = 2):
+    def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: Optional[str],
+                 location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None):
+        if (stop_compound is None) == (compound_choice is None):
+            raise ValueError("Give either a fixed stop compound or a compound choice")
         if original_vse is None:
             raise ValueError("Enable the original VSE before attaching this adapter")
         if any(kind != "realstrategy" for kind in original_vse.vse_pars["vse_type"].values()):
@@ -147,6 +153,7 @@ class NetworkVSE:
         self.idx = next(i for i, d in enumerate(race.drivers_list) if d.initials == driver)
         self.network = network
         self.stop_compound = stop_compound
+        self.compound_choice = compound_choice
         self.location_cat = location_cat
         self.pit_loss_s = pit_loss_s
         self.first_lap = first_lap
@@ -156,25 +163,37 @@ class NetworkVSE:
     def __getattr__(self, name):
         return getattr(self.original_vse, name)
 
-    def situation(self, lap: int) -> dict:
+    def compound_for(self, lap: int) -> str:
+        """Compound a stop decided on `lap` would mount."""
+        if self.compound_choice is None:
+            return self.stop_compound
+        current = self.race.drivers_list[self.idx].strategy_info[0][1]
+        tot = self.race.race_pars["tot_no_laps"]
+        compound = self.compound_choice.choose(current, (lap - 1) / tot)   # TUM: raceprogress_prevlap
+        if compound is None:
+            raise RuntimeError("TUM's compound choice found no legal compound on lap %d" % lap)
+        return compound
+
+    def situation(self, lap: int, stop_compound: Optional[str] = None) -> dict:
         from integration.situations import features
         situation = features(self.race, self.idx, lap, self.dry_compounds, self.location_cat, self.pit_loss_s)
         tire_pars = self.race.drivers_list[self.idx].tireset_pars
-        situation.update(tyre_features(tire_pars, situation["Compound"], self.stop_compound,
+        situation.update(tyre_features(tire_pars, situation["Compound"], stop_compound or self.compound_for(lap),
                                        situation["TyreAge"], situation["LapsRemaining"]))
         return situation
 
     def decide(self, lap: int, tot_no_laps: int) -> Optional[str]:
         if lap >= tot_no_laps - 1:
-            return self.stop_compound
+            return self.compound_for(lap)
         if lap < self.first_lap:
             return None
-        situation = self.situation(lap)
+        compound = self.compound_for(lap)
+        situation = self.situation(lap, compound)
         prediction = self.network.predict(feature_vector(situation))[0]
         pit = pit_now(float(prediction[0]), float(prediction[1]))
         self.decisions.append({"Lap": lap, "PredPosition": round(float(prediction[0]), 3),
-                               "PredTime_s": round(float(prediction[1]), 3), "Pit": pit})
-        return self.stop_compound if pit else None
+                               "PredTime_s": round(float(prediction[1]), 3), "Pit": pit, "Compound": compound})
+        return compound if pit else None
 
     def decide_pitstop(self, **state):
         decisions = list(self.original_vse.decide_pitstop(**state))
