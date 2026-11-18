@@ -1,0 +1,19 @@
+Comparison,Track,Races,PosDiff,PosDiff_SE,PosDiff_N,TimeDiff_s,TimeDiff_s_SE,TimeDiff_s_N,Better,Worse,MeanStopDiff_laps
+network_head - real,all,all,0.8779,0.0391,1793,11.1566,0.4059,1511,0.088,0.43,-1.4381
+network_head - real,all,SC or VSC,0.9277,0.0594,982,10.7073,0.5847,825,0.0965,0.3974,-1.684
+network_head - real,all,green only,0.8175,0.0478,811,11.6969,0.5518,686,0.0767,0.4733,-1.1275
+network_head - real,Catalunya,all,0.8779,0.0391,1793,11.1566,0.4059,1511,0.088,0.43,-1.4381
+network_head - real,Catalunya,SC or VSC,0.9277,0.0594,982,10.7073,0.5847,825,0.0965,0.3974,-1.684
+network_head - real,Catalunya,green only,0.8175,0.0478,811,11.6969,0.5518,686,0.0767,0.4733,-1.1275
+network_head - tum,all,all,0.7708,0.0357,1793,12.2888,0.3645,1589,0.0645,0.428,-3.6324
+network_head - tum,all,SC or VSC,0.777,0.0542,982,11.4935,0.5311,856,0.0746,0.3965,-3.107
+network_head - tum,all,green only,0.7633,0.0438,811,13.2175,0.4879,733,0.0512,0.4698,-4.3034
+network_head - tum,Catalunya,all,0.7708,0.0357,1793,12.2888,0.3645,1589,0.0645,0.428,-3.6324
+network_head - tum,Catalunya,SC or VSC,0.777,0.0542,982,11.4935,0.5311,856,0.0746,0.3965,-3.107
+network_head - tum,Catalunya,green only,0.7633,0.0438,811,13.2175,0.4879,733,0.0512,0.4698,-4.3034
+network_head - network_two,all,all,0.1567,0.0322,1793,2.6686,0.3287,1592,0.0985,0.1575,0.0
+network_head - network_two,all,SC or VSC,0.1568,0.0459,982,2.6438,0.4432,875,0.0939,0.1474,0.0
+network_head - network_two,all,green only,0.1566,0.0444,811,2.6987,0.4904,717,0.1047,0.1709,0.0
+network_head - network_two,Catalunya,all,0.1567,0.0322,1793,2.6686,0.3287,1592,0.0985,0.1575,0.0
+network_head - network_two,Catalunya,SC or VSC,0.1568,0.0459,982,2.6438,0.4432,875,0.0939,0.1474,0.0
+network_head - network_two,Catalunya,green only,0.1566,0.0444,811,2.6987,0.4904,717,0.1047,0.1709,0.0

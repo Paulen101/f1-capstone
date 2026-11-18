@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) round 6 (v4's timing with a compound head: the best policy so far) and round 7 (safety-car headroom: not worth training) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) round 6 (v4's timing with a compound head: the best policy so far) and round 7 (safety-car headroom: not worth training) and round 8 (Barcelona as a fifth track: v6 + compound head is now the best policy on five tracks) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -306,10 +306,55 @@ What this shows:
 - **Per track it does not hold up either.** Waiting 1–4 laps looks slightly better at Austin and Spielberg (−0.02 to −0.09 ± 0.05 on held-out runs) and worse at Monza and Singapore. Choosing the wait per track on the training runs gives Austin −0.04, Monza +0.04, Singapore 0 and Spielberg +0.06 on the held-out runs: no gain.
 - **v4 already knows about safety cars.** It sees the SC and VSC flags, and policy iteration trained it on exact labels for stopping under them. What these situation features can say about safety cars is already in it. **A separate safety-car round is not worth training.** TUM's remaining lead at Monza and Spielberg is a different trade-off (later stops that pay off when a safety car comes) that our replay does not find better on average. Testing that needs either more runs per driver or features describing the safety car itself (laps since it came out, the field's gaps under it).
 
+## Round 8: Barcelona as a fifth track
+
+Barcelona 2019 had no labels: every top finisher stopped twice. With the two-stop generator it can now be added.
+
+**Race file fix.** The fitted Barcelona file burned 1.667 kg/lap over 66 laps, 110.02 kg from a 110 kg tank, so every Barcelona race without a safety car ran dry on the last lap and the simulator stopped with an error. `write_fitted_pars.py` already lowers the burn in that case (added for Monza in a8afaad), but the Barcelona file was written before that. Rewritten from the same fit: `b_fuel_perlap` 1.666, `t_lap_sens_mass` 0.03479 → 0.03481, `t_gap_racepace` 4.266 → 4.264; nothing else changed.
+
+**Unseen-track test first.** Before any Barcelona training, v4 + compound head raced there (`catalunya_unseen_v4_mc100`, the same seeds as every evaluation): **+0.77 ± 0.04 places and +12.3 s behind TUM's VSE**, +0.88 places behind the real strategies, worse than TUM for 19 of 20 drivers. It stopped twice in 7 % of races (real: 78 %). The compound head made it worse there (+0.16 places against v4 alone). This is the leave-one-track-out finding again, now on a real fifth race.
+
+**Runs**: `two_stop_generator.py --track Catalunya --runs 50` (967 plans per driver: 64 one-stop, 903 two-stop; 48,350 races per driver), 20 drivers in 2 h 55 min, none re-run; then `compound_runs.py --tracks Catalunya` (9 min). The second stop goes onto each driver's real last compound (most of the field stopped twice).
+
+**Training**, as v4: `train_two_stop_network.py` on all five tracks, starting from v1, stored compound, 4 iterations (297,000 first-stint and 3.88 million second-stint rows, 3 minutes on the GPU). Iteration 4 is best; a 6-iteration run gives identical iterations 1–4 and worse 5–6 (−0.118 and −0.072 vs the fixed one-stop), so 4 stays. Saved as `integration/models/pit_network_v6_five_tracks.npz` ([report](evidence/pit_network/pit_network_v6_five_tracks.json)). Then the compound head on v6 (`train_compound_head.py --timing pit_network_v6_five_tracks.npz`, `integration/models/pit_compound_head_v2.npz`, [report](evidence/pit_network/pit_compound_head_v2.json); its log calls the timing network "v4").
+
+| Held-out runs (40–49), places | All five tracks |
+|---|---:|
+| Best fixed plan minus best fixed one-stop | −0.149 ± 0.022 |
+| v6 minus best fixed one-stop | −0.123 ± 0.034 |
+| v6 minus best fixed plan | +0.026 ± 0.031 |
+| v6 + head minus v6 | −0.016 ± 0.010 (Barcelona +0.038, Spielberg −0.087) |
+
+**In the simulator** (policies `network_two` and `network_head`, 100 new races per driver-race, the same seeds as every other policy; races of real, TUM and v4 + head reused from rounds 6 and the unseen test; [summary](evidence/pit_network/all_five_tracks_mc100_summary.csv), [by driver](evidence/pit_network/all_five_tracks_mc100_by_driver.csv)):
+
+| v6 + head minus | Places | Race time | Green races | SC/VSC races |
+|---|---:|---:|---:|---:|
+| Real 2019 strategy | **−0.62 ± 0.02** | **−5.1 s** | −0.63 | −0.61 |
+| **TUM's VSE** | **−0.18 ± 0.02** | **−1.2 s** | −0.40 | +0.00 ± 0.02 |
+| v4 + head (round 6; unseen at Barcelona) | −0.17 ± 0.01 | −1.6 s | −0.17 | −0.18 |
+| v6 alone | −0.04 ± 0.003 | −0.4 s | −0.04 | −0.04 |
+
+| By track | − TUM places | − TUM time | − TUM, SC/VSC | − v4 + head | Drivers better / worse than TUM (2 SE) | Two-stop share: v6+head / TUM / real |
+|---|---:|---:|---:|---:|---|---|
+| **Barcelona** | **−0.23 ± 0.03** | −0.2 ± 0.3 s | −0.30 | **−1.00 ± 0.04** (−12.5 s) | 6 / 5 | 70 / 19 / 78 % |
+| Austin | −0.11 | −1.5 s | +0.08 | −0.01 | 4 / 7 | 92 / 64 / 60 % |
+| Monza | +0.11 | +0.9 s | +0.31 | +0.02 | 0 / 3 | 1 / 0 / 37 % |
+| Singapore | −0.82 | −6.9 s | −0.44 | **+0.12 ± 0.03** | 14 / 0 | 3 / 18 / 36 % |
+| Spielberg | +0.16 | +1.6 s | +0.36 | +0.02 | 0 / 5 | 4 / 0 / 9 % |
+
+What this shows:
+
+- **Barcelona goes from the worst track to a win.** Trained on it, the network stops twice in 70 % of races (real 78 %) and is 1.00 places and 12.5 s better than the network that had never seen it, better for 15 of 20 drivers. It now beats TUM's VSE there by 0.23 places, in safety-car races too (−0.30); on race time the two are level (−0.2 ± 0.3 s). TUM stops twice in only 19 % of Barcelona races.
+- **The other four tracks barely move.** Austin, Monza and Spielberg are within ±0.02 places of v4 + head. Singapore loses 0.12 places (TUM lead −0.94 → −0.82; 3 drivers worse, none better). On the old four tracks v6 + head is −0.16 ± 0.02 against TUM, v4 + head −0.20: one network for five tracks costs 0.04 places there.
+- **Over five tracks it beats TUM's VSE by 0.18 places and 1.2 s** and the real strategies by 0.62 places. The safety-car split is unchanged in kind: clearly ahead in green races (−0.40), level with a safety car, where TUM still leads at Monza (+0.31) and Spielberg (+0.36).
+- **The compound head again adds a little** (−0.04 places, at Spielberg and Monza) and costs nothing at Barcelona in the simulator (−0.006), although it was slightly worse there on the held-out runs.
+- **A new track still needs its own runs.** Five tracks are not yet evidence that the network transfers; that needs a leave-one-out test on five (or more) tracks.
+
 ## Next
 
-1. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
-2. More tracks before claiming anything about new tracks.
+1. Leave-one-track-out on five tracks: does a fifth track make the unseen-track result less bad?
+2. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
+3. More tracks (2022–2025 seasons) before claiming anything about new tracks.
 
 ## Reproduce
 
@@ -343,4 +388,14 @@ What this shows:
 .venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_tracks_head_mc100 --base network_head
 # round 7 (safety-car headroom)
 .venv-train/Scripts/python.exe data_pipeline/safety_car_headroom.py
+# round 8 (Barcelona); all_five_tracks_mc100/runs.csv = real, tum, network_head (renamed v4_head) of
+# all_tracks_head_mc100 and catalunya_unseen_v4_mc100, plus pit_network_v6_mc100 (network_two -> v6, network_head -> v6_head)
+.venv-tum/Scripts/python.exe integration/write_fitted_pars.py --fit notes/evidence/fitted_parameters/Catalunya_2019_fit.json
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_two_stop.npz --tracks Catalunya --policies real tum network_two network_head --out integration/output/evaluation/catalunya_unseen_v4_mc100
+.venv-tum/Scripts/python.exe integration/two_stop_generator.py --track Catalunya --runs 50 --jobs 28
+.venv-tum/Scripts/python.exe integration/compound_runs.py --tracks Catalunya --runs 50 --jobs 28
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin Monza Singapore Spielberg Catalunya --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v6_five_tracks --iterations 4
+.venv-train/Scripts/python.exe data_pipeline/train_compound_head.py --tracks Austin Monza Singapore Spielberg Catalunya --timing integration/models/pit_network_v6_five_tracks.npz --name pit_compound_head_v2
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_five_tracks.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_two network_head --compound-head integration/models/pit_compound_head_v2.npz --out integration/output/evaluation/pit_network_v6_mc100
+.venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_five_tracks_mc100 --base v6_head
 ```
