@@ -95,13 +95,14 @@ class SimulatorTests(unittest.TestCase):
         cls.source, cls.pars, cls.paths, _, _ = load(args)
         cls.tot = cls.pars["race_pars"]["tot_no_laps"]
 
-    def race(self, network, seed=3, compound_choice=None):
+    def race(self, network, seed=3, compound_choice=None, second_compound=None):
         from racesim.src.race import Race
         random.seed(seed)
         np.random.seed(seed)
         race = Race(**self.pars, vse_paths=self.paths, use_prob_infl=True, create_rand_events=True)
         race.vse = NetworkVSE(race.vse, race, "VER", network, None if compound_choice else "A3",
-                              self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice)
+                              self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice,
+                              second_compound=second_compound)
         race.simulate_race()
         self.assertEqual(race.result_status, 0)
         return race, race.vse
@@ -128,6 +129,20 @@ class SimulatorTests(unittest.TestCase):
             recorded = feature_vector(vse.situation(lap))
             for name, a, b in zip(FEATURES, x, recorded):
                 self.assertTrue(math.isclose(a, b, abs_tol=1e-9), "lap %d %s: live %s, after %s" % (lap, name, a, b))
+
+    def test_second_stop_after_min_stint(self):
+        network = StubNetwork(self.tot, pit_from=30)
+        race, vse = self.race(network, second_compound="A6")
+        self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])
+        # the second-stint situation seen live equals the one recorded after the race
+        live = dict(zip(FEATURES, network.inputs[-1]))
+        recorded = dict(zip(FEATURES, feature_vector(vse.situation(40, "A6"))))
+        self.assertEqual(live, recorded)
+        self.assertEqual((live["StopsMade"], live["TyreAge"], live["RelSoft"]), (1.0, 10.0, 0.0))
+
+    def test_no_second_stop_without_second_compound(self):
+        race, _ = self.race(StubNetwork(self.tot, pit_from=30))
+        self.assertEqual(self.stops(race), [(30, "A3")])
 
     def compound_choice(self):
         from integration.tum_compound_choice import TumCompoundChoice

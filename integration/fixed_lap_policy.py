@@ -23,6 +23,35 @@ class FixedLapPolicy:
         return None
 
 
+@dataclass(frozen=True)
+class PlannedStopsPolicy:
+    """Stops on given laps onto given compounds, in order: ((lap, compound), ...). Two-stop label runs."""
+    stops: tuple
+
+    def __post_init__(self):
+        laps = [lap for lap, _ in self.stops]
+        if not self.stops or laps != sorted(set(laps)):
+            raise ValueError("Stops need increasing laps")
+        for lap, compound in self.stops:
+            FixedLapPolicy(lap, compound)          # same checks as a single stop
+
+    @property
+    def compound(self) -> str:
+        return self.stops[0][1]
+
+    @property
+    def compounds(self) -> list:
+        return [compound for _, compound in self.stops]
+
+    def decide(self, cur_lap: int, tot_no_laps: int,
+               is_driving: bool, no_past_tirechanges: int) -> Optional[str]:
+        if self.stops[-1][0] >= tot_no_laps:
+            raise ValueError("Every stop needs an in-lap and an out-lap before the race ends")
+        if is_driving and no_past_tirechanges < len(self.stops) and cur_lap == self.stops[no_past_tirechanges][0]:
+            return self.stops[no_past_tirechanges][1]
+        return None
+
+
 class FixedLapVSE:
     """Replace one driver's decisions; delegate other drivers to TUM's realstrategy.
 
@@ -33,7 +62,7 @@ class FixedLapVSE:
     def __init__(self, original_vse, driver: str, policy: FixedLapPolicy):
         if original_vse is None:
             raise ValueError("Enable the original VSE before attaching this adapter")
-        if policy.compound not in original_vse.param_dry_compounds:
+        if any(c not in original_vse.param_dry_compounds for c in getattr(policy, "compounds", [policy.compound])):
             raise ValueError("The fixed compound is not parameterized for this race")
         if any(kind != "realstrategy" for kind in original_vse.vse_pars["vse_type"].values()):
             raise ValueError("This experiment requires realstrategy for all background drivers")

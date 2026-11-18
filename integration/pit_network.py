@@ -16,7 +16,7 @@ import numpy as np
 GAP_CAP_S = 30.0          # gaps above this (or missing: leader / last car) count as free air
 POSITION_TIE = 0.1        # predicted position advantages within +-0.1 places count as a tie, decided by time
 
-# Order of the network's inputs. Changing it needs a retrained network.
+# Order of the network's inputs. A saved network stores its own list (v1 and v2: without StopsMade).
 FEATURES = [
     "RaceProgress", "LapsRemaining", "TyreAge", "TyreAgeProgress",
     "RelHard", "RelMedium", "RelSoft",
@@ -24,6 +24,7 @@ FEATURES = [
     "CloseAheadPrevLap", "PursuerPittedPrevLap", "FlagSC", "FlagVSC",
     "LocationCat", "PitLoss_s",
     "TyreDelta_s", "WearRate_s", "StopWearRate_s", "StayCost_s",
+    "StopsMade",
 ]
 TARGETS = ["AdvantagePosition", "AdvantageTime_s"]
 
@@ -74,8 +75,10 @@ def _gap(value):
     return min(float(value), GAP_CAP_S), 0.0
 
 
-def feature_vector(situation: dict) -> list:
-    """Network inputs from one situation (integration/situations.py fields plus tyre_features)."""
+def feature_vector(situation: dict, features: list = FEATURES) -> list:
+    """Network inputs from one situation (integration/situations.py fields plus tyre_features).
+
+    StopsMade is 0 when a situation has none (rows recorded before two-stop decisions existed)."""
     ahead, no_ahead = _gap(situation["GapAhead_s"])
     behind, no_behind = _gap(situation["GapBehind_s"])
     rel = int(situation["RelCompound"])
@@ -93,7 +96,9 @@ def feature_vector(situation: dict) -> list:
     }
     for name in ("TyreDelta_s", "WearRate_s", "StopWearRate_s", "StayCost_s"):
         values[name] = situation[name]
-    return [float(values[name]) for name in FEATURES]
+    stops = situation.get("StopsMade", 0)
+    values["StopsMade"] = 0.0 if stops is None or (isinstance(stops, float) and math.isnan(stops)) else float(stops)
+    return [float(values[name]) for name in features]
 
 
 class PitNetwork:
@@ -101,15 +106,21 @@ class PitNetwork:
 
     def __init__(self, path):
         data = np.load(str(path), allow_pickle=False)
-        if [str(x) for x in data["features"]] != FEATURES:
-            raise ValueError("Network was trained on other features: retrain it")
+        self.features = [str(x) for x in data["features"]]
+        if any(name not in FEATURES for name in self.features):
+            raise ValueError("Network was trained on unknown features: retrain it")
+        self.columns = [FEATURES.index(name) for name in self.features]
         self.mean, self.std = data["x_mean"], data["x_std"]
         self.y_scale = data["y_scale"]
         n = int(data["n_layers"])
         self.layers = [(data["w%d" % i], data["b%d" % i]) for i in range(n)]
 
     def predict(self, x) -> np.ndarray:
-        h = (np.atleast_2d(np.asarray(x, dtype=np.float64)) - self.mean) / self.std
+        """x: rows in the network's own feature order, or in the full FEATURES order (columns are picked)."""
+        x = np.atleast_2d(np.asarray(x, dtype=np.float64))
+        if x.shape[1] == len(FEATURES) and len(self.features) != len(FEATURES):
+            x = x[:, self.columns]
+        h = (x - self.mean) / self.std
         for i, (w, b) in enumerate(self.layers):
             h = h @ w.T + b
             if i < len(self.layers) - 1:
@@ -137,10 +148,15 @@ class NetworkVSE:
     The compound is `stop_compound` (a fixed compound, as in the training rows), or, with `compound_choice`
     (integration/tum_compound_choice.py), what TUM's compound-choice network would mount if the driver pitted
     on this lap. The tyre features then describe that compound, so the network weighs the stop it would make.
+
+    With `second_compound` the network may also make an optional second stop onto it, on laps at least
+    `min_stint` after the first stop and at least `min_stint` before the end, as in the two-stop runs
+    (integration/two_stop_generator.py). The first stop is then no longer forced to be the only one.
     """
 
     def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: Optional[str],
-                 location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None):
+                 location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None,
+                 second_compound: Optional[str] = None, min_stint: int = 10):
         if (stop_compound is None) == (compound_choice is None):
             raise ValueError("Give either a fixed stop compound or a compound choice")
         if original_vse is None:
@@ -157,6 +173,8 @@ class NetworkVSE:
         self.location_cat = location_cat
         self.pit_loss_s = pit_loss_s
         self.first_lap = first_lap
+        self.second_compound = second_compound
+        self.min_stint = min_stint
         self.dry_compounds = original_vse.param_dry_compounds
         self.decisions = []
 
@@ -187,12 +205,22 @@ class NetworkVSE:
             return self.compound_for(lap)
         if lap < self.first_lap:
             return None
-        compound = self.compound_for(lap)
+        return self.ask(lap, self.compound_for(lap))
+
+    def decide_second(self, lap: int, tot_no_laps: int) -> Optional[str]:
+        first = self.race.drivers_list[self.idx].strategy_info[1][0]
+        if self.second_compound is None or not first + self.min_stint <= lap <= tot_no_laps - self.min_stint:
+            return None
+        return self.ask(lap, self.second_compound)
+
+    def ask(self, lap: int, compound: str) -> Optional[str]:
         situation = self.situation(lap, compound)
-        prediction = self.network.predict(feature_vector(situation))[0]
+        features = getattr(self.network, "features", FEATURES)
+        prediction = self.network.predict(feature_vector(situation, features))[0]
         pit = pit_now(float(prediction[0]), float(prediction[1]))
         self.decisions.append({"Lap": lap, "PredPosition": round(float(prediction[0]), 3),
-                               "PredTime_s": round(float(prediction[1]), 3), "Pit": pit, "Compound": compound})
+                               "PredTime_s": round(float(prediction[1]), 3), "Pit": pit, "Compound": compound,
+                               "StopsMade": situation["StopsMade"]})
         return compound if pit else None
 
     def decide_pitstop(self, **state):
@@ -201,5 +229,7 @@ class NetworkVSE:
         decision = None
         if bool(state["bool_driving"][idx]) and state["no_past_tirechanges"][idx] == 0:
             decision = self.decide(state["cur_lap"], state["tot_no_laps"])
+        elif bool(state["bool_driving"][idx]) and state["no_past_tirechanges"][idx] == 1:
+            decision = self.decide_second(state["cur_lap"], state["tot_no_laps"])
         decisions[idx] = decision
         return decisions

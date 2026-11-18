@@ -1,0 +1,31 @@
+Comparison,Track,Races,PosDiff,PosDiff_SE,PosDiff_N,TimeDiff_s,TimeDiff_s_SE,TimeDiff_s_N,Better,Worse,MeanStopDiff_laps
+network_two - real,all,all,-0.4858,0.0309,1793,-7.0594,0.2633,1659,0.2855,0.0645,-0.4297
+network_two - real,all,SC or VSC,-0.5723,0.0509,982,-6.7531,0.4134,883,0.2921,0.0851,-0.3221
+network_two - real,all,green only,-0.381,0.029,811,-7.4079,0.309,776,0.2767,0.0372,-0.566
+network_two - real,Austin,all,-0.4858,0.0309,1793,-7.0594,0.2633,1659,0.2855,0.0645,-0.4297
+network_two - real,Austin,SC or VSC,-0.5723,0.0509,982,-6.7531,0.4134,883,0.2921,0.0851,-0.3221
+network_two - real,Austin,green only,-0.381,0.029,811,-7.4079,0.309,776,0.2767,0.0372,-0.566
+network_two - tum,all,all,-0.106,0.0292,1793,-2.1096,0.2963,1667,0.185,0.14,-4.3951
+network_two - tum,all,SC or VSC,0.0886,0.0451,982,0.5198,0.4643,897,0.1518,0.1991,-3.7262
+network_two - tum,all,green only,-0.3416,0.0327,811,-5.1727,0.3104,770,0.2291,0.0616,-5.2434
+network_two - tum,Austin,all,-0.106,0.0292,1793,-2.1096,0.2963,1667,0.185,0.14,-4.3951
+network_two - tum,Austin,SC or VSC,0.0886,0.0451,982,0.5198,0.4643,897,0.1518,0.1991,-3.7262
+network_two - tum,Austin,green only,-0.3416,0.0327,811,-5.1727,0.3104,770,0.2291,0.0616,-5.2434
+network_two - fixed,all,all,-0.575,0.0301,1793,-8.3963,0.2541,1633,0.34,0.056,-7.1931
+network_two - fixed,all,SC or VSC,-0.6772,0.0495,982,-7.844,0.4384,879,0.3491,0.0789,-7.1167
+network_two - fixed,all,green only,-0.4513,0.028,811,-9.0403,0.202,754,0.3279,0.0256,-7.2895
+network_two - fixed,Austin,all,-0.575,0.0301,1793,-8.3963,0.2541,1633,0.34,0.056,-7.1931
+network_two - fixed,Austin,SC or VSC,-0.6772,0.0495,982,-7.844,0.4384,879,0.3491,0.0789,-7.1167
+network_two - fixed,Austin,green only,-0.4513,0.028,811,-9.0403,0.202,754,0.3279,0.0256,-7.2895
+network_two - network,all,all,-0.5756,0.0294,1793,-8.2697,0.2675,1639,0.3425,0.0505,-5.7253
+network_two - network,all,SC or VSC,-0.6853,0.0484,982,-7.7185,0.4662,877,0.3535,0.0693,-5.6871
+network_two - network,all,green only,-0.4427,0.0272,811,-8.9041,0.206,762,0.3279,0.0256,-5.7737
+network_two - network,Austin,all,-0.5756,0.0294,1793,-8.2697,0.2675,1639,0.3425,0.0505,-5.7253
+network_two - network,Austin,SC or VSC,-0.6853,0.0484,982,-7.7185,0.4662,877,0.3535,0.0693,-5.6871
+network_two - network,Austin,green only,-0.4427,0.0272,811,-8.9041,0.206,762,0.3279,0.0256,-5.7737
+network_two - network_tum,all,all,-0.5404,0.0293,1793,-7.435,0.2537,1639,0.32,0.052,-5.4641
+network_two - network_tum,all,SC or VSC,-0.6568,0.0485,982,-6.9927,0.4454,877,0.3351,0.0711,-5.413
+network_two - network_tum,all,green only,-0.3995,0.0264,811,-7.944,0.1856,762,0.3,0.0267,-5.5287
+network_two - network_tum,Austin,all,-0.5404,0.0293,1793,-7.435,0.2537,1639,0.32,0.052,-5.4641
+network_two - network_tum,Austin,SC or VSC,-0.6568,0.0485,982,-6.9927,0.4454,877,0.3351,0.0711,-5.413
+network_two - network_tum,Austin,green only,-0.3995,0.0264,811,-7.944,0.1856,762,0.3,0.0267,-5.5287

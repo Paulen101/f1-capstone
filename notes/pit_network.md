@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -126,10 +126,44 @@ The first label compares pitting now with pitting on one fixed later lap. Stayin
 
 **Why waiting cannot pay here.** Even a hand-made "wait for a safety car" rule gains at most 0.04 places on the stored runs: with one stop onto one fixed compound per driver, an early or late stop has nothing to gain from a cheap pit stop. Yet TUM's VSE gains up to half a place in safety-car races. `integration/check_tum_as_fixed.py` re-simulates TUM's races as fixed stops on TUM's lap and compound with the same seed: **30 of 30 Spielberg races are identical** (Austin: 18 of 20; the other two are retirements with the same position). TUM's advantage is therefore entirely *which lap and which compound* it picks in each race, for example a late stop onto softs (Spielberg: lap 41 on A6 in 29 % of races). Our stored runs hold one compound per driver, so no label built from them can learn that combination, however it values waiting.
 
+## Round 3: two-stop decisions (Austin)
+
+At Austin TUM's VSE makes two stops in 64 % of races and beat the one-stop network by 0.43 places. The network can now make an optional second stop.
+
+**Runs** (`integration/two_stop_generator.py --track Austin --runs 50`): for every driver and Monte Carlo run (seeds 0–49, the same as the one-stop runs), every one-stop lap and every two-stop plan with stints of at least 10 laps: first stop from lap 5, second stop at least 10 laps later and at least 10 laps before the end. 582 plans × 50 runs = 29,100 races per driver, about 5 minutes; 20 drivers in 97 minutes, none re-run. The first stop goes onto the one-stop compound, the second onto the driver's real last compound if they really stopped twice, otherwise the last compound most two-stoppers used (the soft at Austin). Situations are recorded in both stints where the history is shared. The one-stop races and first-stint situations are identical to those of the earlier one-stop batch with the same seeds (checked on a 3-run pilot: 162 races and 157 situations).
+
+**Situation features** (`integration/situations.py`) now describe the current stint: compound and tyre age since the last stop, and a new input `StopsMade` (0 on the first set, 1 after a stop). On the first set the network decides the first stop; after it, whether and when to stop again.
+
+**Labels and training** (`data_pipeline/two_stop_labels.py`, `train_two_stop_network.py`): the exact replay of round 2 over two levels. In the second stint, stopping now is compared with following the network from the next lap, which may mean never stopping again; in the first stint a stop now is worth what following the network's second-stint decisions after it is worth. Started from v1 (no second stop), four iterations of policy iteration, 30 s on the GPU; runs 0–39 for training, 40–49 held out. Saved as `integration/models/pit_network_v3_two_stop.npz` ([report](evidence/pit_network/pit_network_v3_two_stop.json)).
+
+| Held-out runs, places vs best fixed one-stop lap | Places | Two-stop share |
+|---|---:|---:|
+| Hindsight upper bound | −1.20 | |
+| Best fixed one- or two-stop plan (chosen on training runs) | −0.61 ± 0.08 | 94 % |
+| Start: v1, one stop | −0.07 ± 0.04 | 0 % |
+| **Network v3** (iteration 4) | **−0.56 ± 0.07** | 94 % |
+
+**In the simulator** (100 new races per Austin driver, the same seeds as the other policies, [evidence](evidence/pit_network/austin_two_stop_mc100_summary.csv)):
+
+| Austin | Mean position | First stop | Second stop | Stops |
+|---|---:|---:|---:|---:|
+| Real 2019 strategy | 9.52 | 17.9 | | 1.60 |
+| TUM's supervised VSE | 9.14 | 21.9 | 39.7 | 1.60 |
+| Network v1, one stop, TUM's compound | 9.58 | 23.0 | | 0.95 |
+| **Network v3, two stops allowed** | **9.04** | 17.5 | 38.8 | 1.88 |
+
+| Network v3 minus | Places | Race time | Green races | SC/VSC races |
+|---|---:|---:|---:|---:|
+| Real 2019 strategy | **−0.49 ± 0.03** | **−7.1 ± 0.3 s** | −0.38 | −0.57 |
+| **TUM's VSE** | **−0.11 ± 0.03** | **−2.1 ± 0.3 s** | −0.34 | +0.09 |
+| Network v1 (one stop, TUM's compound) | −0.54 ± 0.03 | −7.4 ± 0.3 s | −0.40 | −0.66 |
+
+It stops twice in 92 % of races (4 % are retirements before the first stop). Per driver (2 standard errors) it is better than the one-stop network for 15 of 20 drivers and worse for none, and better than TUM's VSE for 4 and worse for 6. **At Austin the network now beats TUM's VSE overall**, clearly in green races; with a safety car TUM's VSE is still slightly better (+0.09 ± 0.05), as in round 2.
+
 ## Next
 
-1. **Store every legal stop compound** in the Monte Carlo runs (each candidate lap × the two compounds other than the start one), then let the network choose lap and compound together, with the replay labels above. This is about two to three times the simulation of the first batch (4 hours at 200 runs on this laptop; 100 runs would halve it).
-2. Two-stop decisions: situations in the second stint, needed for Austin and Barcelona.
+1. Two-stop runs for the other tracks (Singapore: TUM two-stops in 18 % of races; Barcelona once its labels exist), then one network for all tracks with the second stop allowed everywhere.
+2. Store every legal stop compound in the runs and choose lap and compound together (round 2: TUM's remaining safety-car edge).
 3. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
 4. More tracks before claiming anything about new tracks.
 
@@ -145,4 +179,8 @@ The first label compares pitting now with pitting on one fixed later lap. Stayin
 .venv-train/Scripts/python.exe data_pipeline/stopping_headroom.py
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v2.npz --policies network network_tum --out integration/output/evaluation/pit_network_v2_mc100
 .venv-tum/Scripts/python.exe integration/check_tum_as_fixed.py --track Spielberg --races 30
+# round 3 (two stops, Austin)
+.venv-tum/Scripts/python.exe integration/two_stop_generator.py --track Austin --runs 50 --jobs 28
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --track Austin --iterations 4
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v3_two_stop.npz --tracks Austin --policies network_two --out integration/output/evaluation/pit_network_v3_austin_mc100
 ```

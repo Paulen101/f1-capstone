@@ -9,6 +9,8 @@ real strategy, as in the training data:
     network   integration/pit_network.py decides each lap; one stop onto the driver's training stop compound
     network_tum  the same network for the timing, the compound from TUM's compound-choice network
               (integration/tum_compound_choice.py), as the project scope plans
+    network_two  the network may also make a second stop (window and compound as in
+              integration/two_stop_generator.py); needs a network trained with StopsMade
     real      the driver's real 2019 strategy (pit laps and compounds)
     tum       TUM's supervised VSE (nn_supervised_tirechange + compoundchoice) for this driver
     fixed     one stop on the Monte Carlo label lap (best mean position over the training runs), same compound
@@ -34,7 +36,7 @@ from integration.label_generator import (MAX_ATTEMPTS, complete_background_strat
 from integration.run_situations import stop_compounds  # noqa: E402
 from integration.write_fitted_pars import parse_pars  # noqa: E402
 
-POLICIES = ["network", "network_tum", "real", "tum", "fixed"]
+POLICIES = ["network", "network_tum", "network_two", "real", "tum", "fixed"]
 YEAR = 2019
 SITUATIONS = ROOT / "integration/output/situations"
 
@@ -78,7 +80,10 @@ def simulate(task):
     pit_loss = round(track_pars["t_pitdrive_inlap"] + track_pars["t_pitdrive_outlap"]
                      + track_pars["t_pit_tirechange_min"] + pars["car_pars"][team]["t_pit_tirechange_add"], 3)
     network = PitNetwork(settings["model"]) if policy.startswith("network") else None
-    choice = None
+    choice, second = None, None
+    if policy == "network_two":
+        from integration.two_stop_generator import second_stop_compounds
+        second = second_stop_compounds(parse_pars(source.read_bytes().decode("utf-8")))[driver]
     if policy == "network_tum":
         from integration.tum_compound_choice import TumCompoundChoice
         choice = TumCompoundChoice(paths, track_pars["name"], pars["vse_pars"]["available_compounds"],
@@ -95,7 +100,8 @@ def simulate(task):
             # CAPSTONE HOOK: public property injection; upstream source stays unchanged.
             if policy.startswith("network"):
                 race.vse = NetworkVSE(race.vse, race, driver, network, None if choice else stop,
-                                      pars["vse_pars"]["location_cat"], pit_loss, compound_choice=choice)
+                                      pars["vse_pars"]["location_cat"], pit_loss, compound_choice=choice,
+                                      second_compound=second, min_stint=settings["min_stint"])
             elif policy == "fixed":
                 race.vse = FixedLapVSE(race.vse, driver, FixedLapPolicy(fixed_lap, stop))
             race.simulate_race()
@@ -131,13 +137,14 @@ def main():
     parser.add_argument("--seed", type=int, default=500000)
     parser.add_argument("--jobs", type=int, default=28)
     parser.add_argument("--chunk", type=int, default=25, help="runs per worker task")
+    parser.add_argument("--min-stint", type=int, default=10, help="network_two: laps between stops and after the last")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     if sys.version_info[:2] != (3, 8):
         parser.error("Run this script with the .venv-tum Python (3.8)")
     out = args.out or ROOT / "integration/output/evaluation" / ("%s_mc%d" % (args.model.stem, args.runs))
     out.mkdir(parents=True, exist_ok=True)
-    settings = {"model": str(args.model.resolve()), "seed": args.seed}
+    settings = {"model": str(args.model.resolve()), "seed": args.seed, "min_stint": args.min_stint}
     tasks = []
     for track in args.tracks:
         drivers = sorted(stop_compounds(parse_pars(race_file(track).read_bytes().decode("utf-8"))))

@@ -37,6 +37,7 @@ Austin (in between).
 | Pit-timing network trained on the situations (`notes/pit_network.md`) | Done: v1, one stop, four 2019 races |
 | Evaluation against the original VSE and real strategies | First round done, with TUM's compound choice: beats real strategies by 0.58 places, ties TUM's VSE (better in green races, worse with safety cars) |
 | Labels that value waiting (policy iteration on exact replays) | Done: no gain; TUM's edge is choosing lap and compound together, which needs runs with every compound |
+| Two-stop decisions (`notes/pit_network.md`, round 3) | Done for Austin: beats TUM's VSE by 0.11 places and the real strategies by 0.49 |
 
 ## Layout
 
@@ -146,7 +147,7 @@ integration/run_mc_labels.sh 500 28
 .venv-tum/bin/python integration/demo_vse.py
 
 .venv-tum/bin/python -m unittest integration.test_policy integration.test_label_generator integration.test_write_fitted_pars integration.test_heldout_traffic integration.test_pit_network -v
-.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic data_pipeline.test_heldout_tyres data_pipeline.test_build_situations data_pipeline.test_summarise_evaluation data_pipeline.test_stopping_labels -v
+.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic data_pipeline.test_heldout_tyres data_pipeline.test_build_situations data_pipeline.test_summarise_evaluation data_pipeline.test_stopping_labels data_pipeline.test_two_stop_labels -v
 ```
 
 Any change to TUM's files is logged in `notes/tum_changes.md`.
