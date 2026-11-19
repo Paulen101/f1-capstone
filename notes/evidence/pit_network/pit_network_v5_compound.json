@@ -1,0 +1,297 @@
+{
+ "Name": "pit_network_v5_compound",
+ "Tracks": [
+  "Austin",
+  "Monza",
+  "Singapore",
+  "Spielberg"
+ ],
+ "DriverRaces": 80,
+ "HeldOutFirstRun": 40,
+ "Settings": {
+  "tracks": [
+   "Austin",
+   "Monza",
+   "Singapore",
+   "Spielberg"
+  ],
+  "runs": 50,
+  "start": "E:\\Seminar\\f1-capstone\\integration\\models\\pit_network_v4_two_stop.npz",
+  "name": "pit_network_v5_compound",
+  "compounds": "all",
+  "iterations": 4,
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16,
+  "device": "auto"
+ },
+ "References": [
+  {
+   "Policy": "fixed one-stop, any compound",
+   "MeanStopLap": 27.14375,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.3725,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.06657608695652174,
+    "PosDiff_SE": 0.011987633790994762,
+    "TimeDiff_s": -0.7332904109589087,
+    "TimeDiff_s_SE": 0.07507906267906368,
+    "Runs": 800
+   }
+  },
+  {
+   "Policy": "fixed best plan",
+   "MeanStopLap": 25.3825,
+   "TwoStopShare": 0.23625,
+   "OtherCompoundShare": 0.3475,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.20380434782608695,
+    "PosDiff_SE": 0.02328998439116821,
+    "TimeDiff_s": -2.1012832861189756,
+    "TimeDiff_s_SE": 0.24961058465199482,
+    "Runs": 800
+   }
+  },
+  {
+   "Policy": "start (pit_network_v4_two_stop)",
+   "MeanStopLap": 23.845,
+   "TwoStopShare": 0.28125,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.15489130434782608,
+    "PosDiff_SE": 0.03235615881415461,
+    "TimeDiff_s": -1.9135648414985487,
+    "TimeDiff_s_SE": 0.3132112571807285,
+    "Runs": 800
+   }
+  },
+  {
+   "Policy": "start (pit_network_v4_two_stop), choosing compound",
+   "MeanStopLap": 23.18125,
+   "TwoStopShare": 0.16875,
+   "OtherCompoundShare": 0.43125,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.08152173913043478,
+    "PosDiff_SE": 0.04263028067550196,
+    "TimeDiff_s": 1.446147445255485,
+    "TimeDiff_s_SE": 0.46669174339011443,
+    "Runs": 800
+   }
+  }
+ ],
+ "Iterations": [
+  {
+   "Policy": "iteration 1",
+   "MeanStopLap": 24.46875,
+   "TwoStopShare": 0.13125,
+   "OtherCompoundShare": 0.36,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.058423913043478264,
+    "PosDiff_SE": 0.03613846884287535,
+    "TimeDiff_s": -0.9883262411347536,
+    "TimeDiff_s_SE": 0.31708095352248394,
+    "Runs": 800
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": 0.008152173913043478,
+    "PosDiff_SE": 0.03602225105784279,
+    "TimeDiff_s": -0.25738975817922755,
+    "TimeDiff_s_SE": 0.3126509519865806,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.1453804347826087,
+    "PosDiff_SE": 0.03600924506745522,
+    "TimeDiff_s": 1.164708154506433,
+    "TimeDiff_s_SE": 0.24962187258945642,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop), choosing compound": {
+    "PosDiff": -0.13994565217391305,
+    "PosDiff_SE": 0.04309341354731974,
+    "TimeDiff_s": -2.4236637681159556,
+    "TimeDiff_s_SE": 0.3946955920859177,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop)": {
+    "PosDiff": 0.09646739130434782,
+    "PosDiff_SE": 0.0343462310771786,
+    "TimeDiff_s": 0.9299345661450777,
+    "TimeDiff_s_SE": 0.22497673765504522,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.9375,
+    "PosDiff_SE": 0.04708143074472278,
+    "TimeDiff_s": 6.145306990881445,
+    "TimeDiff_s_SE": 0.3859422533222979,
+    "Runs": 800
+   },
+   "Iteration": 1,
+   "TrainRows": 2288144,
+   "Epochs": 14
+  },
+  {
+   "Policy": "iteration 2",
+   "MeanStopLap": 24.49125,
+   "TwoStopShare": 0.23125,
+   "OtherCompoundShare": 0.35125,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.16983695652173914,
+    "PosDiff_SE": 0.03662832368190017,
+    "TimeDiff_s": -1.5721273247496519,
+    "TimeDiff_s_SE": 0.33621598181243906,
+    "Runs": 800
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.10326086956521739,
+    "PosDiff_SE": 0.03658746691118133,
+    "TimeDiff_s": -0.8556728837876647,
+    "TimeDiff_s_SE": 0.33969568976356695,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.033967391304347824,
+    "PosDiff_SE": 0.0343462310771786,
+    "TimeDiff_s": 0.5743192686357081,
+    "TimeDiff_s_SE": 0.25548659242230637,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop), choosing compound": {
+    "PosDiff": -0.2513586956521739,
+    "PosDiff_SE": 0.04291961116119058,
+    "TimeDiff_s": -2.9157728571428794,
+    "TimeDiff_s_SE": 0.43029461144218806,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop)": {
+    "PosDiff": -0.014945652173913044,
+    "PosDiff_SE": 0.03282392094165987,
+    "TimeDiff_s": 0.3445495118549289,
+    "TimeDiff_s_SE": 0.24465838507443216,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.8260869565217391,
+    "PosDiff_SE": 0.043032318200468996,
+    "TimeDiff_s": 5.540939577039252,
+    "TimeDiff_s_SE": 0.40779513193836,
+    "Runs": 800
+   },
+   "Iteration": 2,
+   "TrainRows": 2288144,
+   "Epochs": 17
+  },
+  {
+   "Policy": "iteration 3",
+   "MeanStopLap": 24.9325,
+   "TwoStopShare": 0.20875,
+   "OtherCompoundShare": 0.35375,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.18885869565217392,
+    "PosDiff_SE": 0.03552612549199932,
+    "TimeDiff_s": -2.2591807909604316,
+    "TimeDiff_s_SE": 0.29515859725452803,
+    "Runs": 800
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.12228260869565218,
+    "PosDiff_SE": 0.03532381172569722,
+    "TimeDiff_s": -1.5371253521126509,
+    "TimeDiff_s_SE": 0.2996334707502244,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.014945652173913044,
+    "PosDiff_SE": 0.03409463006970129,
+    "TimeDiff_s": -0.19039577464787394,
+    "TimeDiff_s_SE": 0.22433306114398358,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop), choosing compound": {
+    "PosDiff": -0.2703804347826087,
+    "PosDiff_SE": 0.04140023423755379,
+    "TimeDiff_s": -3.7019466089466047,
+    "TimeDiff_s_SE": 0.42247709560447033,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop)": {
+    "PosDiff": -0.033967391304347824,
+    "PosDiff_SE": 0.029730339841667862,
+    "TimeDiff_s": -0.4039390934844161,
+    "TimeDiff_s_SE": 0.20104872164837365,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.8070652173913043,
+    "PosDiff_SE": 0.04448685498348956,
+    "TimeDiff_s": 4.773094081942344,
+    "TimeDiff_s_SE": 0.37369290143054695,
+    "Runs": 800
+   },
+   "Iteration": 3,
+   "TrainRows": 2288144,
+   "Epochs": 17
+  },
+  {
+   "Policy": "iteration 4",
+   "MeanStopLap": 26.7225,
+   "TwoStopShare": 0.1725,
+   "OtherCompoundShare": 0.35625,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.06114130434782609,
+    "PosDiff_SE": 0.03836558064485858,
+    "TimeDiff_s": -1.2549189189189172,
+    "TimeDiff_s_SE": 0.3473843324356269,
+    "Runs": 800
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": 0.005434782608695652,
+    "PosDiff_SE": 0.03821421946332285,
+    "TimeDiff_s": -0.5157951635846298,
+    "TimeDiff_s_SE": 0.3435506051260272,
+    "Runs": 800
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.14266304347826086,
+    "PosDiff_SE": 0.03723522269894759,
+    "TimeDiff_s": 0.9265469845722271,
+    "TimeDiff_s_SE": 0.2794941881521185,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop), choosing compound": {
+    "PosDiff": -0.14266304347826086,
+    "PosDiff_SE": 0.04634728471941887,
+    "TimeDiff_s": -2.5287442196531837,
+    "TimeDiff_s_SE": 0.4668657096482889,
+    "Runs": 800
+   },
+   "Vs start (pit_network_v4_two_stop)": {
+    "PosDiff": 0.09375,
+    "PosDiff_SE": 0.03603713419056018,
+    "TimeDiff_s": 0.7521974612129735,
+    "TimeDiff_s_SE": 0.2967965485018445,
+    "Runs": 800
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.9347826086956522,
+    "PosDiff_SE": 0.04773929367394993,
+    "TimeDiff_s": 5.97966717325228,
+    "TimeDiff_s_SE": 0.41881151168702957,
+    "Runs": 800
+   },
+   "Iteration": 4,
+   "TrainRows": 2288144,
+   "Epochs": 17
+  }
+ ],
+ "Best": 3,
+ "Seconds": 162
+}

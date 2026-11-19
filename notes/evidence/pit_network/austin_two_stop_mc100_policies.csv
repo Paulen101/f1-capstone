@@ -1,0 +1,7 @@
+Policy,MeanPosition,Finished,MeanFirstStop,MeanStops,FirstStopUnderSCorVSC
+fixed,9.6096,0.8965,24.7,0.945,0.0495
+network,9.6102,0.8965,23.2212,0.947,0.0505
+network_tum,9.575,0.8965,22.9615,0.9475,0.051
+network_two,9.0346,0.8965,17.5065,1.8795,0.039
+real,9.5204,0.8965,17.8976,1.6035,0.0635
+tum,9.1405,0.8965,21.8882,1.5965,0.1015

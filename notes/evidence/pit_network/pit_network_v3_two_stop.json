@@ -1,0 +1,198 @@
+{
+ "Name": "pit_network_v3_two_stop",
+ "Track": "Austin",
+ "DriverRaces": 20,
+ "HeldOutFirstRun": 40,
+ "Settings": {
+  "track": "Austin",
+  "runs": 50,
+  "start": "E:\\Seminar\\f1-capstone\\integration\\models\\pit_network_v1.npz",
+  "name": "pit_network_v3_two_stop",
+  "iterations": 4,
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16,
+  "device": "auto"
+ },
+ "References": [
+  {
+   "Policy": "fixed best plan",
+   "MeanStopLap": 18.455,
+   "TwoStopShare": 0.945,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.6141304347826086,
+    "PosDiff_SE": 0.07543397467460687,
+    "TimeDiff_s": -7.038874999999962,
+    "TimeDiff_s_SE": 0.9870233644216885,
+    "Runs": 200
+   }
+  },
+  {
+   "Policy": "start (v1, one stop)",
+   "MeanStopLap": 24.335,
+   "TwoStopShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.06521739130434782,
+    "PosDiff_SE": 0.04263860161401674,
+    "TimeDiff_s": -0.8196033519552911,
+    "TimeDiff_s_SE": 0.6508271598930218,
+    "Runs": 200
+   }
+  }
+ ],
+ "Iterations": [
+  {
+   "Policy": "iteration 1",
+   "MeanStopLap": 24.415,
+   "TwoStopShare": 0.745,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.02717391304347826,
+    "PosDiff_SE": 0.06234130016250076,
+    "TimeDiff_s": 0.9925574712643831,
+    "TimeDiff_s_SE": 0.8685399909026253,
+    "Runs": 200
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.6413043478260869,
+    "PosDiff_SE": 0.06592140015016691,
+    "TimeDiff_s": 8.021228915662636,
+    "TimeDiff_s_SE": 0.40362498134749714,
+    "Runs": 200
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": 0.09239130434782608,
+    "PosDiff_SE": 0.05854956389445731,
+    "TimeDiff_s": 1.3857828571428554,
+    "TimeDiff_s_SE": 1.0237151680739993,
+    "Runs": 200
+   },
+   "Vs hindsight": {
+    "PosDiff": 1.2228260869565217,
+    "PosDiff_SE": 0.09530810138533012,
+    "TimeDiff_s": 14.909389261744941,
+    "TimeDiff_s_SE": 1.246078940765768,
+    "Runs": 200
+   },
+   "Iteration": 1,
+   "TrainRows": 409024,
+   "Epochs": 15
+  },
+  {
+   "Policy": "iteration 2",
+   "MeanStopLap": 22.585,
+   "TwoStopShare": 0.825,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.5108695652173914,
+    "PosDiff_SE": 0.07063046800005156,
+    "TimeDiff_s": -5.40756363636365,
+    "TimeDiff_s_SE": 0.9763492187691868,
+    "Runs": 200
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.10326086956521739,
+    "PosDiff_SE": 0.05585201621748099,
+    "TimeDiff_s": 1.618005714285656,
+    "TimeDiff_s_SE": 0.34467759376717944,
+    "Runs": 200
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": -0.44565217391304346,
+    "PosDiff_SE": 0.06967334641123883,
+    "TimeDiff_s": -5.029601190476223,
+    "TimeDiff_s_SE": 1.1311655624780277,
+    "Runs": 200
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.6847826086956522,
+    "PosDiff_SE": 0.06533113546659867,
+    "TimeDiff_s": 8.702298701298652,
+    "TimeDiff_s_SE": 1.2578035760873623,
+    "Runs": 200
+   },
+   "Iteration": 2,
+   "TrainRows": 409024,
+   "Epochs": 14
+  },
+  {
+   "Policy": "iteration 3",
+   "MeanStopLap": 18.955,
+   "TwoStopShare": 0.905,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.5380434782608695,
+    "PosDiff_SE": 0.06844280233089245,
+    "TimeDiff_s": -5.878938271604893,
+    "TimeDiff_s_SE": 1.1374940661188526,
+    "Runs": 200
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.07608695652173914,
+    "PosDiff_SE": 0.05081153673765385,
+    "TimeDiff_s": 1.1280842696629314,
+    "TimeDiff_s_SE": 0.5783493635165041,
+    "Runs": 200
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": -0.47282608695652173,
+    "PosDiff_SE": 0.06536447933723451,
+    "TimeDiff_s": -5.521696969696942,
+    "TimeDiff_s_SE": 1.2522307976923248,
+    "Runs": 200
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.657608695652174,
+    "PosDiff_SE": 0.06750248533083855,
+    "TimeDiff_s": 7.900542483660139,
+    "TimeDiff_s_SE": 1.395506917858318,
+    "Runs": 200
+   },
+   "Iteration": 3,
+   "TrainRows": 409024,
+   "Epochs": 22
+  },
+  {
+   "Policy": "iteration 4",
+   "MeanStopLap": 18.045,
+   "TwoStopShare": 0.94,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.5597826086956522,
+    "PosDiff_SE": 0.07216207391440667,
+    "TimeDiff_s": -6.725841772151864,
+    "TimeDiff_s_SE": 1.1511358832116763,
+    "Runs": 200
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.05434782608695652,
+    "PosDiff_SE": 0.04857695840573304,
+    "TimeDiff_s": 0.43013333333332815,
+    "TimeDiff_s_SE": 0.5506475090002806,
+    "Runs": 200
+   },
+   "Vs start (v1, one stop)": {
+    "PosDiff": -0.4945652173913043,
+    "PosDiff_SE": 0.0671861218617225,
+    "TimeDiff_s": -6.25066459627328,
+    "TimeDiff_s_SE": 1.2825982825884212,
+    "Runs": 200
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.6358695652173914,
+    "PosDiff_SE": 0.06949125723565437,
+    "TimeDiff_s": 7.036443708609245,
+    "TimeDiff_s_SE": 1.2863166200215088,
+    "Runs": 200
+   },
+   "Iteration": 4,
+   "TrainRows": 409024,
+   "Epochs": 26
+  }
+ ],
+ "Best": 4,
+ "Seconds": 32
+}

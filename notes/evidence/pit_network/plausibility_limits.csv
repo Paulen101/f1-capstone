@@ -1,0 +1,29 @@
+Track,Policy,VsTUM,Time,Green,SC,VsReal,TwoStop,FirstStop
+Austin,seen v6,-0.11±0.03,-1.5,-0.33,+0.08,-0.49,92%,16.3
+Austin,3-track unseen,+0.97±0.04,+11.4,+0.58,+1.29,+0.59,38%,12.4
+Austin,3-track unseen + limits,+0.21±0.03,+2.5,-0.08,+0.44,-0.17,92%,12.4
+Austin,4-track unseen,+0.92±0.04,+11.8,+0.66,+1.13,+0.54,94%,5.2
+Austin,4-track unseen + limits,+0.88±0.04,+11.1,+0.62,+1.10,+0.50,94%,5.2
+Austin,race-file plan,-0.17±0.03,-2.5,-0.36,-0.02,-0.55,92%,17.1
+Monza,seen v6,+0.15±0.03,+1.6,-0.08,+0.35,-0.96,5%,25.6
+Monza,3-track unseen,+0.53±0.03,+5.4,+0.27,+0.74,-0.58,0%,30.8
+Monza,3-track unseen + limits,+0.14±0.03,+1.0,-0.11,+0.34,-0.98,0%,25.7
+Monza,4-track unseen,+0.99±0.04,+7.5,+0.75,+1.18,-0.13,4%,15.2
+Monza,4-track unseen + limits,+0.88±0.04,+6.5,+0.65,+1.07,-0.23,0%,15.4
+Monza,race-file plan,+0.14±0.02,+1.1,-0.09,+0.34,-0.97,0%,25.4
+Singapore,seen v6,-0.81±0.05,-6.9,-1.27,-0.43,-1.13,3%,17.4
+Singapore,3-track unseen,+1.62±0.05,+18.0,+1.33,+1.86,+1.30,94%,3.2
+Singapore,3-track unseen + limits,+0.32±0.05,+9.2,-0.27,+0.81,-0.00,0%,7.4
+Singapore,4-track unseen,-0.78±0.05,-7.1,-1.19,-0.44,-1.10,11%,18.3
+Singapore,4-track unseen + limits,-0.85±0.05,-7.7,-1.29,-0.49,-1.17,0%,18.3
+Singapore,race-file plan,-0.75±0.04,-9.4,-1.09,-0.46,-1.07,0%,23.2
+Spielberg,seen v6,+0.30±0.03,+2.7,+0.05,+0.51,-0.20,7%,27.3
+Spielberg,3-track unseen,+1.52±0.04,+12.4,+1.47,+1.55,+1.01,94%,5.5
+Spielberg,3-track unseen + limits,+0.67±0.03,+4.9,+0.39,+0.90,+0.17,0%,19.3
+Spielberg,4-track unseen,+1.37±0.04,+12.6,+1.31,+1.42,+0.87,85%,13.2
+Spielberg,4-track unseen + limits,+0.72±0.03,+5.4,+0.46,+0.94,+0.22,0%,17.8
+Spielberg,race-file plan,+0.21±0.02,+1.2,-0.01,+0.39,-0.30,0%,35.1
+Catalunya,seen v6,-0.22±0.03,-0.2,-0.14,-0.29,-0.12,72%,21.2
+Catalunya,4-track unseen,+0.61±0.04,+9.2,+0.61,+0.62,+0.72,14%,22.8
+Catalunya,4-track unseen + limits,+0.50±0.04,+7.7,+0.51,+0.49,+0.61,19%,22.5
+Catalunya,race-file plan,-0.23±0.03,-1.8,-0.22,-0.23,-0.12,19%,30.8

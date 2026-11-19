@@ -1,0 +1,321 @@
+"""Checks for the pit-timing network adapter (.venv-tum; the simulator test runs one Spielberg race).
+
+    .venv-tum/Scripts/python.exe -m unittest integration.test_pit_network
+"""
+import math
+import random
+import tempfile
+import unittest
+from pathlib import Path
+
+import numpy as np
+
+from integration.pit_network import (FEATURES, FixedHead, NetworkVSE, PitNetwork, best_choice, degradation,
+                                     feature_vector, pit_now, tyre_features)
+
+ROOT = Path(__file__).resolve().parents[1]
+QUAD = {"tire_deg_model": "quad", "A3": {"k_0": 0.0, "k_1_quad": 0.02, "k_2_quad": 0.001},
+        "A4": {"k_0": -0.5, "k_1_quad": 0.05, "k_2_quad": 0.001}}
+
+
+class StubNetwork:
+    """Pits from a given lap on (stay: +1 place, pit: -1 place), reading the lap from RaceProgress."""
+
+    def __init__(self, tot_no_laps: int, pit_from: int):
+        self.tot, self.pit_from = tot_no_laps, pit_from
+        self.inputs = []
+
+    def predict(self, x):
+        x = np.atleast_2d(x)
+        self.inputs.append(x[0])
+        lap = round(x[0][FEATURES.index("RaceProgress")] * self.tot)
+        return np.array([[-1.0, -1.0] if lap >= self.pit_from else [1.0, 1.0]])
+
+
+class ChoiceStub:
+    """From `pit_from` on: pit, and the last candidate compound is better (-1 place) than the first (-0.5)."""
+
+    def __init__(self, tot_no_laps: int, pit_from: int):
+        self.tot, self.pit_from = tot_no_laps, pit_from
+        self.batches = []
+
+    def predict(self, x):
+        x = np.atleast_2d(x)
+        self.batches.append(x)
+        lap = round(x[0][FEATURES.index("RaceProgress")] * self.tot)
+        if lap < self.pit_from:
+            return np.ones((len(x), 2))
+        out = np.full((len(x), 2), [-0.5, 0.0])
+        out[-1] = [-1.0, 0.0]
+        return out
+
+
+class FeatureTests(unittest.TestCase):
+    def test_best_choice(self):
+        self.assertEqual(best_choice([(0.0, 0.0), (-0.5, 3.0)]), 1)          # clearly better position
+        self.assertEqual(best_choice([(0.0, 1.0), (-0.05, 2.0)]), 0)         # tie in position: faster wins
+        self.assertEqual(best_choice([(0.2, 0.0), (0.2, 0.0)]), 0)           # full tie: the stored compound
+
+    def test_degradation_matches_tum(self):
+        from integration.label_generator import setup
+        setup()
+        from helper_funcs.src.calc_tire_degradation import calc_tire_degradation
+        lin = {"tire_deg_model": "lin", "A3": {"k_0": 0.1, "k_1_lin": 0.03}}
+        for pars, compound in ((QUAD, "A4"), (lin, "A3")):
+            for age in (0, 5, 30):
+                self.assertAlmostEqual(degradation(pars, compound, age),
+                                       calc_tire_degradation(age, 1, compound, pars))
+
+    def test_tyre_features(self):
+        f = tyre_features(QUAD, "A4", "A3", age=10, laps_remaining=2)
+        self.assertAlmostEqual(f["TyreDelta_s"], (-0.5 + 0.5 + 0.1) - 0.0)
+        self.assertAlmostEqual(f["WearRate_s"], (0.05 * 11 + 0.121) - (0.05 * 10 + 0.1))
+        self.assertAlmostEqual(f["StopWearRate_s"], (0.04 + 0.004) / 2)
+        stay = (degradation(QUAD, "A4", 10) - 0.0) + (degradation(QUAD, "A4", 11) - degradation(QUAD, "A3", 1))
+        self.assertAlmostEqual(f["StayCost_s"], stay)
+
+    def test_missing_gaps_are_free_air(self):
+        situation = {"RaceProgress": 0.5, "LapsRemaining": 30, "TyreAge": 30, "TyreAgeProgress": 0.5,
+                     "RelCompound": 2, "Position": 1, "GapAhead_s": float("nan"), "GapBehind_s": 45.0,
+                     "CloseAheadPrevLap": "False", "PursuerPittedPrevLap": True, "FlagState": "VSC",
+                     "LocationCat": 2, "PitLoss_s": 20.0, "TyreDelta_s": 1.0, "WearRate_s": 0.1,
+                     "StopWearRate_s": 0.05, "StayCost_s": 40.0}
+        v = dict(zip(FEATURES, feature_vector(situation)))
+        self.assertEqual((v["GapAhead_s"], v["NoCarAhead"]), (30.0, 1.0))
+        self.assertEqual((v["GapBehind_s"], v["NoCarBehind"]), (30.0, 0.0))
+        self.assertEqual((v["RelSoft"], v["RelHard"], v["FlagVSC"], v["FlagSC"]), (1.0, 0.0, 1.0, 0.0))
+        self.assertEqual((v["CloseAheadPrevLap"], v["PursuerPittedPrevLap"]), (0.0, 1.0))
+
+    def test_decision_rule(self):
+        self.assertTrue(pit_now(-0.5, 10.0))       # gains places: pit even if slower
+        self.assertFalse(pit_now(0.5, -10.0))      # loses places: stay even if faster
+        self.assertTrue(pit_now(0.05, -1.0))       # tie in position: time decides
+        self.assertFalse(pit_now(-0.05, 1.0))
+
+    def test_numpy_network_round_trip(self):
+        rng = np.random.default_rng(0)
+        w0, b0, w1, b1 = rng.normal(size=(4, len(FEATURES))), rng.normal(size=4), rng.normal(size=(2, 4)), rng.normal(size=2)
+        mean, std = rng.normal(size=len(FEATURES)), np.abs(rng.normal(size=len(FEATURES))) + 0.5
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "net.npz"
+            np.savez(path, features=np.array(FEATURES), x_mean=mean, x_std=std, y_scale=np.array([1.0, 10.0]),
+                     n_layers=np.array(2), w0=w0, b0=b0, w1=w1, b1=b1)
+            x = rng.normal(size=(3, len(FEATURES)))
+            expected = (np.maximum(((x - mean) / std) @ w0.T + b0, 0) @ w1.T + b1) * [1.0, 10.0]
+            np.testing.assert_allclose(PitNetwork(path).predict(x), expected)
+
+
+class SimulatorTests(unittest.TestCase):
+    """One Monte Carlo Spielberg race with the adapter installed for VER."""
+
+    @classmethod
+    def setUpClass(cls):
+        import argparse
+        from integration.label_generator import load, setup
+        setup()
+        args = argparse.Namespace(race=str(ROOT / "integration/parameters/pars_Spielberg_2019_fitted.ini"),
+                                  driver="VER", deterministic=False, events="sampled")
+        cls.source, cls.pars, cls.paths, _, _ = load(args)
+        cls.tot = cls.pars["race_pars"]["tot_no_laps"]
+
+    def race(self, network, seed=3, compound_choice=None, second_compound=None, other_compounds=None, head=None,
+             limits=None):
+        from racesim.src.race import Race
+        random.seed(seed)
+        np.random.seed(seed)
+        race = Race(**self.pars, vse_paths=self.paths, use_prob_infl=True, create_rand_events=True)
+        race.vse = NetworkVSE(race.vse, race, "VER", network, None if compound_choice else "A3",
+                              self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice,
+                              second_compound=second_compound, other_compounds=other_compounds,
+                              compound_head=head, limits=limits)
+        race.simulate_race()
+        self.assertEqual(race.result_status, 0)
+        return race, race.vse
+
+    def stops(self, race):
+        idx = next(i for i, d in enumerate(race.drivers_list) if d.initials == "VER")
+        return [(s[0], s[1]) for s in race.drivers_list[idx].strategy_info[1:]]
+
+    def test_pits_once_on_the_first_pit_decision(self):
+        race, _ = self.race(StubNetwork(self.tot, pit_from=30))
+        self.assertEqual(self.stops(race), [(30, "A3")])
+
+    def test_forced_stop_on_the_last_possible_lap(self):
+        race, _ = self.race(StubNetwork(self.tot, pit_from=10 ** 6))
+        self.assertEqual(self.stops(race), [(self.tot - 1, "A3")])
+
+    def test_live_situation_equals_the_recorded_one(self):
+        """The training rows were recorded after the race; the network sees them during it. Same values."""
+        network = StubNetwork(self.tot, pit_from=10 ** 6)
+        race, vse = self.race(network)
+        live = network.inputs
+        self.assertEqual(len(live), self.tot - 1 - 2)      # laps 2 .. tot-2 asked; tot-1 is the forced stop
+        for lap, x in zip(range(2, self.tot - 1), live):
+            recorded = feature_vector(vse.situation(lap))
+            for name, a, b in zip(FEATURES, x, recorded):
+                self.assertTrue(math.isclose(a, b, abs_tol=1e-9), "lap %d %s: live %s, after %s" % (lap, name, a, b))
+
+    def test_second_stop_after_min_stint(self):
+        network = StubNetwork(self.tot, pit_from=30)
+        race, vse = self.race(network, second_compound="A6")
+        self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])
+        # the second-stint situation seen live equals the one recorded after the race
+        live = dict(zip(FEATURES, network.inputs[-1]))
+        recorded = dict(zip(FEATURES, feature_vector(vse.situation(40, "A6"))))
+        self.assertEqual(live, recorded)
+        self.assertEqual((live["StopsMade"], live["TyreAge"], live["RelSoft"]), (1.0, 10.0, 0.0))
+
+    def test_no_second_stop_without_second_compound(self):
+        race, _ = self.race(StubNetwork(self.tot, pit_from=30))
+        self.assertEqual(self.stops(race), [(30, "A3")])
+
+    def test_limits_hold_back_an_early_stop(self):
+        # the network wants to stop from lap 5 on (and again 10 laps later); the window opens on lap 20
+        race, _ = self.race(StubNetwork(self.tot, pit_from=5), second_compound="A6",
+                            limits={"first": [20, 40], "second": None})
+        self.assertEqual(self.stops(race), [(20, "A3")])
+
+    def test_limits_force_a_late_stop(self):
+        race, vse = self.race(StubNetwork(self.tot, pit_from=10 ** 6), second_compound="A6",
+                              limits={"first": [20, 30], "second": [45, 50]})
+        self.assertEqual(self.stops(race), [(30, "A3"), (50, "A6")])
+        self.assertEqual([d.get("Forced") for d in vse.decisions if d.get("Forced")], ["first", "second"])
+
+    def test_forced_second_stop_waits_for_min_stint(self):
+        # the second window closes before the first stint's 10 laps are up: forced on the first legal lap
+        race, _ = self.race(StubNetwork(self.tot, pit_from=10 ** 6), second_compound="A6",
+                            limits={"first": [20, 35], "second": [30, 38]})
+        self.assertEqual(self.stops(race), [(35, "A3"), (45, "A6")])
+
+
+    def test_network_chooses_the_compound(self):
+        network = ChoiceStub(self.tot, pit_from=30)
+        race, vse = self.race(network, second_compound="A6", other_compounds=["A6"])
+        # onto the better candidate; no second stop after a stop onto a compound other than the stored one
+        self.assertEqual(self.stops(race), [(30, "A6")])
+        self.assertEqual(vse.decisions[-1]["Candidates"].keys(), {"A3", "A6"})
+        # one row per candidate, differing only in the stop compound's tyre features
+        rows = network.batches[-1]
+        differ = {name for name, a, b in zip(FEATURES, rows[0], rows[1]) if a != b}
+        self.assertTrue(differ and differ <= {"TyreDelta_s", "StopWearRate_s", "StayCost_s"}, differ)
+
+    def test_choice_keeps_second_stop_after_stored_compound(self):
+        network = ChoiceStub(self.tot, pit_from=30)
+        race, _ = self.race(network, second_compound="A6", other_compounds=[])
+        self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])
+
+    def test_compound_head_only_picks_the_tyre(self):
+        # the timing network decides on the stored compound alone; the head is asked only when it stops
+        timing = StubNetwork(self.tot, pit_from=30)
+        race, vse = self.race(timing, second_compound="A6", other_compounds=["A6"], head=FixedHead(True))
+        self.assertEqual(self.stops(race), [(30, "A6")])
+        self.assertEqual(vse.decisions[-1]["Compound"], "A6")
+        stop_feature = FEATURES.index("StopWearRate_s")
+        self.assertTrue(all(x[stop_feature] == timing.inputs[0][stop_feature] for x in timing.inputs[:5]))
+        race, _ = self.race(StubNetwork(self.tot, pit_from=30), second_compound="A6", other_compounds=["A6"],
+                            head=FixedHead(False))
+        self.assertEqual(self.stops(race), [(30, "A3"), (40, "A6")])      # kept: the second stop is allowed
+
+    def compound_choice(self):
+        from integration.tum_compound_choice import TumCompoundChoice
+        vse = self.pars["vse_pars"]
+        return TumCompoundChoice(self.paths, self.pars["track_pars"]["name"], vse["available_compounds"],
+                                 vse["param_dry_compounds"])
+
+    def test_tum_compound_choice_equals_tum_vse(self):
+        """Same network output as TUM's own VSE_SUPERVISED pipeline, for every compound and race phase."""
+        from racesim.src.vse_supervised import VSE_SUPERVISED
+        choice = self.compound_choice()
+        tum = VSE_SUPERVISED(self.paths["supervised_preprocessor_cc"], self.paths["supervised_preprocessor_tc"],
+                             self.paths["supervised_nnmodel_cc"], self.paths["supervised_nnmodel_tc"])
+        interpreter = tum.nnmodel_cc["interpreter"]
+        for compound in ("A3", "A4", "A6"):
+            for progress in (0.1, 0.4, 0.7):
+                tum.reset()
+                tum.preprocess_features(tireageprogress_corr_zeroinchange=[0.3], raceprogress=progress, position=[5],
+                                        rel_compound_num_nl=[choice.rel_compound(compound)], fcy_stat_nl=[0],
+                                        remainingtirechanges_nl=[1], tirechange_pursuer=[0], location_cat=2,
+                                        close_ahead_prevlap=[0], location="Spielberg", used_2compounds_nl=[False],
+                                        no_avail_dry_compounds=3)
+                interpreter.set_tensor(tum.nnmodel_cc["input_index"], tum.X_conv_cc[:1])
+                interpreter.invoke()
+                expected = interpreter.get_tensor(tum.nnmodel_cc["output_index"])[0]
+                np.testing.assert_allclose(choice.probabilities(compound, progress), expected, rtol=1e-6)
+                chosen = choice.choose(compound, progress)
+                self.assertIn(chosen, ("A3", "A4", "A6"))
+                self.assertNotEqual(chosen, compound)
+
+    def test_stop_mounts_tum_compound(self):
+        choice = self.compound_choice()
+        race, vse = self.race(StubNetwork(self.tot, pit_from=30), compound_choice=choice)
+        start = race.drivers_list[vse.idx].strategy_info[0][1]
+        expected = choice.choose(start, 29 / self.tot)
+        self.assertEqual(self.stops(race), [(30, expected)])
+        self.assertEqual(vse.decisions[-1]["Compound"], expected)
+
+
+class RaceFilePlanTests(unittest.TestCase):
+    def test_plan_is_the_cheapest_and_limits_follow_it(self):
+        from integration.race_file_plan import driver_plan, limits, stint_cost
+        pars = {"race_pars": {"tot_no_laps": 40},
+                "track_pars": {"t_pitdrive_inlap": 5.0, "t_pitdrive_outlap": 14.0, "t_pit_tirechange_min": 2.0},
+                "car_pars": {"T": {"t_pit_tirechange_add": 1.0}},
+                "tireset_pars": {"X": dict(QUAD, t_add_coldtires=1.0)},
+                "driver_pars": {"X": {"team": "T", "strategy_info": [[0, "A4", 0, 0.0]]}}}
+        plan = driver_plan(pars, "X", "A3", "A4")
+        one = {l1: stint_cost(QUAD, "A4", 0, l1) + 23.0 + stint_cost(QUAD, "A3", 0, 40 - l1) for l1 in range(2, 40)}
+        self.assertEqual(plan["OneStopLap"], min(one, key=one.get))
+        self.assertAlmostEqual(plan["OneStopCost_s"], round(min(one.values()), 3))
+        self.assertEqual(plan["StopCost_s"], 23.0)
+        if plan["TwoStopGain_s"] < 0:
+            lim = limits(plan, early=0.25, late=0.05)
+            self.assertIsNone(lim["second"])
+            self.assertEqual(lim["first"], [max(2, math.floor(plan["OneStopLap"] - 10)),
+                                            min(39, math.ceil(plan["OneStopLap"] + 2))])
+        # with a free stop, two stops always pay and get a second window inside the legal two-stop window
+        free = dict(pars, track_pars={"t_pitdrive_inlap": 0.0, "t_pitdrive_outlap": 0.0, "t_pit_tirechange_min": 0.0},
+                    car_pars={"T": {"t_pit_tirechange_add": 0.0}},
+                    tireset_pars={"X": dict(QUAD, t_add_coldtires=0.0)})
+        lim = limits(driver_plan(free, "X", "A3", "A4"), early=0.25, late=0.5)
+        self.assertIsNotNone(lim["second"])
+        self.assertLessEqual(lim["second"][1], 30)
+
+
+class TyreUncertaintyTests(unittest.TestCase):
+    def test_errors_are_paired_shared_and_exact_is_identity(self):
+        from integration.tyre_uncertainty import believed_tires, draw
+        both = {"X": QUAD, "Y": QUAD}
+        self.assertEqual(draw(["A3", "A4"], "Monza", 7, "large"), draw(["A3", "A4"], "Monza", 7, "large"))
+        self.assertNotEqual(draw(["A3", "A4"], "Monza", 7, "large"), draw(["A3", "A4"], "Monza", 8, "large"))
+        self.assertEqual(believed_tires(both, ["A3", "A4"], "Monza", 7, "exact"), both)
+        wrong = believed_tires(both, ["A3", "A4"], "Monza", 7, "large")
+        self.assertEqual(wrong["X"], wrong["Y"])                    # one estimate for the whole field
+        offset, factor = draw(["A3", "A4"], "Monza", 7, "large")["A4"]
+        self.assertAlmostEqual(wrong["X"]["A4"]["k_0"], QUAD["A4"]["k_0"] + offset)
+        self.assertAlmostEqual(wrong["X"]["A4"]["k_2_quad"], QUAD["A4"]["k_2_quad"] * factor)
+        self.assertEqual(QUAD["A4"]["k_0"], -0.5)                    # the true model is not changed
+
+    def test_network_sees_the_believed_tyres(self):
+        sim = SimulatorTests()
+        SimulatorTests.setUpClass()
+        sim.pars, sim.paths, sim.tot = SimulatorTests.pars, SimulatorTests.paths, SimulatorTests.tot
+        from racesim.src.race import Race
+        random.seed(3)
+        np.random.seed(3)
+        race = Race(**sim.pars, vse_paths=sim.paths, use_prob_infl=True, create_rand_events=True)
+        true = race.drivers_list[next(i for i, d in enumerate(race.drivers_list) if d.initials == "VER")].tireset_pars
+        believed = {k: (dict(v, k_0=v["k_0"] + 1.0) if isinstance(v, dict) else v) for k, v in true.items()}
+        vse = NetworkVSE(race.vse, race, "VER", StubNetwork(sim.tot, 10 ** 6), "A3",
+                         sim.pars["vse_pars"]["location_cat"], 20.0, believed_tires=believed)
+        race.vse = vse
+        race.simulate_race()
+        compound = vse.situation(20)["Compound"]
+        seen = vse.situation(20)["TyreDelta_s"]
+        expected = tyre_features(believed, compound, "A3", vse.situation(20)["TyreAge"], 1)["TyreDelta_s"]
+        self.assertAlmostEqual(seen, expected)
+        if compound != "A3":                                         # same offset on both compounds cancels
+            self.assertAlmostEqual(seen, tyre_features(true, compound, "A3", vse.situation(20)["TyreAge"], 1)["TyreDelta_s"])
+
+
+if __name__ == "__main__":
+    unittest.main()

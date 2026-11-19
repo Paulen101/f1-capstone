@@ -1,0 +1,399 @@
+{
+ "Name": "pit_compound_head_v2",
+ "Timing": "integration\\models\\pit_network_v6_five_tracks.npz",
+ "Rows": {
+  "Train": 205500,
+  "Val": 53728
+ },
+ "Epochs": 40,
+ "Policies": [
+  {
+   "Policy": "v4 (stored compound)",
+   "OtherCompoundShare": 0.0,
+   "TwoStopShare": 0.384,
+   "Vs v4": {
+    "all": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 1000
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.0,
+    "Austin": 0.0,
+    "Catalunya": 0.0,
+    "Monza": 0.0,
+    "Singapore": 0.0,
+    "Spielberg": 0.0
+   }
+  },
+  {
+   "Policy": "v4 + per-driver rule",
+   "OtherCompoundShare": 0.299,
+   "TwoStopShare": 0.319,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.003260869565217391,
+     "PosDiff_SE": 0.01206100826883585,
+     "TimeDiff_s": -0.14478587196468135,
+     "TimeDiff_s_SE": 0.11884151762778182,
+     "Runs": 1000
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": 0.09782608695652174,
+     "PosDiff_SE": 0.037057009832817636,
+     "TimeDiff_s": 1.4197752808988726,
+     "TimeDiff_s_SE": 0.35654736290732203,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.016304347826086956,
+     "PosDiff_SE": 0.0210718141544992,
+     "TimeDiff_s": -0.3912707182320677,
+     "TimeDiff_s_SE": 0.12165616011231434,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.042217391304347984,
+     "TimeDiff_s_SE": 0.04221739130434799,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.09782608695652174,
+     "PosDiff_SE": 0.04158847394657558,
+     "TimeDiff_s": -1.7924245810055666,
+     "TimeDiff_s_SE": 0.43718278472703664,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.299,
+    "Austin": 0.0,
+    "Catalunya": 0.195,
+    "Monza": 0.675,
+    "Singapore": 0.045,
+    "Spielberg": 0.58
+   }
+  },
+  {
+   "Policy": "v4 + head",
+   "OtherCompoundShare": 0.246,
+   "TwoStopShare": 0.361,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.016304347826086956,
+     "PosDiff_SE": 0.010474131290635836,
+     "TimeDiff_s": -0.2760796943231432,
+     "TimeDiff_s_SE": 0.05232911518517306,
+     "Runs": 1000
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": 0.03804347826086957,
+     "PosDiff_SE": 0.024814407121452636,
+     "TimeDiff_s": 0.12053804347826134,
+     "TimeDiff_s_SE": 0.10538044723397451,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.03260869565217391,
+     "PosDiff_SE": 0.024251902651039613,
+     "TimeDiff_s": -0.48738461538464384,
+     "TimeDiff_s_SE": 0.11891665951639444,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.08695652173913043,
+     "PosDiff_SE": 0.038768421250099536,
+     "TimeDiff_s": -1.0239780219779897,
+     "TimeDiff_s_SE": 0.19776699017473037,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.246,
+    "Austin": 0.0,
+    "Catalunya": 0.02,
+    "Monza": 0.715,
+    "Singapore": 0.025,
+    "Spielberg": 0.47
+   }
+  },
+  {
+   "Policy": "v4 + hindsight compound",
+   "OtherCompoundShare": 0.232,
+   "TwoStopShare": 0.361,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.04673913043478261,
+     "PosDiff_SE": 0.008901312008916858,
+     "TimeDiff_s": -0.6762314410480358,
+     "TimeDiff_s_SE": 0.11801690668241224,
+     "Runs": 1000
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": -0.3699402173913066,
+     "TimeDiff_s_SE": 0.3699402173913066,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": -0.021739130434782608,
+     "PosDiff_SE": 0.013251684264561027,
+     "TimeDiff_s": -0.09802747252746945,
+     "TimeDiff_s_SE": 0.05548141204245147,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.07608695652173914,
+     "PosDiff_SE": 0.02242618273696634,
+     "TimeDiff_s": -0.7917500000000285,
+     "TimeDiff_s_SE": 0.10337873543207463,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.1358695652173913,
+     "PosDiff_SE": 0.035150315674486815,
+     "TimeDiff_s": -2.130967032967009,
+     "TimeDiff_s_SE": 0.42870259235166336,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.232,
+    "Austin": 0.005,
+    "Catalunya": 0.04,
+    "Monza": 0.625,
+    "Singapore": 0.0,
+    "Spielberg": 0.49
+   }
+  },
+  {
+   "Policy": "v5",
+   "OtherCompoundShare": 0.327,
+   "TwoStopShare": 0.301,
+   "Vs v4": {
+    "all": {
+     "PosDiff": 0.06086956521739131,
+     "PosDiff_SE": 0.03175548719454544,
+     "TimeDiff_s": 0.6636167247386715,
+     "TimeDiff_s_SE": 0.33509696134851685,
+     "Runs": 1000
+    },
+    "Austin": {
+     "PosDiff": 0.14130434782608695,
+     "PosDiff_SE": 0.05348567767817886,
+     "TimeDiff_s": 1.326923976608163,
+     "TimeDiff_s_SE": 0.7454726843764431,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": 0.5760869565217391,
+     "PosDiff_SE": 0.08173232482549148,
+     "TimeDiff_s": 9.63882317073169,
+     "TimeDiff_s_SE": 0.9435218141259648,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.059782608695652176,
+     "PosDiff_SE": 0.040905639008516334,
+     "TimeDiff_s": -0.7350800000000215,
+     "TimeDiff_s_SE": 0.20770537543492892,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": -0.1358695652173913,
+     "PosDiff_SE": 0.09047065185681707,
+     "TimeDiff_s": -3.4675828571428378,
+     "TimeDiff_s_SE": 0.6912162884298679,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.21739130434782608,
+     "PosDiff_SE": 0.061002637690851985,
+     "TimeDiff_s": -2.845630681818162,
+     "TimeDiff_s_SE": 0.5268378569965846,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.327,
+    "Austin": 0.1,
+    "Catalunya": 0.22,
+    "Monza": 0.74,
+    "Singapore": 0.0,
+    "Spielberg": 0.575
+   }
+  }
+ ],
+ "PerDriverRule": {
+  "Austin ALB": false,
+  "Austin BOT": false,
+  "Austin GAS": false,
+  "Austin GIO": false,
+  "Austin GRO": false,
+  "Austin HAM": false,
+  "Austin HUL": false,
+  "Austin KUB": false,
+  "Austin KVY": false,
+  "Austin LEC": false,
+  "Austin MAG": false,
+  "Austin NOR": false,
+  "Austin PER": false,
+  "Austin RAI": false,
+  "Austin RIC": false,
+  "Austin RUS": false,
+  "Austin SAI": false,
+  "Austin STR": false,
+  "Austin VER": false,
+  "Austin VET": false,
+  "Catalunya ALB": false,
+  "Catalunya BOT": false,
+  "Catalunya GAS": false,
+  "Catalunya GIO": true,
+  "Catalunya GRO": false,
+  "Catalunya HAM": false,
+  "Catalunya HUL": false,
+  "Catalunya KUB": false,
+  "Catalunya KVY": false,
+  "Catalunya LEC": true,
+  "Catalunya MAG": false,
+  "Catalunya NOR": false,
+  "Catalunya PER": false,
+  "Catalunya RAI": true,
+  "Catalunya RIC": true,
+  "Catalunya RUS": false,
+  "Catalunya SAI": false,
+  "Catalunya STR": false,
+  "Catalunya VER": false,
+  "Catalunya VET": false,
+  "Monza ALB": true,
+  "Monza BOT": true,
+  "Monza GAS": false,
+  "Monza GIO": true,
+  "Monza GRO": true,
+  "Monza HAM": true,
+  "Monza HUL": true,
+  "Monza KUB": true,
+  "Monza KVY": false,
+  "Monza LEC": false,
+  "Monza MAG": true,
+  "Monza NOR": true,
+  "Monza PER": false,
+  "Monza RAI": false,
+  "Monza RIC": true,
+  "Monza RUS": true,
+  "Monza SAI": true,
+  "Monza STR": true,
+  "Monza VER": true,
+  "Monza VET": false,
+  "Singapore ALB": false,
+  "Singapore BOT": false,
+  "Singapore GAS": true,
+  "Singapore GIO": false,
+  "Singapore GRO": false,
+  "Singapore HAM": false,
+  "Singapore HUL": false,
+  "Singapore KUB": false,
+  "Singapore KVY": false,
+  "Singapore LEC": false,
+  "Singapore MAG": false,
+  "Singapore NOR": false,
+  "Singapore PER": false,
+  "Singapore RAI": false,
+  "Singapore RIC": false,
+  "Singapore RUS": false,
+  "Singapore SAI": false,
+  "Singapore STR": false,
+  "Singapore VER": false,
+  "Singapore VET": false,
+  "Spielberg ALB": true,
+  "Spielberg BOT": true,
+  "Spielberg GAS": false,
+  "Spielberg GIO": false,
+  "Spielberg GRO": true,
+  "Spielberg HAM": true,
+  "Spielberg HUL": true,
+  "Spielberg KUB": true,
+  "Spielberg KVY": true,
+  "Spielberg LEC": false,
+  "Spielberg MAG": false,
+  "Spielberg NOR": false,
+  "Spielberg PER": true,
+  "Spielberg RAI": false,
+  "Spielberg RIC": false,
+  "Spielberg RUS": true,
+  "Spielberg SAI": true,
+  "Spielberg STR": true,
+  "Spielberg VER": true,
+  "Spielberg VET": false
+ },
+ "Seconds": 83
+}

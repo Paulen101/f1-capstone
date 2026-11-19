@@ -1,0 +1,61 @@
+{
+ "runs": "integration\\output\\evaluation\\all_five_tracks_mc100\\runs.csv",
+ "policy": "v6",
+ "widths": {
+  "Austin": {
+   "early": 0.258,
+   "late": 0.038,
+   "from_tracks": [
+    "Catalunya",
+    "Monza",
+    "Singapore",
+    "Spielberg"
+   ],
+   "races": 7625
+  },
+  "Catalunya": {
+   "early": 0.197,
+   "late": 0.054,
+   "from_tracks": [
+    "Austin",
+    "Monza",
+    "Singapore",
+    "Spielberg"
+   ],
+   "races": 7638
+  },
+  "Monza": {
+   "early": 0.258,
+   "late": 0.018,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Singapore",
+    "Spielberg"
+   ],
+   "races": 7666
+  },
+  "Singapore": {
+   "early": 0.258,
+   "late": 0.057,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Monza",
+    "Spielberg"
+   ],
+   "races": 7628
+  },
+  "Spielberg": {
+   "early": 0.242,
+   "late": 0.057,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Monza",
+    "Singapore"
+   ],
+   "races": 7647
+  }
+ }
+}

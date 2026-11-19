@@ -1,0 +1,116 @@
+{
+ "Name": "pit_network_v2",
+ "Start": "integration\\models\\pit_network_v1.npz",
+ "DriverRaces": 80,
+ "Settings": {
+  "start": "E:\\Seminar\\f1-capstone\\integration\\models\\pit_network_v1.npz",
+  "name": "pit_network_v2",
+  "iterations": 4,
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16,
+  "device": "auto"
+ },
+ "StartVsFixed": {
+  "PosDiff": -0.0038101835815725666,
+  "PosDiff_SE": 0.01904778619599239,
+  "TimeDiff_s": -0.38117446043166414,
+  "TimeDiff_s_SE": 0.14440760266041855,
+  "Runs": 3200
+ },
+ "Iterations": [
+  {
+   "Iteration": 1,
+   "TrainRows": 647365,
+   "Epochs": 23,
+   "MeanLaterStopLap": 36.36828634115668,
+   "MeanStopLap": 25.3496875,
+   "VsFixed": {
+    "PosDiff": -0.012816072047107724,
+    "PosDiff_SE": 0.018490068656457317,
+    "TimeDiff_s": -0.5214096298957964,
+    "TimeDiff_s_SE": 0.1367185691634606,
+    "Runs": 3200
+   },
+   "VsStart": {
+    "PosDiff": -0.009005888465535157,
+    "PosDiff_SE": 0.012961526172103992,
+    "TimeDiff_s": -0.1289513494318096,
+    "TimeDiff_s_SE": 0.08942183005225125,
+    "Runs": 3200
+   }
+  },
+  {
+   "Iteration": 2,
+   "TrainRows": 647365,
+   "Epochs": 23,
+   "MeanLaterStopLap": 37.13721969893669,
+   "MeanStopLap": 25.5203125,
+   "VsFixed": {
+    "PosDiff": -0.012469691721510218,
+    "PosDiff_SE": 0.01844791050508908,
+    "TimeDiff_s": -0.43508419921175356,
+    "TimeDiff_s_SE": 0.14338297227931238,
+    "Runs": 3200
+   },
+   "VsStart": {
+    "PosDiff": -0.008659508139937652,
+    "PosDiff_SE": 0.01295697727188506,
+    "TimeDiff_s": -0.04788002822864374,
+    "TimeDiff_s_SE": 0.08258432277820552,
+    "Runs": 3200
+   }
+  },
+  {
+   "Iteration": 3,
+   "TrainRows": 647365,
+   "Epochs": 23,
+   "MeanLaterStopLap": 37.036847215232086,
+   "MeanStopLap": 25.73375,
+   "VsFixed": {
+    "PosDiff": -0.02009005888465535,
+    "PosDiff_SE": 0.018419534795060494,
+    "TimeDiff_s": -0.5529477264590137,
+    "TimeDiff_s_SE": 0.142575119032797,
+    "Runs": 3200
+   },
+   "VsStart": {
+    "PosDiff": -0.016279875303082784,
+    "PosDiff_SE": 0.013771754169318058,
+    "TimeDiff_s": -0.18647131728045366,
+    "TimeDiff_s_SE": 0.09146155211436041,
+    "Runs": 3200
+   }
+  },
+  {
+   "Iteration": 4,
+   "TrainRows": 647365,
+   "Epochs": 32,
+   "MeanLaterStopLap": 37.18793138030623,
+   "MeanStopLap": 26.3371875,
+   "VsFixed": {
+    "PosDiff": -0.026324904745410462,
+    "PosDiff_SE": 0.01788786303130843,
+    "TimeDiff_s": -0.4441418312387862,
+    "TimeDiff_s_SE": 0.14703904518319827,
+    "Runs": 3200
+   },
+   "VsStart": {
+    "PosDiff": -0.022514721163837893,
+    "PosDiff_SE": 0.014556829665266119,
+    "TimeDiff_s": -0.06757580071174082,
+    "TimeDiff_s_SE": 0.10725671919463566,
+    "Runs": 3200
+   }
+  }
+ ],
+ "Best": 4,
+ "Seconds": 49
+}

@@ -114,7 +114,7 @@ Deterministic, one stop onto the driver's real second compound, every candidate 
 - **The fitted files put the best stop much closer to the real one**: 3.9 laps on average, against 7.9 with TUM's files. Monza uses quadratic wear here; its labels hardly moved because the VSC on lap 30 dominates.
 - **These labels use hindsight about safety cars.** A deterministic run replays the recorded safety cars, so stopping under one is cheap. At Monza all three drivers come out at lap 30, the lap of the second VSC; at Singapore HAM's best with TUM's file is lap 36, the first safety car. Monte Carlo runs with sampled events remove this, and are needed before any of these become training labels.
 - Many windows are 1–3 laps wide, so the deterministic optimum is still sharp.
-- **Barcelona has no labels.** Every top finisher stopped twice, partly under the safety car, and the label generator handles one stop only.
+- **Barcelona has no labels.** Every top finisher stopped twice, partly under the safety car, and the label generator handles one stop only. (2026-11-18: two-stop runs and training added, [pit_network.md](pit_network.md) round 8. The file was rewritten then with the fuel-burn fix of a8afaad: 1.667 kg/lap ran a 110 kg tank dry on lap 66.)
 
 ## Limits
 

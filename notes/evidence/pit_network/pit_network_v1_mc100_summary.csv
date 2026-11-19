@@ -1,0 +1,61 @@
+Comparison,Track,Races,PosDiff,PosDiff_SE,PosDiff_N,TimeDiff_s,TimeDiff_s_SE,TimeDiff_s_N,Better,Worse,MeanStopDiff_laps
+network_tum - real,all,all,-0.5759,0.0202,7172,-4.628,0.1655,6567,0.2904,0.107,3.497
+network_tum - real,all,SC or VSC,-0.5351,0.0292,3928,-3.7617,0.2315,3533,0.2783,0.1224,3.4917
+network_tum - real,all,green only,-0.6252,0.0273,3244,-5.6367,0.2345,3034,0.3064,0.0866,3.5036
+network_tum - real,Austin,all,0.0547,0.0263,1793,0.1083,0.2706,1675,0.1495,0.1725,5.018
+network_tum - real,Austin,SC or VSC,0.0845,0.0419,982,-0.1799,0.4357,902,0.1632,0.1877,5.071
+network_tum - real,Austin,green only,0.0185,0.0283,811,0.4446,0.2919,773,0.1314,0.1523,4.951
+network_tum - real,Monza,all,-0.9671,0.0454,1793,-7.3673,0.299,1660,0.3405,0.0565,2.9612
+network_tum - real,Monza,SC or VSC,-0.9358,0.0646,982,-6.2152,0.4023,896,0.3088,0.0623,2.9695
+network_tum - real,Monza,green only,-1.0049,0.063,811,-8.7184,0.4418,764,0.3826,0.0488,2.9507
+network_tum - real,Singapore,all,-1.15,0.0504,1793,-10.3935,0.4669,1559,0.4525,0.1185,3.2717
+network_tum - real,Singapore,SC or VSC,-1.1039,0.0709,982,-8.1027,0.6459,828,0.4246,0.1254,3.197
+network_tum - real,Singapore,green only,-1.2059,0.071,811,-12.9882,0.6629,731,0.4895,0.1093,3.3663
+network_tum - real,Spielberg,all,-0.2409,0.0262,1793,-1.2792,0.1683,1673,0.219,0.0805,2.7313
+network_tum - real,Spielberg,SC or VSC,-0.1853,0.041,982,-0.9371,0.2686,907,0.2167,0.114,2.7234
+network_tum - real,Spielberg,green only,-0.3083,0.0297,811,-1.6842,0.1835,766,0.2221,0.036,2.7413
+network_tum - tum,all,all,0.0038,0.0174,7172,-0.1639,0.1525,6672,0.1945,0.1884,-2.1459
+network_tum - tum,all,SC or VSC,0.265,0.0268,3928,2.2672,0.2257,3566,0.1621,0.2533,-1.099
+network_tum - tum,all,green only,-0.3126,0.0192,3244,-2.955,0.1883,3106,0.2375,0.1023,-3.4656
+network_tum - tum,Austin,all,0.4345,0.0337,1793,5.0051,0.3107,1649,0.1065,0.2865,1.0588
+network_tum - tum,Austin,SC or VSC,0.7454,0.0541,982,7.348,0.5026,868,0.0947,0.357,1.6803
+network_tum - tum,Austin,green only,0.058,0.0306,811,2.4012,0.3193,781,0.1221,0.193,0.2743
+network_tum - tum,Monza,all,0.1461,0.0255,1793,1.3535,0.1642,1728,0.119,0.1565,-0.8974
+network_tum - tum,Monza,SC or VSC,0.3473,0.042,982,2.8965,0.2817,933,0.1026,0.2228,0.0744
+network_tum - tum,Monza,green only,-0.0974,0.0215,811,-0.4573,0.1023,795,0.1407,0.0686,-2.1212
+network_tum - tum,Singapore,all,-0.8288,0.043,1793,-9.1388,0.403,1611,0.4655,0.1235,-4.8328
+network_tum - tum,Singapore,SC or VSC,-0.5234,0.0638,982,-4.516,0.5733,871,0.3737,0.1693,-3.846
+network_tum - tum,Singapore,green only,-1.1985,0.0527,811,-14.5799,0.4905,740,0.5872,0.0628,-6.0805
+network_tum - tum,Spielberg,all,0.2632,0.0255,1793,1.8034,0.1749,1684,0.087,0.187,-3.9229
+network_tum - tum,Spielberg,SC or VSC,0.4908,0.0421,982,3.286,0.3078,894,0.0772,0.264,-2.3123
+network_tum - tum,Spielberg,green only,-0.0123,0.0198,811,0.1255,0.1052,790,0.1,0.0849,-5.9472
+network_tum - fixed,all,all,0.0438,0.0112,7172,-0.1547,0.084,6942,0.1112,0.1296,-1.2511
+network_tum - fixed,all,SC or VSC,0.0415,0.017,3928,-0.1261,0.1348,3767,0.1121,0.1342,-1.2618
+network_tum - fixed,all,green only,0.0465,0.0135,3244,-0.1886,0.0903,3175,0.1102,0.1235,-1.2376
+network_tum - fixed,Austin,all,-0.0346,0.015,1793,-0.8952,0.1437,1737,0.0915,0.067,-1.7108
+network_tum - fixed,Austin,SC or VSC,-0.0204,0.0226,982,-0.844,0.2279,946,0.093,0.0728,-1.6711
+network_tum - fixed,Austin,green only,-0.0518,0.0185,811,-0.9564,0.1591,791,0.0895,0.0593,-1.7608
+network_tum - fixed,Monza,all,0.0028,0.0167,1793,0.1651,0.0852,1749,0.0955,0.0935,-0.2359
+network_tum - fixed,Monza,SC or VSC,0.0081,0.0259,982,0.1478,0.1354,955,0.0904,0.0965,-0.23
+network_tum - fixed,Monza,green only,-0.0037,0.0197,811,0.1859,0.0934,794,0.1023,0.0895,-0.2434
+network_tum - fixed,Singapore,all,0.1617,0.0331,1793,-0.247,0.2624,1729,0.167,0.242,3.2365
+network_tum - fixed,Singapore,SC or VSC,0.1049,0.0494,982,-0.2636,0.4169,932,0.1719,0.2307,3.1466
+network_tum - fixed,Singapore,green only,0.2306,0.0421,811,-0.2276,0.2943,797,0.1605,0.257,3.3504
+network_tum - fixed,Spielberg,all,0.0452,0.0195,1793,0.3588,0.1273,1727,0.091,0.116,-6.3616
+network_tum - fixed,Spielberg,SC or VSC,0.0733,0.0318,982,0.4583,0.2223,934,0.093,0.1368,-6.3877
+network_tum - fixed,Spielberg,green only,0.0111,0.0192,811,0.2417,0.0913,793,0.0884,0.0884,-6.3289
+network_tum - network,all,all,-0.005,0.0026,7172,-0.1617,0.0224,7141,0.0112,0.0074,-0.0327
+network_tum - network,all,SC or VSC,-0.0023,0.0041,3928,-0.1236,0.03,3913,0.0105,0.0081,-0.0626
+network_tum - network,all,green only,-0.0083,0.003,3244,-0.2078,0.0338,3228,0.0122,0.0064,0.0051
+network_tum - network,Austin,all,-0.0351,0.0062,1793,-0.7243,0.0705,1789,0.0295,0.003,-0.2598
+network_tum - network,Austin,SC or VSC,-0.0285,0.0085,982,-0.5867,0.0878,980,0.0263,0.0044,-0.2741
+network_tum - network,Austin,green only,-0.0432,0.009,811,-0.8909,0.1139,809,0.0337,0.0012,-0.2416
+network_tum - network,Monza,all,0.0033,0.0068,1793,-0.0402,0.0473,1768,0.0145,0.02,0.0916
+network_tum - network,Monza,SC or VSC,0.0031,0.0108,982,-0.0262,0.0681,970,0.014,0.0211,-0.0114
+network_tum - network,Monza,green only,0.0037,0.0073,811,-0.0572,0.0641,798,0.0151,0.0186,0.2216
+network_tum - network,Singapore,all,0.0,0.0,1793,0.0,0.0,1793,0.0,0.0,0.0026
+network_tum - network,Singapore,SC or VSC,0.0,0.0,982,0.0,0.0,982,0.0,0.0,0.0047
+network_tum - network,Singapore,green only,0.0,0.0,811,0.0,0.0,811,0.0,0.0,0.0
+network_tum - network,Spielberg,all,0.0117,0.0052,1793,0.1186,0.0247,1791,0.001,0.0065,0.0348
+network_tum - network,Spielberg,SC or VSC,0.0163,0.0092,982,0.119,0.0419,981,0.0018,0.007,0.0303
+network_tum - network,Spielberg,green only,0.0062,0.0028,811,0.1181,0.0201,810,0.0,0.0058,0.0405

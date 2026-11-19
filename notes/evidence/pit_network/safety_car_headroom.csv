@@ -1,0 +1,78 @@
+Policy,Track,Races,PosDiff,PosDiff_SE,TimeDiff_s,TimeDiff_s_SE,Runs
+base: v4 + compound head,all,all,0.0,0.0,0.0,0.0,800
+base: v4 + compound head,all,SC or VSC,0.0,0.0,0.0,0.0,300
+base: v4 + compound head,all,green only,0.0,0.0,0.0,0.0,500
+base: v4 + compound head,Austin,SC or VSC,0.0,0.0,0.0,0.0,75
+base: v4 + compound head,Monza,SC or VSC,0.0,0.0,0.0,0.0,75
+base: v4 + compound head,Singapore,SC or VSC,0.0,0.0,0.0,0.0,75
+base: v4 + compound head,Spielberg,SC or VSC,0.0,0.0,0.0,0.0,75
+"hindsight, SC laps only",all,all,-0.163,0.0213,-0.9783,0.2404,800
+"hindsight, SC laps only",all,SC or VSC,-0.4478,0.0545,-2.8023,0.6744,300
+"hindsight, SC laps only",all,green only,0.0,0.0,0.0,0.0,500
+"hindsight, SC laps only",Austin,SC or VSC,-0.2537,0.086,-4.2619,2.3632,75
+"hindsight, SC laps only",Monza,SC or VSC,-0.2388,0.0879,-0.5003,0.1242,75
+"hindsight, SC laps only",Singapore,SC or VSC,-0.6119,0.1221,-2.4949,0.9509,75
+"hindsight, SC laps only",Spielberg,SC or VSC,-0.6866,0.1244,-4.1434,1.1438,75
+  ... SC stop before the base stop,all,all,-0.0774,0.0144,-0.3994,0.1575,800
+  ... SC stop before the base stop,all,SC or VSC,-0.2127,0.0383,-1.1239,0.4401,300
+  ... SC stop before the base stop,all,green only,0.0,0.0,0.0,0.0,500
+  ... SC stop before the base stop,Austin,SC or VSC,-0.1045,0.0527,-1.8331,1.5264,75
+  ... SC stop before the base stop,Monza,SC or VSC,-0.0149,0.0149,-0.0992,0.06,75
+  ... SC stop before the base stop,Singapore,SC or VSC,-0.2836,0.0818,-0.5096,0.8038,75
+  ... SC stop before the base stop,Spielberg,SC or VSC,-0.4478,0.1111,-2.1581,0.4238,75
+  ... SC stop after the base stop,all,all,-0.0625,0.0134,-0.3264,0.1056,800
+  ... SC stop after the base stop,all,SC or VSC,-0.1716,0.0359,-0.905,0.2898,300
+  ... SC stop after the base stop,all,green only,0.0,0.0,0.0,0.0,500
+  ... SC stop after the base stop,Austin,SC or VSC,-0.0149,0.0149,-0.2503,0.1826,75
+  ... SC stop after the base stop,Monza,SC or VSC,-0.2239,0.0872,-0.4158,0.1132,75
+  ... SC stop after the base stop,Singapore,SC or VSC,-0.1343,0.0598,-1.0372,0.4422,75
+  ... SC stop after the base stop,Spielberg,SC or VSC,-0.3134,0.0932,-1.9325,1.0574,75
+  ... second stop under SC,all,all,-0.0408,0.0119,-0.3391,0.1499,800
+  ... second stop under SC,all,SC or VSC,-0.1119,0.0323,-0.9402,0.4135,300
+  ... second stop under SC,all,green only,0.0,0.0,0.0,0.0,500
+  ... second stop under SC,Austin,SC or VSC,-0.1493,0.0713,-2.1165,1.645,75
+  ... second stop under SC,Monza,SC or VSC,0.0,0.0,0.0,0.0,75
+  ... second stop under SC,Singapore,SC or VSC,-0.2985,0.1042,-1.664,0.4894,75
+  ... second stop under SC,Spielberg,SC or VSC,0.0,0.0,-0.0507,0.0379,75
+"hindsight, any plan",all,all,-0.7989,0.0428,-4.764,0.3547,800
+"hindsight, any plan",all,SC or VSC,-1.1716,0.0843,-6.6025,0.8593,300
+"hindsight, any plan",all,green only,-0.5855,0.0441,-3.6697,0.2271,500
+"hindsight, any plan",Austin,SC or VSC,-1.0,0.1473,-12.0599,3.155,75
+"hindsight, any plan",Monza,SC or VSC,-0.7463,0.1351,-2.2272,0.2679,75
+"hindsight, any plan",Singapore,SC or VSC,-1.7612,0.1818,-6.7886,1.1153,75
+"hindsight, any plan",Spielberg,SC or VSC,-1.1791,0.1829,-5.8359,1.1147,75
+"first stop under SC, progress >= 0.2",all,all,0.0,0.0,0.0183,0.0183,800
+"first stop under SC, progress >= 0.2",all,SC or VSC,0.0,0.0,0.0502,0.0502,300
+"first stop under SC, progress >= 0.2",all,green only,0.0,0.0,0.0,0.0,500
+"first stop under SC, progress >= 0.2",Austin,SC or VSC,0.0,0.0,0.0,0.0,75
+"first stop under SC, progress >= 0.2",Monza,SC or VSC,0.0,0.0,0.0,0.0,75
+"first stop under SC, progress >= 0.2",Singapore,SC or VSC,0.0,0.0,0.0,0.0,75
+"first stop under SC, progress >= 0.2",Spielberg,SC or VSC,0.0,0.0,0.201,0.201,75
+"second stop under SC, >= 40 laps left",all,all,0.0,0.0,0.0,0.0,800
+"second stop under SC, >= 40 laps left",all,SC or VSC,0.0,0.0,0.0,0.0,300
+"second stop under SC, >= 40 laps left",all,green only,0.0,0.0,0.0,0.0,500
+"second stop under SC, >= 40 laps left",Austin,SC or VSC,0.0,0.0,0.0,0.0,75
+"second stop under SC, >= 40 laps left",Monza,SC or VSC,0.0,0.0,0.0,0.0,75
+"second stop under SC, >= 40 laps left",Singapore,SC or VSC,0.0,0.0,0.0,0.0,75
+"second stop under SC, >= 40 laps left",Spielberg,SC or VSC,0.0,0.0,0.0,0.0,75
+both,all,all,0.0,0.0,0.0183,0.0183,800
+both,all,SC or VSC,0.0,0.0,0.0502,0.0502,300
+both,all,green only,0.0,0.0,0.0,0.0,500
+both,Austin,SC or VSC,0.0,0.0,0.0,0.0,75
+both,Monza,SC or VSC,0.0,0.0,0.0,0.0,75
+both,Singapore,SC or VSC,0.0,0.0,0.0,0.0,75
+both,Spielberg,SC or VSC,0.0,0.0,0.201,0.201,75
+hold for SC up to 1 laps,all,all,0.0122,0.0283,-0.2325,0.1842,800
+hold for SC up to 1 laps,all,SC or VSC,-0.0448,0.0574,-0.4643,0.3944,300
+hold for SC up to 1 laps,all,green only,0.0449,0.03,-0.0993,0.1813,500
+hold for SC up to 1 laps,Austin,SC or VSC,-0.1194,0.1009,-2.2126,1.4433,75
+hold for SC up to 1 laps,Monza,SC or VSC,-0.0299,0.0672,-0.0006,0.1369,75
+hold for SC up to 1 laps,Singapore,SC or VSC,-0.0299,0.174,0.2772,0.594,75
+hold for SC up to 1 laps,Spielberg,SC or VSC,0.0,0.0902,0.0488,0.1861,75
+SC lowers the bar to 0.00,all,all,0.0163,0.0086,0.0774,0.0448,800
+SC lowers the bar to 0.00,all,SC or VSC,0.0448,0.0235,0.2131,0.1231,300
+SC lowers the bar to 0.00,all,green only,0.0,0.0,0.0,0.0,500
+SC lowers the bar to 0.00,Austin,SC or VSC,0.0,0.0,0.0,0.0,75
+SC lowers the bar to 0.00,Monza,SC or VSC,0.0,0.0,0.0,0.0,75
+SC lowers the bar to 0.00,Singapore,SC or VSC,0.0597,0.0702,-0.112,0.3457,75
+SC lowers the bar to 0.00,Spielberg,SC or VSC,0.1194,0.0621,0.9596,0.3404,75

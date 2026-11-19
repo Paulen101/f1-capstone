@@ -1,0 +1,41 @@
+Track,Error,Policy,VsTUM,Time,Green,SC,TwoStop,FirstStop
+Austin,moderate,seen robust v7,+0.22±0.04,+2.2,-0.06,+0.46,70%,22.5
+Austin,moderate,unseen robust,+1.04±0.04,+11.7,+0.70,+1.32,14%,18.5
+Austin,moderate,unseen exact-trained,+1.38±0.05,+16.3,+1.12,+1.60,79%,7.4
+Austin,moderate,race-file plan,+0.23±0.03,+1.9,+0.06,+0.36,72%,17.9
+Austin,exact,seen robust v7,+0.19±0.04,+1.8,-0.12,+0.46,75%,22.3
+Austin,exact,unseen robust,+1.05±0.04,+11.4,+0.76,+1.29,11%,19.0
+Austin,exact,unseen exact-trained,+0.92±0.04,+11.8,+0.66,+1.13,94%,5.2
+Austin,exact,race-file plan,-0.17±0.03,-2.5,-0.36,-0.02,92%,17.1
+Monza,moderate,seen robust v7,+0.21±0.03,+1.2,-0.05,+0.42,0%,25.7
+Monza,moderate,unseen robust,+0.75±0.04,+6.4,+0.55,+0.92,31%,18.8
+Monza,moderate,unseen exact-trained,+0.98±0.04,+7.6,+0.78,+1.15,4%,15.8
+Monza,moderate,race-file plan,+0.33±0.03,+2.7,+0.10,+0.51,1%,25.2
+Monza,exact,seen robust v7,+0.19±0.03,+1.2,-0.08,+0.41,0%,25.8
+Monza,exact,unseen robust,+0.77±0.04,+6.3,+0.59,+0.92,32%,19.0
+Monza,exact,unseen exact-trained,+0.99±0.04,+7.5,+0.75,+1.18,4%,15.2
+Monza,exact,race-file plan,+0.14±0.02,+1.1,-0.09,+0.34,0%,25.4
+Singapore,moderate,seen robust v7,-0.78±0.05,-6.9,-1.24,-0.40,2%,17.6
+Singapore,moderate,unseen robust,+0.45±0.06,+0.3,+0.09,+0.75,0%,29.5
+Singapore,moderate,unseen exact-trained,-0.21±0.05,-1.2,-0.64,+0.14,25%,16.8
+Singapore,moderate,race-file plan,-0.15±0.05,-2.4,-0.55,+0.17,19%,21.5
+Singapore,exact,seen robust v7,-0.75±0.05,-6.8,-1.18,-0.39,2%,18.6
+Singapore,exact,unseen robust,+0.27±0.06,-2.6,-0.09,+0.57,0%,27.8
+Singapore,exact,unseen exact-trained,-0.78±0.05,-7.1,-1.19,-0.44,11%,18.3
+Singapore,exact,race-file plan,-0.75±0.04,-9.4,-1.09,-0.46,0%,23.2
+Spielberg,moderate,seen robust v7,+0.18±0.02,+1.3,-0.04,+0.36,1%,29.9
+Spielberg,moderate,unseen robust,+0.84±0.03,+7.8,+0.66,+0.98,46%,33.9
+Spielberg,moderate,unseen exact-trained,+1.30±0.04,+12.1,+1.23,+1.35,78%,13.7
+Spielberg,moderate,race-file plan,+0.65±0.03,+5.1,+0.43,+0.84,6%,32.6
+Spielberg,exact,seen robust v7,+0.16±0.02,+1.1,-0.09,+0.37,1%,29.6
+Spielberg,exact,unseen robust,+0.79±0.03,+7.7,+0.60,+0.95,44%,34.2
+Spielberg,exact,unseen exact-trained,+1.37±0.04,+12.6,+1.31,+1.42,85%,13.2
+Spielberg,exact,race-file plan,+0.21±0.02,+1.2,-0.01,+0.39,0%,35.1
+Catalunya,moderate,seen robust v7,-0.17±0.03,-0.2,-0.23,-0.12,8%,31.0
+Catalunya,moderate,unseen robust,+0.29±0.03,+4.7,+0.19,+0.37,0%,26.9
+Catalunya,moderate,unseen exact-trained,+0.45±0.04,+7.1,+0.40,+0.49,22%,23.9
+Catalunya,moderate,race-file plan,-0.11±0.03,-0.2,-0.04,-0.18,36%,28.2
+Catalunya,exact,seen robust v7,-0.19±0.03,-0.5,-0.22,-0.16,7%,31.1
+Catalunya,exact,unseen robust,+0.29±0.03,+4.8,+0.20,+0.36,0%,26.0
+Catalunya,exact,unseen exact-trained,+0.61±0.04,+9.2,+0.61,+0.62,14%,22.8
+Catalunya,exact,race-file plan,-0.23±0.03,-1.8,-0.22,-0.23,19%,30.8

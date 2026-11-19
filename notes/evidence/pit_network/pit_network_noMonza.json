@@ -1,0 +1,508 @@
+{
+ "Name": "pit_network_noMonza",
+ "Settings": {
+  "data": "E:\\Seminar\\f1-capstone\\integration\\output\\situations\\situations.csv",
+  "name": "pit_network_noMonza",
+  "holdout_track": "Monza",
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16
+ },
+ "Features": [
+  "RaceProgress",
+  "LapsRemaining",
+  "TyreAge",
+  "TyreAgeProgress",
+  "RelHard",
+  "RelMedium",
+  "RelSoft",
+  "Position",
+  "GapAhead_s",
+  "GapBehind_s",
+  "NoCarAhead",
+  "NoCarBehind",
+  "CloseAheadPrevLap",
+  "PursuerPittedPrevLap",
+  "FlagSC",
+  "FlagVSC",
+  "LocationCat",
+  "PitLoss_s",
+  "TyreDelta_s",
+  "WearRate_s",
+  "StopWearRate_s",
+  "StayCost_s"
+ ],
+ "TrainRows": 536107,
+ "History": [
+  {
+   "Epoch": 1,
+   "TrainLoss": [
+    1.31942,
+    0.52348
+   ],
+   "ValLoss": [
+    1.2871,
+    0.48832
+   ]
+  },
+  {
+   "Epoch": 2,
+   "TrainLoss": [
+    1.27055,
+    0.49197
+   ],
+   "ValLoss": [
+    1.23589,
+    0.45799
+   ]
+  },
+  {
+   "Epoch": 3,
+   "TrainLoss": [
+    1.25002,
+    0.47614
+   ],
+   "ValLoss": [
+    1.21452,
+    0.44424
+   ]
+  },
+  {
+   "Epoch": 4,
+   "TrainLoss": [
+    1.2375,
+    0.46739
+   ],
+   "ValLoss": [
+    1.20309,
+    0.43809
+   ]
+  },
+  {
+   "Epoch": 5,
+   "TrainLoss": [
+    1.22905,
+    0.46423
+   ],
+   "ValLoss": [
+    1.19524,
+    0.43584
+   ]
+  },
+  {
+   "Epoch": 6,
+   "TrainLoss": [
+    1.22307,
+    0.46001
+   ],
+   "ValLoss": [
+    1.18942,
+    0.43182
+   ]
+  },
+  {
+   "Epoch": 7,
+   "TrainLoss": [
+    1.21892,
+    0.45952
+   ],
+   "ValLoss": [
+    1.1838,
+    0.42957
+   ]
+  },
+  {
+   "Epoch": 8,
+   "TrainLoss": [
+    1.21668,
+    0.45678
+   ],
+   "ValLoss": [
+    1.18084,
+    0.42892
+   ]
+  },
+  {
+   "Epoch": 9,
+   "TrainLoss": [
+    1.21497,
+    0.45556
+   ],
+   "ValLoss": [
+    1.1833,
+    0.42735
+   ]
+  },
+  {
+   "Epoch": 10,
+   "TrainLoss": [
+    1.20945,
+    0.45471
+   ],
+   "ValLoss": [
+    1.17615,
+    0.42873
+   ]
+  },
+  {
+   "Epoch": 11,
+   "TrainLoss": [
+    1.20614,
+    0.45244
+   ],
+   "ValLoss": [
+    1.17188,
+    0.42354
+   ]
+  },
+  {
+   "Epoch": 12,
+   "TrainLoss": [
+    1.20609,
+    0.45256
+   ],
+   "ValLoss": [
+    1.17199,
+    0.42352
+   ]
+  },
+  {
+   "Epoch": 13,
+   "TrainLoss": [
+    1.20293,
+    0.45148
+   ],
+   "ValLoss": [
+    1.17073,
+    0.42571
+   ]
+  },
+  {
+   "Epoch": 14,
+   "TrainLoss": [
+    1.2018,
+    0.45102
+   ],
+   "ValLoss": [
+    1.17016,
+    0.42324
+   ]
+  },
+  {
+   "Epoch": 15,
+   "TrainLoss": [
+    1.19881,
+    0.45159
+   ],
+   "ValLoss": [
+    1.16782,
+    0.42306
+   ]
+  },
+  {
+   "Epoch": 16,
+   "TrainLoss": [
+    1.1981,
+    0.44933
+   ],
+   "ValLoss": [
+    1.16657,
+    0.4212
+   ]
+  },
+  {
+   "Epoch": 17,
+   "TrainLoss": [
+    1.19628,
+    0.44916
+   ],
+   "ValLoss": [
+    1.16365,
+    0.42257
+   ]
+  },
+  {
+   "Epoch": 18,
+   "TrainLoss": [
+    1.19377,
+    0.44773
+   ],
+   "ValLoss": [
+    1.16294,
+    0.42168
+   ]
+  },
+  {
+   "Epoch": 19,
+   "TrainLoss": [
+    1.19299,
+    0.44939
+   ],
+   "ValLoss": [
+    1.16109,
+    0.42157
+   ]
+  },
+  {
+   "Epoch": 20,
+   "TrainLoss": [
+    1.19302,
+    0.44715
+   ],
+   "ValLoss": [
+    1.16062,
+    0.42156
+   ]
+  },
+  {
+   "Epoch": 21,
+   "TrainLoss": [
+    1.19142,
+    0.44785
+   ],
+   "ValLoss": [
+    1.16207,
+    0.42048
+   ]
+  },
+  {
+   "Epoch": 22,
+   "TrainLoss": [
+    1.19421,
+    0.4473
+   ],
+   "ValLoss": [
+    1.16248,
+    0.42149
+   ]
+  },
+  {
+   "Epoch": 23,
+   "TrainLoss": [
+    1.19052,
+    0.44587
+   ],
+   "ValLoss": [
+    1.15932,
+    0.42206
+   ]
+  },
+  {
+   "Epoch": 24,
+   "TrainLoss": [
+    1.20395,
+    0.45006
+   ],
+   "ValLoss": [
+    1.17328,
+    0.42188
+   ]
+  },
+  {
+   "Epoch": 25,
+   "TrainLoss": [
+    1.18734,
+    0.4451
+   ],
+   "ValLoss": [
+    1.15587,
+    0.42038
+   ]
+  },
+  {
+   "Epoch": 26,
+   "TrainLoss": [
+    1.18961,
+    0.44541
+   ],
+   "ValLoss": [
+    1.15713,
+    0.42276
+   ]
+  },
+  {
+   "Epoch": 27,
+   "TrainLoss": [
+    1.18943,
+    0.44599
+   ],
+   "ValLoss": [
+    1.15714,
+    0.41667
+   ]
+  },
+  {
+   "Epoch": 28,
+   "TrainLoss": [
+    1.18794,
+    0.44628
+   ],
+   "ValLoss": [
+    1.15634,
+    0.42041
+   ]
+  },
+  {
+   "Epoch": 29,
+   "TrainLoss": [
+    1.18569,
+    0.44448
+   ],
+   "ValLoss": [
+    1.15613,
+    0.42196
+   ]
+  },
+  {
+   "Epoch": 30,
+   "TrainLoss": [
+    1.18666,
+    0.44472
+   ],
+   "ValLoss": [
+    1.15784,
+    0.41956
+   ]
+  },
+  {
+   "Epoch": 31,
+   "TrainLoss": [
+    1.188,
+    0.44462
+   ],
+   "ValLoss": [
+    1.15612,
+    0.42124
+   ]
+  },
+  {
+   "Epoch": 32,
+   "TrainLoss": [
+    1.1842,
+    0.44474
+   ],
+   "ValLoss": [
+    1.15476,
+    0.42253
+   ]
+  }
+ ],
+ "NumpyVsTorchMaxDiff": 1.2226552364325016e-05,
+ "Validation": {
+  "Rows": 136379,
+  "MSE": [
+   1.1571389889898835,
+   41.66657197555312
+  ],
+  "MSE_constant": [
+   2.264956662890677,
+   125.07220051357541
+  ],
+  "MSE_lookup": [
+   1.1316204241806718,
+   41.58618985825671
+  ],
+  "MSE_model_on_lookup_rows": [
+   1.1571389889898835,
+   41.66657197555312
+  ],
+  "DecisionCells": 3580,
+  "DecisionAgreement": 0.9175977653631285,
+  "PitShareModel": 0.49162011173184356,
+  "PitShareTrue": 0.47849162011173185
+ },
+ "ValidationByTrack": {
+  "Austin": {
+   "Rows": 40387,
+   "MSE": [
+    1.0509129159970911,
+    42.58036300736776
+   ],
+   "MSE_constant": [
+    3.1859885528130913,
+    194.7091107925881
+   ],
+   "MSE_lookup": [
+    0.9328303362221909,
+    40.649004989606766
+   ],
+   "MSE_model_on_lookup_rows": [
+    1.0509129159970911,
+    42.58036300736776
+   ],
+   "DecisionCells": 1060,
+   "DecisionAgreement": 0.9509433962264151,
+   "PitShareModel": 0.5622641509433962,
+   "PitShareTrue": 0.5433962264150943
+  },
+  "Singapore": {
+   "Rows": 44179,
+   "MSE": [
+    1.4343395754968078,
+    59.18712739396743
+   ],
+   "MSE_constant": [
+    2.3579674131030526,
+    150.44159079955617
+   ],
+   "MSE_lookup": [
+    1.4393299049238415,
+    59.36778483609905
+   ],
+   "MSE_model_on_lookup_rows": [
+    1.4343395754968078,
+    59.18712739396743
+   ],
+   "DecisionCells": 1160,
+   "DecisionAgreement": 0.9215517241379311,
+   "PitShareModel": 0.6094827586206897,
+   "PitShareTrue": 0.5948275862068966
+  },
+  "Spielberg": {
+   "Rows": 51813,
+   "MSE": [
+    1.0034970456254189,
+    25.83133413158171
+   ],
+   "MSE_constant": [
+    1.4677608735052985,
+    50.282384053210116
+   ],
+   "MSE_lookup": [
+    1.0241016709261967,
+    26.930535217413635
+   ],
+   "MSE_model_on_lookup_rows": [
+    1.0034970456254189,
+    25.83133413158171
+   ],
+   "DecisionCells": 1360,
+   "DecisionAgreement": 0.888235294117647,
+   "PitShareModel": 0.3360294117647059,
+   "PitShareTrue": 0.3286764705882353
+  }
+ },
+ "HeldOutTrack": {
+  "Rows": 187986,
+  "MSE": [
+   3.5032561173320516,
+   65.76745210466242
+  ],
+  "MSE_constant": [
+   2.69305267000833,
+   87.99658939313694
+  ],
+  "DecisionCells": 1000,
+  "DecisionAgreement": 0.554,
+  "PitShareModel": 0.01,
+  "PitShareTrue": 0.456
+ },
+ "Seconds": 27
+}

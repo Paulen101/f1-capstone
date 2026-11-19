@@ -1,7 +1,7 @@
 """Behavior checks for the single-driver timing adapter; Python 3.8 stdlib only."""
 import unittest
 
-from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE
+from integration.fixed_lap_policy import FixedLapPolicy, FixedLapVSE, PlannedStopsPolicy
 
 
 class BackgroundVSE:
@@ -21,6 +21,15 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(policy.decide(25, 71, True, 0), "A3")
         self.assertIsNone(policy.decide(26, 71, True, 0))
         self.assertIsNone(policy.decide(25, 71, True, 1))
+
+    def test_planned_stops_in_order(self):
+        policy = PlannedStopsPolicy(((20, "A3"), (40, "A6")))
+        self.assertEqual(policy.decide(20, 56, True, 0), "A3")
+        self.assertIsNone(policy.decide(40, 56, True, 0))      # first stop not made: no second
+        self.assertEqual(policy.decide(40, 56, True, 1), "A6")
+        self.assertIsNone(policy.decide(41, 56, True, 2))
+        with self.assertRaises(ValueError):
+            PlannedStopsPolicy(((40, "A3"), (20, "A6")))
 
     def test_retirement_and_invalid_schedule(self):
         self.assertIsNone(FixedLapPolicy(25, "A3").decide(25, 71, False, 0))

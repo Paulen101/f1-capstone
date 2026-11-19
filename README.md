@@ -34,8 +34,14 @@ Austin (in between).
 | Held-out check and quadratic wear where it predicts better (`notes/heldout_check.md`) | Done |
 | Label generator: Monte Carlo per-lap scores for 14 one-stop drivers (`notes/label_generator.md`) | Done |
 | Race situation sampling, methodology step 4: 860,000 situations from 80 driver-races (`notes/situation_sampling.md`) | Done for the four one-stop 2019 races |
-| Retrained pit-timing network | Planned |
-| Evaluation against the original VSE and real strategies | Planned |
+| Pit-timing network trained on the situations (`notes/pit_network.md`) | Done: v1, one stop, four 2019 races |
+| Evaluation against the original VSE and real strategies | First round done, with TUM's compound choice: beats real strategies by 0.58 places, ties TUM's VSE (better in green races, worse with safety cars) |
+| Labels that value waiting (policy iteration on exact replays) | Done: no gain; TUM's edge is choosing lap and compound together, which needs runs with every compound |
+| Two-stop decisions (`notes/pit_network.md`, round 3) | Done for Austin: beats TUM's VSE by 0.11 places and the real strategies by 0.49 |
+| One two-stop network for all four tracks (`notes/pit_network.md`, round 4) | Done: beats TUM's VSE by 0.15 places and 1.7 s, and the real strategies by 0.73 places; TUM still wins safety-car races at Monza and Spielberg |
+| Lap and compound chosen together (`notes/pit_network.md`, round 5) | Done: helps at Spielberg (0.15 places) and Monza, costs as much at Austin and Singapore; no overall change, v4 stays best |
+| v4's timing with a compound head (`notes/pit_network.md`, round 6) | Done: best policy so far, beats TUM's VSE by 0.20 places and 2.2 s and the real strategies by 0.78 places; TUM still leads in safety-car races at Monza and Spielberg |
+| Safety-car headroom (`notes/pit_network.md`, round 7) | Done: hindsight bound −0.45 places in safety-car races, but no rule that only knows the present gains on held-out runs; not worth a training round |
 
 ## Layout
 
@@ -52,13 +58,14 @@ fastf1_cache/           FastF1 download cache (not in git)
 
 ## Setup
 
-Two separate Python environments are required, because FastF1 needs Python 3.10+ and TUM's
+Two separate Python environments are required (a third, `.venv-train`, only for training the network), because FastF1 needs Python 3.10+ and TUM's
 pinned dependencies need Python 3.8. They exchange data only through files.
 
 | Environment | Python | Used for |
 |---|---|---|
 | `.venv-data` | 3.10+ | FastF1, Excel export, analysis, parameter fitting |
 | `.venv-tum` | 3.8 | everything in `race-simulation/` and `integration/` |
+| `.venv-train` | 3.10 | training the pit-timing network (PyTorch; `notes/pit_network.md`) |
 
 ```sh
 python3.10 -m venv .venv-data
@@ -66,6 +73,11 @@ python3.10 -m venv .venv-data
 
 # TUM: see notes/environment.md for the exact Python 3.8 build used on macOS
 .venv-tum/bin/pip install -r race-simulation/requirements.txt
+
+# network training; on an NVIDIA RTX 50-series GPU use the CUDA 12.8 build, otherwise the CPU one
+python3.10 -m venv .venv-train
+.venv-train/bin/pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cu128   # or .../whl/cpu
+.venv-train/bin/pip install numpy==2.2.6 pandas==2.3.3
 ```
 
 Exact package versions are in `notes/requirements-data.lock.txt` and
@@ -138,8 +150,8 @@ integration/run_mc_labels.sh 500 28
 .venv-tum/bin/python -X utf8 race-simulation/main_racesim.py
 .venv-tum/bin/python integration/demo_vse.py
 
-.venv-tum/bin/python -m unittest integration.test_policy integration.test_label_generator integration.test_write_fitted_pars integration.test_heldout_traffic -v
-.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic data_pipeline.test_heldout_tyres data_pipeline.test_build_situations -v
+.venv-tum/bin/python -m unittest integration.test_policy integration.test_label_generator integration.test_write_fitted_pars integration.test_heldout_traffic integration.test_pit_network -v
+.venv-data/bin/python -m unittest data_pipeline.test_comparison data_pipeline.test_fit_parameters data_pipeline.test_fit_traffic data_pipeline.test_heldout_tyres data_pipeline.test_build_situations data_pipeline.test_summarise_evaluation data_pipeline.test_stopping_labels data_pipeline.test_two_stop_labels -v
 ```
 
 Any change to TUM's files is logged in `notes/tum_changes.md`.

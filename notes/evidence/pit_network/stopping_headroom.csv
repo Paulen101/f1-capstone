@@ -1,0 +1,11 @@
+Policy,All,SC or VSC,Green only
+hindsight,-0.797 ± 0.022,-1.037 ± 0.033,-0.420 ± 0.022
+"wait for SC: from fixed-0, else fixed+0",+0.000 ± 0.000,+0.000 ± 0.000,+0.000 ± 0.000
+"wait for SC: from fixed-5, else fixed+0",-0.024 ± 0.009,-0.040 ± 0.015,+0.000 ± 0.000
+"wait for SC: from fixed-10, else fixed+0",-0.009 ± 0.013,-0.014 ± 0.021,+0.000 ± 0.000
+"wait for SC: from fixed-15, else fixed+0",+0.055 ± 0.017,+0.090 ± 0.028,+0.000 ± 0.000
+"wait for SC: from fixed-5, else fixed+2",+0.008 ± 0.017,-0.033 ± 0.024,+0.073 ± 0.021
+"wait for SC: from fixed-5, else fixed+4",+0.074 ± 0.019,+0.001 ± 0.028,+0.189 ± 0.023
+"wait for SC: from fixed-5, else fixed+8",+0.349 ± 0.024,+0.191 ± 0.034,+0.597 ± 0.029
+pit_network_v1,-0.004 ± 0.019,-0.032 ± 0.028,+0.040 ± 0.021
+pit_network_v2,-0.026 ± 0.018,-0.066 ± 0.027,+0.036 ± 0.019
