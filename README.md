@@ -33,7 +33,7 @@ Austin (in between).
 | Own fitted parameters written into TUM parameter files (`notes/fitted_parameters.md`, `notes/fitted_parameters_study_circuits.md`) | Done for 2019: Austria and the four study circuits |
 | Held-out check and quadratic wear where it predicts better (`notes/heldout_check.md`) | Done |
 | Label generator: Monte Carlo per-lap scores for 14 one-stop drivers (`notes/label_generator.md`) | Done |
-| Race situation sampling, methodology step 4 (`notes/situation_sampling.md`) | In progress |
+| Race situation sampling, methodology step 4: 860,000 situations from 80 driver-races (`notes/situation_sampling.md`) | Done for the four one-stop 2019 races |
 | Retrained pit-timing network | Planned |
 | Evaluation against the original VSE and real strategies | Planned |
 
@@ -114,6 +114,9 @@ integration/run_sweep.sh
 # Monte Carlo labels on the fitted files, then the per-lap score table
 integration/run_mc_labels.sh 500 28
 .venv-data/bin/python data_pipeline/summarise_labels.py --runs 500
+# race situations for every driver, then the per-situation rows (see notes/situation_sampling.md)
+.venv-tum/bin/python integration/run_situations.py --runs 200 --jobs 28
+.venv-data/bin/python data_pipeline/build_situations.py integration/output/situations/*_2019_fitted_*_mc200
 
 # our fitted parameters: fit from the workbook, write the fitted race file, then pass its path
 # with --race (see notes/fitted_parameters.md)
