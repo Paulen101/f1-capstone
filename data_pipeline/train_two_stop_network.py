@@ -47,10 +47,11 @@ def first_stint_decisions(network, x1, t1, stored_only=False) -> np.ndarray:
     return decisions(network, x1, has) & chosen & (t1.Lap < t1.LastLap).to_numpy()
 
 
-def features(table: pd.DataFrame) -> np.ndarray:
+def features(table: pd.DataFrame, tyre_error: str = None) -> np.ndarray:
+    """Network inputs of every row with a situation; tyre_error: tyre inputs from a wrong model per run."""
     x = np.zeros((len(table), len(FEATURES)))
     has = table.HasSituation.to_numpy()
-    situated = add_tyre_features(table[has].reset_index())
+    situated = add_tyre_features(table[has].reset_index(), tyre_error)
     x[situated["index"].to_numpy()] = np.array([feature_vector(r) for r in situated.to_dict("records")])
     return x
 
@@ -92,6 +93,9 @@ def main():
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--threads", type=int, default=16)
     parser.add_argument("--device", choices=["auto", "cuda", "cpu"], default="auto")
+    parser.add_argument("--tyre-error", choices=["exact", "moderate", "large"], default="exact",
+                        help="train and replay with tyre inputs from a wrong tyre model, drawn per run "
+                             "(integration/tyre_uncertainty.py); outcomes stay those of the true model")
     args = parser.parse_args()
 
     started = time.perf_counter()
@@ -99,7 +103,7 @@ def main():
                      if (p / "manifest.json").is_file())
     tracks = sorted({p.name.split("_")[0] for p in folders})
     t1, t2 = load_folders(folders, COMPOUND_RUNS if args.compounds == "all" else None)
-    x1, x2 = features(t1), features(t2)
+    x1, x2 = features(t1, args.tyre_error), features(t2, args.tyre_error)
     has2 = t2.HasSituation.to_numpy()
     first_val = int(args.runs * 0.8)
     val1, val2 = (t1.Run >= first_val).to_numpy(), (t2.Run >= first_val).to_numpy()

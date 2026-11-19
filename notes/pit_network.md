@@ -441,10 +441,39 @@ What this shows:
 - **What the wrong model does**: at Austin the network's two-stop share falls from 92 % to 59 % (moderate) and 37 % (large), at Barcelona from 70 % to 46 % and 36 %; a wear rate believed too low makes long stints look cheap.
 - **This completes the picture of rounds 6–8.** Our policies' lead over TUM in this simulator is the exact tyre model they share with it. TUM's VSE never had that model and is unaffected; against it, the honest comparison is the "moderate" row.
 
+### Training for a wrong tyre model (network v7)
+
+The network trusted its tyre inputs completely, because in training they were always exact. Here it trains on wrong ones: every stored run gets its own wrong tyre model at the **moderate** level (the error model above, drawn per track and run with a different key from the evaluation races, so no evaluation race repeats a training error). Only the inputs change; the runs and their outcomes are those of the true model, so the labels stay exact. The policy-iteration replay also decides on the wrong inputs, so it scores exactly what a strategy with a wrong model would get.
+
+- `add_tyre_features(rows, tyre_error)` (`data_pipeline/train_pit_network.py`): the error is a pace offset plus a wear factor per compound, so each tyre input is linear in it. The inputs are split once into pace and wear parts and each run's error is applied with arrays; `data_pipeline/test_tyre_error_features.py` checks this against the simulator-side calculation (`tyre_uncertainty.believed_tires` + `tyre_features`) to 1e-9.
+- **v7** (`train_two_stop_network.py --tyre-error moderate`, otherwise as v6: five tracks, start v1, stored compound, 4 iterations; iteration 2 best; [report](evidence/pit_network/pit_network_v7_robust.json)) and **compound head v3** (`train_compound_head.py --tyre-error moderate --timing pit_network_v7_robust.npz`; [report](evidence/pit_network/pit_compound_head_v3_robust.json)). On held-out runs with wrong inputs, v1 loses 0.25 places to the error (+0.26 vs the fixed one-stop instead of +0.01); v7 is 0.31 places better than v1 there.
+
+Raced as v7 + head v3 (`network_head`) at every error level, the same seeds and the same error draws as the previous section ([table](evidence/pit_network/robust_training.csv)):
+
+| Minus TUM's VSE (places) | Exact tyres | Moderate error | Large error |
+|---|---:|---:|---:|
+| v6 + head (trained on exact tyres) | **−0.18 ± 0.02** | +0.27 ± 0.02 | +0.78 ± 0.02 |
+| **v7 + head (trained on moderate errors)** | −0.08 ± 0.02 | **−0.07 ± 0.02** | **−0.02 ± 0.02** |
+| race-file plan | −0.16 ± 0.01 | +0.19 ± 0.02 | +0.74 ± 0.02 |
+| v7 + head minus v6 + head | +0.10 ± 0.01 | **−0.34 ± 0.02** (−3.7 s) | **−0.80 ± 0.02** (−7.1 s) |
+| v7 + head minus race-file plan | +0.08 ± 0.01 | **−0.26 ± 0.01** (−1.9 s) | **−0.76 ± 0.02** (−6.6 s) |
+
+| v7 + head, moderate error, minus TUM | Places | Race time | Green | SC/VSC | Austin | Barcelona | Monza | Singapore | Spielberg |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| | −0.07 ± 0.02 | −0.4 s | −0.32 | +0.14 | +0.22 | −0.17 | +0.21 | −0.78 | +0.18 |
+
+What this shows:
+
+- **Training on wrong tyres makes the network almost blind to the error.** From exact tyres to large errors it moves by 0.06 places (v6: 0.96, race-file plan: 0.90). It was trained only at the moderate level and still holds at the large one.
+- **With a realistic error it is the only policy ahead of TUM's VSE**: −0.07 ± 0.02 places, 0.34 ahead of v6 and 0.26 ahead of the race-file plan. Ahead in green races (−0.32), behind with a safety car (+0.14), as before.
+- **The price is the exact-tyre case**: 0.10 places worse than v6 when the tyres are known exactly. It stops twice less often (Austin is where it loses: +0.22 against TUM, v6 −0.11), because a two-stop plan relies on believing a high wear rate.
+- **What it probably learned**: to lean less on the tyre inputs and more on the track inputs (location category, pit loss), which identify the five tracks it trained on. That would make it robust on these tracks but no help on a new one; this has not been tested.
+- **Overall**: with tyre knowledge that is as uncertain as our own fit, the robust network keeps a small lead over TUM's VSE (−0.07 places), where every policy trained or planned on exact tyres falls behind. That, not the −0.18 of v6 with exact tyres, is the fair headline against TUM.
+
 ## Next
 
-1. **Train for uncertainty**: give the network wrong tyre inputs during training (the same error model, drawn per stored run), so it learns how far to trust them; compare with the race-file plan under the same errors. The stored runs and their labels stay valid, because only the inputs change.
-2. Decide what the network is for: with exact tyres it matches the race-file plan, with wrong tyres it loses to TUM. What it could still add is reacting to the race (safety cars, traffic, rivals' stops), which needs reacting background drivers (TUM's VSE for everyone else). Keep a race-file-plan baseline and a tyre-error row in every table.
+1. Leave one track out with the robust network: does robustness to tyre errors come from memorising the tracks?
+2. Reacting background drivers (TUM's VSE for everyone else), so safety-car and undercut reactions can pay; keep a race-file-plan baseline and the tyre-error rows in every table.
 3. More tracks (2022–2025 seasons): the leave-one-out test says the network does not yet transfer to new tracks.
 
 ## Reproduce
@@ -497,6 +526,10 @@ What this shows:
 .venv-tum/Scripts/python.exe integration/race_file_plan.py --widths integration/output/evaluation/all_five_tracks_mc100/runs.csv --policy v6
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_noX.npz --tracks X --policies network_limited race_file_plan --out integration/output/evaluation/limits_v6_noX_mc100
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_noX.npz --tracks X --policies network_limited --out integration/output/evaluation/limits_v4_noX_mc100
+# round 8, robust network v7 (trained on moderate tyre errors), raced at LEVEL exact, moderate and large
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin Monza Singapore Spielberg Catalunya --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v7_robust --iterations 4 --tyre-error moderate
+.venv-train/Scripts/python.exe data_pipeline/train_compound_head.py --tracks Austin Monza Singapore Spielberg Catalunya --timing integration/models/pit_network_v7_robust.npz --name pit_compound_head_v3_robust --tyre-error moderate
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v7_robust.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_head --compound-head integration/models/pit_compound_head_v3_robust.npz --tyre-error LEVEL --out integration/output/evaluation/robust_v7_LEVEL_mc100
 # round 8, wrong tyre model (LEVEL moderate and large)
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_five_tracks.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_head race_file_plan --compound-head integration/models/pit_compound_head_v2.npz --tyre-error LEVEL --out integration/output/evaluation/tyre_error_LEVEL_mc100
 ```

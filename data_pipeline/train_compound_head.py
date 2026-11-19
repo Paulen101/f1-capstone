@@ -79,13 +79,15 @@ def main():
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--threads", type=int, default=16)
     parser.add_argument("--device", choices=["auto", "cuda", "cpu"], default="auto")
+    parser.add_argument("--tyre-error", choices=["exact", "moderate", "large"], default="exact",
+                        help="tyre inputs from a wrong tyre model, drawn per run, as train_two_stop_network.py")
     args = parser.parse_args()
 
     started = time.perf_counter()
     folders = sorted(p for track in args.tracks for p in TWO_STOP.glob("%s_2019_fitted_*_mc%d" % (track, args.runs))
                      if (p / "manifest.json").is_file())
     t1, t2 = load_folders(folders, COMPOUND_RUNS)
-    x1, x2 = features(t1), features(t2)
+    x1, x2 = features(t1, args.tyre_error), features(t2, args.tyre_error)
     has2 = t2.HasSituation.to_numpy()
     first_val = int(args.runs * 0.8)
     stored, other = pairs(t1)

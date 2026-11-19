@@ -36,16 +36,69 @@ TIME_CLIP_S = 60.0     # a few race-time advantages are 100-190 s (lapped cars);
 Y_SCALE = np.array([1.0, 10.0])   # places, 10 s: both targets of similar size during training
 
 
-def add_tyre_features(rows: pd.DataFrame) -> pd.DataFrame:
-    """Tyre features of every row, from each race file's degradation model of the driver."""
+TRAIN_ERROR_SALT = 10 ** 6   # training draws use run + salt, so they never repeat an evaluation race's error
+
+
+def add_tyre_features(rows: pd.DataFrame, tyre_error: str = None) -> pd.DataFrame:
+    """Tyre features of every row, from each race file's degradation model of the driver.
+
+    tyre_error (integration/tyre_uncertainty.LEVELS): the features the strategy would compute from a wrong
+    tyre model, drawn per (track, Monte Carlo run) like the evaluation's --tyre-error. The error is a pace
+    offset plus a wear factor per compound, so every feature is linear in it: the features are split once
+    into pace and wear parts of the true model and the error of each run is applied to those."""
+    if tyre_error in (None, "exact"):
+        keys = ["Race", "Driver", "Compound", "StopCompound", "TyreAge", "LapsRemaining"]
+        unique = rows[keys].drop_duplicates()
+        pars = {race: parse_pars((ROOT / "integration/parameters" / race).read_bytes().decode("utf-8"))
+                for race in unique.Race.unique()}
+        values = [tyre_features(pars[r.Race]["tireset_pars"][r.Driver], r.Compound, r.StopCompound,
+                                int(r.TyreAge), int(r.LapsRemaining)) for r in unique.itertuples()]
+        unique = pd.concat([unique.reset_index(drop=True), pd.DataFrame(values)], axis=1)
+        return rows.merge(unique, on=keys, how="left", validate="many_to_one")
+    return _wrong_tyre_features(rows, tyre_error)
+
+
+def _tyre_parts(tire_pars: dict, compound: str, stop: str, age: int, laps_remaining: int) -> dict:
+    """tyre_features split into pace (k_0) and wear parts: W(c, a) = degradation(c, a) - k_0(c)."""
+    from integration.pit_network import degradation
+    remaining = max(int(laps_remaining), 1)
+    k0c, k0s = tire_pars[compound]["k_0"], tire_pars[stop]["k_0"]
+    wear = lambda c, a: degradation(tire_pars, c, a) - tire_pars[c]["k_0"]
+    return {"K0c": k0c, "K0s": k0s, "Rem": remaining, "Wc": wear(compound, age), "Wc1": wear(compound, age + 1),
+            "Ws0": wear(stop, 0), "WsRem": wear(stop, remaining),
+            "SumWc": sum(wear(compound, age + a) for a in range(remaining)),
+            "SumWs": sum(wear(stop, a) for a in range(remaining))}
+
+
+def _wrong_tyre_features(rows: pd.DataFrame, level: str) -> pd.DataFrame:
+    from integration.tyre_uncertainty import draw
     keys = ["Race", "Driver", "Compound", "StopCompound", "TyreAge", "LapsRemaining"]
     unique = rows[keys].drop_duplicates()
     pars = {race: parse_pars((ROOT / "integration/parameters" / race).read_bytes().decode("utf-8"))
             for race in unique.Race.unique()}
-    values = [tyre_features(pars[r.Race]["tireset_pars"][r.Driver], r.Compound, r.StopCompound,
-                            int(r.TyreAge), int(r.LapsRemaining)) for r in unique.itertuples()]
-    unique = pd.concat([unique.reset_index(drop=True), pd.DataFrame(values)], axis=1)
-    return rows.merge(unique, on=keys, how="left", validate="many_to_one")
+    parts = [_tyre_parts(pars[r.Race]["tireset_pars"][r.Driver], r.Compound, r.StopCompound,
+                         int(r.TyreAge), int(r.LapsRemaining)) for r in unique.itertuples()]
+    unique = pd.concat([unique.reset_index(drop=True), pd.DataFrame(parts)], axis=1)
+    out = rows.merge(unique, on=keys, how="left", validate="many_to_one")
+    errors = []
+    for race, run in out[["Race", "Run"]].drop_duplicates().itertuples(index=False):
+        track = race.split("_")[1]
+        for compound, (offset, factor) in draw(pars[race]["vse_pars"]["param_dry_compounds"], track,
+                                               int(run) + TRAIN_ERROR_SALT, level).items():
+            errors.append({"Race": race, "Run": run, "C": compound, "Offset": offset, "Factor": factor})
+    errors = pd.DataFrame(errors)
+    cur = out[["Race", "Run", "Compound"]].merge(errors.rename(columns={"C": "Compound"}),
+                                                 on=["Race", "Run", "Compound"], how="left")
+    stp = out[["Race", "Run", "StopCompound"]].merge(errors.rename(columns={"C": "StopCompound"}),
+                                                     on=["Race", "Run", "StopCompound"], how="left")
+    oc, fc = cur.Offset.to_numpy(), cur.Factor.to_numpy()
+    os_, fs = stp.Offset.to_numpy(), stp.Factor.to_numpy()
+    k0c, k0s, rem = out.K0c + oc, out.K0s + os_, out.Rem
+    out["TyreDelta_s"] = (k0c + fc * out.Wc) - (k0s + fs * out.Ws0)
+    out["WearRate_s"] = fc * (out.Wc1 - out.Wc)
+    out["StopWearRate_s"] = fs * (out.WsRem - out.Ws0) / rem
+    out["StayCost_s"] = rem * (k0c - k0s) + fc * out.SumWc - fs * out.SumWs
+    return out.drop(columns=["K0c", "K0s", "Rem", "Wc", "Wc1", "Ws0", "WsRem", "SumWc", "SumWs"])
 
 
 def load(path: Path):
