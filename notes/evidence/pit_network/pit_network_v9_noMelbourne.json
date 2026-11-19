@@ -1,0 +1,304 @@
+{
+ "Name": "pit_network_v9_noMelbourne",
+ "Tracks": [
+  "Austin",
+  "Catalunya",
+  "Monza",
+  "Sakhir",
+  "Singapore",
+  "Spielberg",
+  "Suzuka"
+ ],
+ "DriverRaces": 140,
+ "HeldOutFirstRun": 40,
+ "Settings": {
+  "tracks": [
+   "Austin",
+   "Monza",
+   "Singapore",
+   "Spielberg",
+   "Catalunya",
+   "Sakhir",
+   "Suzuka"
+  ],
+  "runs": 50,
+  "start": "integration\\models\\pit_network_v1.npz",
+  "name": "pit_network_v9_noMelbourne",
+  "compounds": "stored",
+  "iterations": 4,
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16,
+  "device": "auto",
+  "tyre_error": "moderate"
+ },
+ "References": [
+  {
+   "Policy": "fixed one-stop, any compound",
+   "MeanStopLap": 28.748571428571427,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.0,
+    "PosDiff_SE": 0.0,
+    "TimeDiff_s": 0.0,
+    "TimeDiff_s_SE": 0.0,
+    "Runs": 1400
+   }
+  },
+  {
+   "Policy": "fixed best plan",
+   "MeanStopLap": 23.76142857142857,
+   "TwoStopShare": 0.5064285714285715,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.4355590062111801,
+    "PosDiff_SE": 0.02964357717044746,
+    "TimeDiff_s": -3.7803433931484367,
+    "TimeDiff_s_SE": 0.25456896310956806,
+    "Runs": 1400
+   }
+  },
+  {
+   "Policy": "start (pit_network_v1)",
+   "MeanStopLap": 30.924285714285713,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.2701863354037267,
+    "PosDiff_SE": 0.0336587293002253,
+    "TimeDiff_s": 2.776920066611177,
+    "TimeDiff_s_SE": 0.300174675459258,
+    "Runs": 1400
+   }
+  },
+  {
+   "Policy": "start (pit_network_v1), choosing compound",
+   "MeanStopLap": 30.924285714285713,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.2701863354037267,
+    "PosDiff_SE": 0.0336587293002253,
+    "TimeDiff_s": 2.776920066611177,
+    "TimeDiff_s_SE": 0.300174675459258,
+    "Runs": 1400
+   }
+  }
+ ],
+ "Iterations": [
+  {
+   "Policy": "iteration 1",
+   "MeanStopLap": 25.19214285714286,
+   "TwoStopShare": 0.4421428571428571,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.07608695652173914,
+    "PosDiff_SE": 0.03440823839114795,
+    "TimeDiff_s": 0.9697520593080878,
+    "TimeDiff_s_SE": 0.27157328251541657,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": 0.07608695652173914,
+    "PosDiff_SE": 0.03440823839114795,
+    "TimeDiff_s": 0.9697520593080878,
+    "TimeDiff_s_SE": 0.27157328251541657,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.5116459627329193,
+    "PosDiff_SE": 0.03306061713508236,
+    "TimeDiff_s": 5.012173044925125,
+    "TimeDiff_s_SE": 0.2459324460283144,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.19409937888198758,
+    "PosDiff_SE": 0.040339593888477826,
+    "TimeDiff_s": -1.8601154170176988,
+    "TimeDiff_s_SE": 0.3500430621529556,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.19409937888198758,
+    "PosDiff_SE": 0.040339593888477826,
+    "TimeDiff_s": -1.8601154170176988,
+    "TimeDiff_s_SE": 0.3500430621529556,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 1.2740683229813665,
+    "PosDiff_SE": 0.04225881111423691,
+    "TimeDiff_s": 10.535133274492491,
+    "TimeDiff_s_SE": 0.34789975633733755,
+    "Runs": 1400
+   },
+   "Iteration": 1,
+   "TrainRows": 3560340,
+   "Epochs": 12
+  },
+  {
+   "Policy": "iteration 2",
+   "MeanStopLap": 23.76642857142857,
+   "TwoStopShare": 0.45571428571428574,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.2779503105590062,
+    "PosDiff_SE": 0.0340730532457732,
+    "TimeDiff_s": -2.3183360588716027,
+    "TimeDiff_s_SE": 0.2547640511193767,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.2779503105590062,
+    "PosDiff_SE": 0.0340730532457732,
+    "TimeDiff_s": -2.3183360588716027,
+    "TimeDiff_s_SE": 0.2547640511193767,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.15760869565217392,
+    "PosDiff_SE": 0.02675957112586527,
+    "TimeDiff_s": 1.603454027664775,
+    "TimeDiff_s_SE": 0.1991530366843195,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.5481366459627329,
+    "PosDiff_SE": 0.040035922628493155,
+    "TimeDiff_s": -5.0472839195979855,
+    "TimeDiff_s_SE": 0.34461195871065925,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.5481366459627329,
+    "PosDiff_SE": 0.040035922628493155,
+    "TimeDiff_s": -5.0472839195979855,
+    "TimeDiff_s_SE": 0.34461195871065925,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.9200310559006211,
+    "PosDiff_SE": 0.03503561393976358,
+    "TimeDiff_s": 7.247697715289987,
+    "TimeDiff_s_SE": 0.31801570703904686,
+    "Runs": 1400
+   },
+   "Iteration": 2,
+   "TrainRows": 3560340,
+   "Epochs": 16
+  },
+  {
+   "Policy": "iteration 3",
+   "MeanStopLap": 24.214285714285715,
+   "TwoStopShare": 0.4614285714285714,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.3392857142857143,
+    "PosDiff_SE": 0.0358354864310995,
+    "TimeDiff_s": -2.8043015484922424,
+    "TimeDiff_s_SE": 0.3001626245600195,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.3392857142857143,
+    "PosDiff_SE": 0.0358354864310995,
+    "TimeDiff_s": -2.8043015484922424,
+    "TimeDiff_s_SE": 0.3001626245600195,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.09627329192546584,
+    "PosDiff_SE": 0.025831079315487705,
+    "TimeDiff_s": 1.0467203867848498,
+    "TimeDiff_s_SE": 0.2020752232561014,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.609472049689441,
+    "PosDiff_SE": 0.04165717826923467,
+    "TimeDiff_s": -5.46240971039183,
+    "TimeDiff_s_SE": 0.3708238435866733,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.609472049689441,
+    "PosDiff_SE": 0.04165717826923467,
+    "TimeDiff_s": -5.46240971039183,
+    "TimeDiff_s_SE": 0.3708238435866733,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.8586956521739131,
+    "PosDiff_SE": 0.034124260131078075,
+    "TimeDiff_s": 6.678666080843576,
+    "TimeDiff_s_SE": 0.3314254994439797,
+    "Runs": 1400
+   },
+   "Iteration": 3,
+   "TrainRows": 3560340,
+   "Epochs": 12
+  },
+  {
+   "Policy": "iteration 4",
+   "MeanStopLap": 22.372857142857143,
+   "TwoStopShare": 0.495,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.26475155279503104,
+    "PosDiff_SE": 0.03522413615376046,
+    "TimeDiff_s": -2.5269901315789136,
+    "TimeDiff_s_SE": 0.31467499531233317,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.26475155279503104,
+    "PosDiff_SE": 0.03522413615376046,
+    "TimeDiff_s": -2.5269901315789136,
+    "TimeDiff_s_SE": 0.31467499531233317,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.17080745341614906,
+    "PosDiff_SE": 0.025244779836047816,
+    "TimeDiff_s": 1.3388276699029298,
+    "TimeDiff_s_SE": 0.23052931155985967,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.5349378881987578,
+    "PosDiff_SE": 0.042231492821544904,
+    "TimeDiff_s": -5.195410760034151,
+    "TimeDiff_s_SE": 0.40088963330619865,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.5349378881987578,
+    "PosDiff_SE": 0.042231492821544904,
+    "TimeDiff_s": -5.195410760034151,
+    "TimeDiff_s_SE": 0.40088963330619865,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.9332298136645962,
+    "PosDiff_SE": 0.03527152755472789,
+    "TimeDiff_s": 6.909081010452971,
+    "TimeDiff_s_SE": 0.30248719546473674,
+    "Runs": 1400
+   },
+   "Iteration": 4,
+   "TrainRows": 3560340,
+   "Epochs": 11
+  }
+ ],
+ "Best": 3,
+ "Seconds": 204
+}

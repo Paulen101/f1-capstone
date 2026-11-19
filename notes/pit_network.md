@@ -1,6 +1,6 @@
 # Pit-timing network (methodology step 6)
 
-Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) round 6 (v4's timing with a compound head: the best policy so far) and round 7 (safety-car headroom: not worth training) and round 8 (Barcelona as a fifth track: v6 + compound head is now the best policy on five tracks) done, 2026-11-18. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
+Status: first network trained and raced in the simulator, with TUM's compound choice; round 2 (labels that value waiting) and round 3 (two stops, Austin) and round 4 (one two-stop network for all four tracks) round 5 (lap and compound together) round 6 (v4's timing with a compound head: the best policy so far) and round 7 (safety-car headroom: not worth training) and round 8 (Barcelona as a fifth track: v6 + compound head is now the best policy on five tracks) done, 2026-11-18; round 9 (eight tracks: robust v9 level with TUM's VSE under tyre uncertainty, still no transfer to hidden tracks) done, 2026-11-19. Builds on the race situations of [situation_sampling.md](situation_sampling.md).
 
 ## What it does
 
@@ -490,11 +490,59 @@ What this shows:
 - **On a new track with uncertain tyres the race-file plan is our best option** (+0.19), still behind TUM's VSE. TUM's VSE, trained on many seasons and tracks, is the better strategy for a track neither of our approaches has data for.
 - **The fair summary of the project so far**: on tracks with our own Monte Carlo runs, the robust network beats TUM's VSE by 0.07 ± 0.02 places with realistic tyre uncertainty (0.32 in green races; TUM is better with a safety car). It does not transfer to new tracks; more tracks are the only route to that.
 
+## Round 9: eight tracks (Melbourne, Sakhir, Suzuka added)
+
+Three more 2019 races, fitted and checked in [fitted_parameters_study_circuits.md](fitted_parameters_study_circuits.md#more-tracks-melbourne-sakhir-suzuka-2026-11-19): Sakhir (high wear), Melbourne (low wear) and Suzuka (mixed). Their two-stop runs (20 drivers × 50 runs each) and one-stop runs onto the third compound ran overnight, 00:44–05:51, with every driver complete. Then two networks were trained on all eight tracks, like v6 and v7 (start v1, `--compounds stored`, 4 iterations), each with its compound head:
+
+- **v8 + head v4**: exact tyres
+- **v9 + head v5**: robust, trained with moderate tyre errors
+
+Each raced 100 races per driver-race on all eight tracks with exact and with moderate tyre error, on the same seeds as before. TUM's VSE and the real strategies for the new tracks were raced once (`new_tracks_baselines_mc100`). The tables come from the new `data_pipeline/compare_policies.py`, which reproduces the round 8 table exactly ([table](evidence/pit_network/eight_tracks.csv)).
+
+| Places minus TUM's VSE | Tyre error | All eight | Green | SC/VSC | Old five | Melbourne | Sakhir | Suzuka | Two-stop |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| v8 + head | exact | −0.11 ± 0.01 | −0.32 | +0.07 | −0.15 | +0.19 | +0.02 | −0.29 | 43 % |
+| Race-file plan | exact | −0.07 ± 0.01 | −0.23 | +0.07 | −0.16 | +0.59 | −0.02 | −0.30 | 37 % |
+| Robust v9 + head | exact | −0.04 ± 0.01 | −0.25 | +0.13 | −0.09 | +0.37 | +0.02 | −0.27 | 39 % |
+| v8 + head | moderate | +0.50 ± 0.02 | +0.27 | +0.68 | +0.46 | +0.53 | +0.56 | +0.57 | 35 % |
+| Race-file plan | moderate | +0.27 ± 0.01 | +0.12 | +0.40 | +0.19 | +0.70 | +0.57 | −0.05 | 35 % |
+| **Robust v9 + head** | **moderate** | **−0.01 ± 0.01** | −0.22 | +0.16 | −0.09 | +0.40 | +0.14 | −0.17 | 38 % |
+
+Paired differences under moderate error: v9 − v8 −0.50 ± 0.01, v9 − plan −0.28 ± 0.01. On the old five tracks, v9 − v7 is −0.02 ± 0.01 at both levels (Austin −0.24, Spielberg +0.18), and v8 − v6 is +0.02 with exact tyres. All against the real strategies: v9 −0.62 (moderate), v8 −0.72 (exact).
+
+What this shows:
+
+- **Adding three tracks did not cost the old five.** The robust network stays level with or slightly better than v7 there.
+- **The new tracks repeat the safety-car pattern.** At Melbourne, where every policy loses to TUM, the loss is mostly in SC/VSC races (v9 +0.65 with SC/VSC vs +0.10 green). TUM stops under the safety car and our policies do not. Suzuka, a two-stop track, is won by every policy (−0.17 to −0.30). At Sakhir, v9 stops twice in 92 % of races against TUM's 75 %; it wins green races (−0.09) and loses SC races (+0.32).
+- **The headline barely moves.** With realistic tyre uncertainty the robust network is level with TUM's VSE over eight tracks (−0.01 ± 0.01; −0.22 in green races, +0.16 with SC/VSC), against −0.07 over five. It still beats the real strategies by 0.62 places and every policy trained or planned on exact tyres by 0.28 or more.
+
+### Does training on more tracks help on a hidden track?
+
+The robust leave-one-out test from round 8, now with seven training tracks per hidden track. For each of the eight tracks, a network trained like v9 on the other seven (start `pit_network_noX`, or v1 for Barcelona and the new tracks, which v1 never saw), saved as `pit_network_v9_noX`. Each raced only its hidden track. "Hidden, 4–5 tracks" is round 8's `pit_network_v7_noX` (four training tracks) for the old five, and v7 itself (five training tracks, none of them new) for the new three. "Hidden + limits" adds the plausibility limits of round 8, with widths recomputed from v8's runs on the other seven tracks ([widths](evidence/pit_network/plausibility_widths_eight.json), [table](evidence/pit_network/leave_one_track_out_eight.csv)).
+
+| Places minus TUM's VSE, moderate tyre error | Austin | Barcelona | Melbourne | Monza | Sakhir | Singapore | Spielberg | Suzuka | All eight |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Robust v9, track seen | −0.02 | −0.18 | +0.40 | +0.19 | +0.14 | −0.78 | +0.36 | −0.17 | **−0.01 ± 0.01** |
+| Hidden, trained on 7 tracks | +1.42 | +0.19 | +0.65 | +0.38 | +1.14 | +6.00 | +0.54 | −0.09 | +1.28 ± 0.02 |
+| Hidden, trained on 4–5 tracks | +1.04 | +0.29 | +0.54 | +0.75 | +1.62 | +0.45 | +0.84 | +0.12 | +0.71 ± 0.02 |
+| Hidden, 7 tracks + limits | +0.33 | +0.09 | +0.65 | +0.27 | +0.47 | +0.04 | +0.42 | +0.16 | **+0.30 ± 0.01** |
+| Race-file plan | +0.23 | −0.11 | +0.70 | +0.33 | +0.57 | −0.15 | +0.65 | −0.05 | +0.27 ± 0.01 |
+
+With exact tyres the hidden networks give the same picture: +1.27 with 7 tracks, +0.69 with 4–5.
+
+What this shows:
+
+- **More tracks helped on six of the eight hidden tracks, but not enough to matter.** Seven training tracks against four or five: Monza −0.37, Sakhir −0.48, Spielberg −0.29, Suzuka −0.21, Barcelona −0.10, but Austin +0.38 and Melbourne +0.11. Without Singapore, the hidden-track loss to TUM falls from +0.74 to +0.60 places on average. It is still far behind TUM's VSE and the race-file plan.
+- **Hidden Singapore fails completely (+6.00).** The network trained on the other seven tracks never stops until the forced stop on the second-to-last lap (lap 60 of 61, in three quarters of races). Singapore's pit loss is far above every training track, and the network extrapolates it into "never worth stopping". With four training tracks the same test gave +0.45. More tracks can make extrapolation worse when the new tracks do not cover the hidden one's inputs.
+- **With limits, the hidden network becomes the race-file plan.** +0.30 against the plan's +0.27 (paired difference +0.03 ± 0.01). The limits remove the implausible plans (Singapore +6.00 → +0.04), but whatever the network adds inside the window does not pay on a track it has not seen.
+- **Conclusion unchanged from round 8.** On a track with its own runs, the robust network is level with TUM's VSE under realistic tyre uncertainty and the best of our policies. On a track without runs, use the race-file plan (+0.27), which is still behind TUM's VSE. Going from five to eight tracks did not produce a network that transfers. That would need many more tracks, or inputs that describe a track by what the strategy depends on (pit loss, wear, overtaking) over a range the training tracks cover.
+
 ## Next
 
-1. More tracks (2022–2025 seasons): the only route to a network that transfers; each needs its own runs (about 3 hours per track).
-2. Reacting background drivers (TUM's VSE for everyone else), so safety-car and undercut reactions can pay; keep a race-file-plan baseline and the tyre-error rows in every table.
-3. If a new track has to be raced without runs: the race-file plan, not the network.
+1. Reacting background drivers (TUM's VSE for everyone else), so safety-car and undercut reactions can pay. The SC/VSC races are where every policy still loses to TUM's VSE (Melbourne, Monza, Spielberg). Keep a race-file-plan baseline and the tyre-error rows in every table.
+2. If a track has to be raced without runs: the race-file plan, not the network (round 9: the hidden-track network with limits only matches it).
+3. More tracks only if they widen the input range (a high-pit-loss track like Singapore, a low-wear one like Melbourne). Round 9 shows three more tracks of similar character do not produce transfer.
+4. Seminar write-up: the robust network is level with TUM's VSE on eight tracks with realistic tyre uncertainty, beats the real 2019 strategies by 0.62 places and beats every exact-tyre policy, but it does not transfer to tracks without their own runs.
 
 ## Reproduce
 
@@ -555,4 +603,23 @@ What this shows:
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v7_noX.npz --tracks X --policies network_two --tyre-error LEVEL --out integration/output/evaluation/loo_robust_noX_LEVEL_mc100
 # round 8, wrong tyre model (LEVEL moderate and large)
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_five_tracks.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_head race_file_plan --compound-head integration/models/pit_compound_head_v2.npz --tyre-error LEVEL --out integration/output/evaluation/tyre_error_LEVEL_mc100
+# round 9 (eight tracks); T = Austin Monza Singapore Spielberg Catalunya Sakhir Melbourne Suzuka
+.venv-tum/Scripts/python.exe integration/two_stop_generator.py --track Sakhir --runs 50 --jobs 28             # and Melbourne, Suzuka
+.venv-tum/Scripts/python.exe integration/compound_runs.py --tracks Sakhir Melbourne Suzuka --runs 50 --jobs 28
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks $T --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v8_eight_tracks --iterations 4
+.venv-train/Scripts/python.exe data_pipeline/train_compound_head.py --tracks $T --timing integration/models/pit_network_v8_eight_tracks.npz --name pit_compound_head_v4
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks $T --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v9_robust_eight --iterations 4 --tyre-error moderate
+.venv-train/Scripts/python.exe data_pipeline/train_compound_head.py --tracks $T --timing integration/models/pit_network_v9_robust_eight.npz --name pit_compound_head_v5_robust --tyre-error moderate
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --tracks Sakhir Melbourne Suzuka --policies real tum race_file_plan --out integration/output/evaluation/new_tracks_baselines_mc100
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v8_eight_tracks.npz --compound-head integration/models/pit_compound_head_v4.npz --tracks $T --policies network_head race_file_plan --tyre-error LEVEL --out integration/output/evaluation/eight_v8_LEVEL_mc100
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v9_robust_eight.npz --compound-head integration/models/pit_compound_head_v5_robust.npz --tracks $T --policies network_head --tyre-error LEVEL --out integration/output/evaluation/eight_v9_LEVEL_mc100
+.venv-data/Scripts/python.exe data_pipeline/compare_policies.py --base all_five_tracks_mc100:tum new_tracks_baselines_mc100:tum --real all_five_tracks_mc100:real new_tracks_baselines_mc100:real --policy v8=eight_v8_exact_mc100:network_head eight_v8_moderate_mc100:network_head --policy v9=eight_v9_exact_mc100:network_head eight_v9_moderate_mc100:network_head --policy plan=eight_v8_exact_mc100:race_file_plan eight_v8_moderate_mc100:race_file_plan --diff v9-v8 v9-plan --out notes/evidence/pit_network/eight_tracks.csv
+# round 9, leave one track out: for X in all eight, OTHERS = the other seven, START = pit_network_noX (v1 for Catalunya and the new tracks)
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks $OTHERS --start $START --compounds stored --name pit_network_v9_noX --iterations 4 --tyre-error moderate
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v9_noX.npz --tracks X --policies network_two --tyre-error LEVEL --out integration/output/evaluation/loo8_robust_noX_LEVEL_mc100
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v7_robust.npz --tracks Sakhir Melbourne Suzuka --policies network_two --tyre-error LEVEL --out integration/output/evaluation/new_tracks_unseen_v7_LEVEL_mc100
+.venv-tum/Scripts/python.exe integration/race_file_plan.py --tracks $T --widths integration/output/evaluation/eight_v8_exact_mc100/runs.csv --policy network_head --out notes/evidence/pit_network/plausibility_widths_eight.json
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v9_noX.npz --tracks X --policies network_limited --tyre-error moderate --widths notes/evidence/pit_network/plausibility_widths_eight.json --out integration/output/evaluation/loo8_limited_noX_moderate_mc100
+# leave-one-out table: compare_policies.py with --policy seen_v9=..., hidden_of_8=<loo8_robust folders>, hidden_of_8_limited=<loo8_limited folders>,
+# hidden_of_5=<loo_robust folders + new_tracks_unseen_v7 folders>, plan=... --out notes/evidence/pit_network/leave_one_track_out_eight.csv
 ```
