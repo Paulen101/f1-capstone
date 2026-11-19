@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 17,
+    "event": "Japanese Grand Prix",
+    "location": "Suzuka"
+  },
+  "tum_file": "pars_Suzuka_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.372,
+      "se": 0.027,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": 0.33,
+      "se": 0.084,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 1.264,
+      "se": 0.225,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 1.42,
+      "se": 0.194,
+      "tum": 1.26
+    }
+  },
+  "counts": {
+    "pairs": 763,
+    "close_pairs": 268,
+    "passes": 36,
+    "duel_laps": 33,
+    "passes_clear_ahead": 21
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 93,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 10,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 25,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 31,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 8,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 3,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 36,
+      "passes": 7
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 49,
+      "passes": 23
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

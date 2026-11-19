@@ -1,0 +1,118 @@
+{
+ "runs": "integration\\output\\evaluation\\eight_v8_exact_mc100\\runs.csv",
+ "policy": "network_head",
+ "widths": {
+  "Austin": {
+   "early": 0.197,
+   "late": 0.057,
+   "from_tracks": [
+    "Catalunya",
+    "Melbourne",
+    "Monza",
+    "Sakhir",
+    "Singapore",
+    "Spielberg",
+    "Suzuka"
+   ],
+   "races": 13349
+  },
+  "Monza": {
+   "early": 0.197,
+   "late": 0.053,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Melbourne",
+    "Sakhir",
+    "Singapore",
+    "Spielberg",
+    "Suzuka"
+   ],
+   "races": 13389
+  },
+  "Singapore": {
+   "early": 0.197,
+   "late": 0.053,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Melbourne",
+    "Monza",
+    "Sakhir",
+    "Spielberg",
+    "Suzuka"
+   ],
+   "races": 13351
+  },
+  "Spielberg": {
+   "early": 0.182,
+   "late": 0.057,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Melbourne",
+    "Monza",
+    "Sakhir",
+    "Singapore",
+    "Suzuka"
+   ],
+   "races": 13371
+  },
+  "Catalunya": {
+   "early": 0.173,
+   "late": 0.053,
+   "from_tracks": [
+    "Austin",
+    "Melbourne",
+    "Monza",
+    "Sakhir",
+    "Singapore",
+    "Spielberg",
+    "Suzuka"
+   ],
+   "races": 13367
+  },
+  "Sakhir": {
+   "early": 0.197,
+   "late": 0.052,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Melbourne",
+    "Monza",
+    "Singapore",
+    "Spielberg",
+    "Suzuka"
+   ],
+   "races": 13356
+  },
+  "Melbourne": {
+   "early": 0.197,
+   "late": 0.053,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Monza",
+    "Sakhir",
+    "Singapore",
+    "Spielberg",
+    "Suzuka"
+   ],
+   "races": 13389
+  },
+  "Suzuka": {
+   "early": 0.197,
+   "late": 0.053,
+   "from_tracks": [
+    "Austin",
+    "Catalunya",
+    "Melbourne",
+    "Monza",
+    "Sakhir",
+    "Singapore",
+    "Spielberg"
+   ],
+   "races": 13353
+  }
+ }
+}

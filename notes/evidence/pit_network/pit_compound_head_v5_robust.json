@@ -1,0 +1,579 @@
+{
+ "Name": "pit_compound_head_v5_robust",
+ "Timing": "integration\\models\\pit_network_v9_robust_eight.npz",
+ "Rows": {
+  "Train": 316732,
+  "Val": 82800
+ },
+ "Epochs": 40,
+ "Policies": [
+  {
+   "Policy": "v4 (stored compound)",
+   "OtherCompoundShare": 0.0,
+   "TwoStopShare": 0.410625,
+   "Vs v4": {
+    "all": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 1600
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Melbourne": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Sakhir": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Suzuka": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.0,
+    "Austin": 0.0,
+    "Catalunya": 0.0,
+    "Melbourne": 0.0,
+    "Monza": 0.0,
+    "Sakhir": 0.0,
+    "Singapore": 0.0,
+    "Spielberg": 0.0,
+    "Suzuka": 0.0
+   }
+  },
+  {
+   "Policy": "v4 + per-driver rule",
+   "OtherCompoundShare": 0.269375,
+   "TwoStopShare": 0.34625,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.07472826086956522,
+     "PosDiff_SE": 0.01599220504564046,
+     "TimeDiff_s": -0.4977377162629819,
+     "TimeDiff_s_SE": 0.1199602939258461,
+     "Runs": 1600
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": -0.08695652173913043,
+     "PosDiff_SE": 0.05071615175258792,
+     "TimeDiff_s": -1.1630914285714347,
+     "TimeDiff_s_SE": 0.3707168768430433,
+     "Runs": 200
+    },
+    "Melbourne": {
+     "PosDiff": -0.4782608695652174,
+     "PosDiff_SE": 0.08919951080933683,
+     "TimeDiff_s": -2.7742747252747386,
+     "TimeDiff_s_SE": 0.5004162042939834,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.03804347826086957,
+     "PosDiff_SE": 0.023587248028259334,
+     "TimeDiff_s": -0.45117486338799084,
+     "TimeDiff_s_SE": 0.12798765651855828,
+     "Runs": 200
+    },
+    "Sakhir": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.05434782608695652,
+     "PosDiff_SE": 0.04541737808085623,
+     "TimeDiff_s": -1.594815642458089,
+     "TimeDiff_s_SE": 0.46282600336181046,
+     "Runs": 200
+    },
+    "Suzuka": {
+     "PosDiff": 0.059782608695652176,
+     "PosDiff_SE": 0.04698765884653364,
+     "TimeDiff_s": 2.053247126436752,
+     "TimeDiff_s_SE": 0.5063085792241415,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.269375,
+    "Austin": 0.0,
+    "Catalunya": 0.195,
+    "Melbourne": 0.375,
+    "Monza": 0.625,
+    "Sakhir": 0.0,
+    "Singapore": 0.0,
+    "Spielberg": 0.68,
+    "Suzuka": 0.28
+   }
+  },
+  {
+   "Policy": "v4 + head",
+   "OtherCompoundShare": 0.18875,
+   "TwoStopShare": 0.390625,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.050271739130434784,
+     "PosDiff_SE": 0.013731524429185023,
+     "TimeDiff_s": -0.3379059711736443,
+     "TimeDiff_s_SE": 0.09166595066031981,
+     "Runs": 1600
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.29780327868852735,
+     "TimeDiff_s_SE": 0.21990231087719891,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": -0.005434782608695652,
+     "PosDiff_SE": 0.030339492919994764,
+     "TimeDiff_s": -0.33997777777776717,
+     "TimeDiff_s_SE": 0.26807659507876214,
+     "Runs": 200
+    },
+    "Melbourne": {
+     "PosDiff": -0.29347826086956524,
+     "PosDiff_SE": 0.09378275921080251,
+     "TimeDiff_s": -1.4598508287292877,
+     "TimeDiff_s_SE": 0.5824042076160487,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.021739130434782608,
+     "PosDiff_SE": 0.02664912600876046,
+     "TimeDiff_s": -0.4155683060109338,
+     "TimeDiff_s_SE": 0.12698414091516005,
+     "Runs": 200
+    },
+    "Sakhir": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.021739130434782608,
+     "PosDiff_SE": 0.021739130434782608,
+     "TimeDiff_s": -0.5069344262295045,
+     "TimeDiff_s_SE": 0.108050136319209,
+     "Runs": 200
+    },
+    "Suzuka": {
+     "PosDiff": -0.059782608695652176,
+     "PosDiff_SE": 0.029012408815866992,
+     "TimeDiff_s": -0.2937430167597812,
+     "TimeDiff_s_SE": 0.22211274587033672,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.18875,
+    "Austin": 0.015,
+    "Catalunya": 0.085,
+    "Melbourne": 0.47,
+    "Monza": 0.605,
+    "Sakhir": 0.0,
+    "Singapore": 0.035,
+    "Spielberg": 0.23,
+    "Suzuka": 0.07
+   }
+  },
+  {
+   "Policy": "v4 + hindsight compound",
+   "OtherCompoundShare": 0.20625,
+   "TwoStopShare": 0.38,
+   "Vs v4": {
+    "all": {
+     "PosDiff": -0.11548913043478261,
+     "PosDiff_SE": 0.014293251805702985,
+     "TimeDiff_s": -1.0719438356164386,
+     "TimeDiff_s_SE": 0.12244238912040725,
+     "Runs": 1600
+    },
+    "Austin": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": -0.4182010869565246,
+     "TimeDiff_s_SE": 0.41820108695652464,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": -0.15760869565217392,
+     "PosDiff_SE": 0.03869966623689976,
+     "TimeDiff_s": -1.5283764044943842,
+     "TimeDiff_s_SE": 0.33260309569450053,
+     "Runs": 200
+    },
+    "Melbourne": {
+     "PosDiff": -0.483695652173913,
+     "PosDiff_SE": 0.08887230177454036,
+     "TimeDiff_s": -3.0797868852458996,
+     "TimeDiff_s_SE": 0.49329345785020784,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": -0.08152173913043478,
+     "PosDiff_SE": 0.024235258696947454,
+     "TimeDiff_s": -0.8484426229508264,
+     "TimeDiff_s_SE": 0.12426213171306913,
+     "Runs": 200
+    },
+    "Sakhir": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 0.0,
+     "PosDiff_SE": 0.0,
+     "TimeDiff_s": 0.0,
+     "TimeDiff_s_SE": 0.0,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": -0.125,
+     "PosDiff_SE": 0.03619994434442297,
+     "TimeDiff_s": -1.8193661202185716,
+     "TimeDiff_s_SE": 0.4399882034575787,
+     "Runs": 200
+    },
+    "Suzuka": {
+     "PosDiff": -0.07608695652173914,
+     "PosDiff_SE": 0.0293140386096365,
+     "TimeDiff_s": -0.907337016574586,
+     "TimeDiff_s_SE": 0.4327673268524047,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.20625,
+    "Austin": 0.005,
+    "Catalunya": 0.145,
+    "Melbourne": 0.335,
+    "Monza": 0.665,
+    "Sakhir": 0.0,
+    "Singapore": 0.0,
+    "Spielberg": 0.43,
+    "Suzuka": 0.07
+   }
+  },
+  {
+   "Policy": "v5",
+   "OtherCompoundShare": 0.329375,
+   "TwoStopShare": 0.119375,
+   "Vs v4": {
+    "all": {
+     "PosDiff": 1.686820652173913,
+     "PosDiff_SE": 0.06966468726843673,
+     "TimeDiff_s": 13.991494057724955,
+     "TimeDiff_s_SE": 0.627835768616929,
+     "Runs": 1600
+    },
+    "Austin": {
+     "PosDiff": 2.1032608695652173,
+     "PosDiff_SE": 0.17667486236954014,
+     "TimeDiff_s": 27.21539285714285,
+     "TimeDiff_s_SE": 2.130526608630332,
+     "Runs": 200
+    },
+    "Catalunya": {
+     "PosDiff": 1.641304347826087,
+     "PosDiff_SE": 0.18896295799398952,
+     "TimeDiff_s": 14.95289629629628,
+     "TimeDiff_s_SE": 1.5906489198817806,
+     "Runs": 200
+    },
+    "Melbourne": {
+     "PosDiff": 0.47282608695652173,
+     "PosDiff_SE": 0.1352408833610442,
+     "TimeDiff_s": 8.867331249999983,
+     "TimeDiff_s_SE": 1.3353533433035059,
+     "Runs": 200
+    },
+    "Monza": {
+     "PosDiff": 0.3967391304347826,
+     "PosDiff_SE": 0.10108082508094957,
+     "TimeDiff_s": 2.9017485714285587,
+     "TimeDiff_s_SE": 0.5558603854472776,
+     "Runs": 200
+    },
+    "Sakhir": {
+     "PosDiff": 3.6793478260869565,
+     "PosDiff_SE": 0.2213697344475693,
+     "TimeDiff_s": 28.719786407766954,
+     "TimeDiff_s_SE": 2.551335047646137,
+     "Runs": 200
+    },
+    "Singapore": {
+     "PosDiff": 2.6793478260869565,
+     "PosDiff_SE": 0.20303599123458374,
+     "TimeDiff_s": 22.449033783783772,
+     "TimeDiff_s_SE": 1.7239574861060358,
+     "Runs": 200
+    },
+    "Spielberg": {
+     "PosDiff": 0.010869565217391304,
+     "PosDiff_SE": 0.07667862139178651,
+     "TimeDiff_s": -0.7161920903954421,
+     "TimeDiff_s_SE": 0.5960992875906262,
+     "Runs": 200
+    },
+    "Suzuka": {
+     "PosDiff": 2.510869565217391,
+     "PosDiff_SE": 0.2372915211369582,
+     "TimeDiff_s": 18.376971428571434,
+     "TimeDiff_s_SE": 2.1421682055232365,
+     "Runs": 200
+    }
+   },
+   "OtherByTrack": {
+    "all": 0.329375,
+    "Austin": 0.17,
+    "Catalunya": 0.41,
+    "Melbourne": 0.455,
+    "Monza": 0.645,
+    "Sakhir": 0.095,
+    "Singapore": 0.135,
+    "Spielberg": 0.34,
+    "Suzuka": 0.385
+   }
+  }
+ ],
+ "PerDriverRule": {
+  "Austin ALB": false,
+  "Austin BOT": false,
+  "Austin GAS": false,
+  "Austin GIO": false,
+  "Austin GRO": false,
+  "Austin HAM": false,
+  "Austin HUL": false,
+  "Austin KUB": false,
+  "Austin KVY": false,
+  "Austin LEC": false,
+  "Austin MAG": false,
+  "Austin NOR": false,
+  "Austin PER": false,
+  "Austin RAI": false,
+  "Austin RIC": false,
+  "Austin RUS": false,
+  "Austin SAI": false,
+  "Austin STR": false,
+  "Austin VER": false,
+  "Austin VET": false,
+  "Catalunya ALB": false,
+  "Catalunya BOT": false,
+  "Catalunya GAS": false,
+  "Catalunya GIO": true,
+  "Catalunya GRO": false,
+  "Catalunya HAM": false,
+  "Catalunya HUL": false,
+  "Catalunya KUB": false,
+  "Catalunya KVY": false,
+  "Catalunya LEC": true,
+  "Catalunya MAG": false,
+  "Catalunya NOR": false,
+  "Catalunya PER": false,
+  "Catalunya RAI": true,
+  "Catalunya RIC": true,
+  "Catalunya RUS": false,
+  "Catalunya SAI": false,
+  "Catalunya STR": false,
+  "Catalunya VER": false,
+  "Catalunya VET": false,
+  "Melbourne ALB": false,
+  "Melbourne BOT": false,
+  "Melbourne GAS": false,
+  "Melbourne GIO": false,
+  "Melbourne GRO": false,
+  "Melbourne HAM": false,
+  "Melbourne HUL": true,
+  "Melbourne KUB": true,
+  "Melbourne KVY": true,
+  "Melbourne LEC": true,
+  "Melbourne MAG": false,
+  "Melbourne NOR": true,
+  "Melbourne PER": true,
+  "Melbourne RAI": false,
+  "Melbourne RIC": true,
+  "Melbourne RUS": false,
+  "Melbourne SAI": false,
+  "Melbourne STR": true,
+  "Melbourne VER": false,
+  "Melbourne VET": false,
+  "Monza ALB": true,
+  "Monza BOT": true,
+  "Monza GAS": false,
+  "Monza GIO": true,
+  "Monza GRO": true,
+  "Monza HAM": true,
+  "Monza HUL": true,
+  "Monza KUB": true,
+  "Monza KVY": false,
+  "Monza LEC": false,
+  "Monza MAG": true,
+  "Monza NOR": true,
+  "Monza PER": false,
+  "Monza RAI": false,
+  "Monza RIC": true,
+  "Monza RUS": true,
+  "Monza SAI": true,
+  "Monza STR": true,
+  "Monza VER": false,
+  "Monza VET": false,
+  "Sakhir ALB": false,
+  "Sakhir BOT": false,
+  "Sakhir GAS": false,
+  "Sakhir GIO": false,
+  "Sakhir GRO": false,
+  "Sakhir HAM": false,
+  "Sakhir HUL": false,
+  "Sakhir KUB": false,
+  "Sakhir KVY": false,
+  "Sakhir LEC": false,
+  "Sakhir MAG": false,
+  "Sakhir NOR": false,
+  "Sakhir PER": false,
+  "Sakhir RAI": false,
+  "Sakhir RIC": false,
+  "Sakhir RUS": false,
+  "Sakhir SAI": false,
+  "Sakhir STR": false,
+  "Sakhir VER": false,
+  "Sakhir VET": false,
+  "Singapore ALB": false,
+  "Singapore BOT": false,
+  "Singapore GAS": false,
+  "Singapore GIO": false,
+  "Singapore GRO": false,
+  "Singapore HAM": false,
+  "Singapore HUL": false,
+  "Singapore KUB": false,
+  "Singapore KVY": false,
+  "Singapore LEC": false,
+  "Singapore MAG": false,
+  "Singapore NOR": false,
+  "Singapore PER": false,
+  "Singapore RAI": false,
+  "Singapore RIC": false,
+  "Singapore RUS": false,
+  "Singapore SAI": false,
+  "Singapore STR": false,
+  "Singapore VER": false,
+  "Singapore VET": false,
+  "Spielberg ALB": true,
+  "Spielberg BOT": true,
+  "Spielberg GAS": false,
+  "Spielberg GIO": true,
+  "Spielberg GRO": true,
+  "Spielberg HAM": true,
+  "Spielberg HUL": true,
+  "Spielberg KUB": true,
+  "Spielberg KVY": true,
+  "Spielberg LEC": false,
+  "Spielberg MAG": false,
+  "Spielberg NOR": false,
+  "Spielberg PER": true,
+  "Spielberg RAI": true,
+  "Spielberg RIC": false,
+  "Spielberg RUS": true,
+  "Spielberg SAI": true,
+  "Spielberg STR": true,
+  "Spielberg VER": true,
+  "Spielberg VET": true,
+  "Suzuka ALB": false,
+  "Suzuka BOT": false,
+  "Suzuka GAS": false,
+  "Suzuka GIO": true,
+  "Suzuka GRO": true,
+  "Suzuka HAM": false,
+  "Suzuka HUL": false,
+  "Suzuka KUB": true,
+  "Suzuka KVY": false,
+  "Suzuka LEC": false,
+  "Suzuka MAG": true,
+  "Suzuka NOR": false,
+  "Suzuka PER": false,
+  "Suzuka RAI": true,
+  "Suzuka RIC": false,
+  "Suzuka RUS": true,
+  "Suzuka SAI": false,
+  "Suzuka STR": false,
+  "Suzuka VER": false,
+  "Suzuka VET": false
+ },
+ "Seconds": 248
+}

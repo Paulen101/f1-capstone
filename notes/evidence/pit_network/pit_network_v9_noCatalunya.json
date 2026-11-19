@@ -1,0 +1,304 @@
+{
+ "Name": "pit_network_v9_noCatalunya",
+ "Tracks": [
+  "Austin",
+  "Melbourne",
+  "Monza",
+  "Sakhir",
+  "Singapore",
+  "Spielberg",
+  "Suzuka"
+ ],
+ "DriverRaces": 140,
+ "HeldOutFirstRun": 40,
+ "Settings": {
+  "tracks": [
+   "Austin",
+   "Monza",
+   "Singapore",
+   "Spielberg",
+   "Sakhir",
+   "Melbourne",
+   "Suzuka"
+  ],
+  "runs": 50,
+  "start": "integration\\models\\pit_network_v1.npz",
+  "name": "pit_network_v9_noCatalunya",
+  "compounds": "stored",
+  "iterations": 4,
+  "hidden": [
+   64,
+   64
+  ],
+  "epochs": 40,
+  "patience": 5,
+  "batch": 4096,
+  "lr": 0.001,
+  "seed": 0,
+  "threads": 16,
+  "device": "auto",
+  "tyre_error": "moderate"
+ },
+ "References": [
+  {
+   "Policy": "fixed one-stop, any compound",
+   "MeanStopLap": 27.662857142857142,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.0,
+    "PosDiff_SE": 0.0,
+    "TimeDiff_s": 0.0,
+    "TimeDiff_s_SE": 0.0,
+    "Runs": 1400
+   }
+  },
+  {
+   "Policy": "fixed best plan",
+   "MeanStopLap": 23.931428571428572,
+   "TwoStopShare": 0.40285714285714286,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.4169254658385093,
+    "PosDiff_SE": 0.027994707182130284,
+    "TimeDiff_s": -3.5838158319870583,
+    "TimeDiff_s_SE": 0.24084409903432583,
+    "Runs": 1400
+   }
+  },
+  {
+   "Policy": "start (pit_network_v1)",
+   "MeanStopLap": 29.09,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.2515527950310559,
+    "PosDiff_SE": 0.035512198403666324,
+    "TimeDiff_s": 2.2916495016611447,
+    "TimeDiff_s_SE": 0.2819894306432276,
+    "Runs": 1400
+   }
+  },
+  {
+   "Policy": "start (pit_network_v1), choosing compound",
+   "MeanStopLap": 29.09,
+   "TwoStopShare": 0.0,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.2515527950310559,
+    "PosDiff_SE": 0.035512198403666324,
+    "TimeDiff_s": 2.2916495016611447,
+    "TimeDiff_s_SE": 0.2819894306432276,
+    "Runs": 1400
+   }
+  }
+ ],
+ "Iterations": [
+  {
+   "Policy": "iteration 1",
+   "MeanStopLap": 24.58142857142857,
+   "TwoStopShare": 0.40785714285714286,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": 0.007763975155279503,
+    "PosDiff_SE": 0.03459514308421461,
+    "TimeDiff_s": 0.33905819672133,
+    "TimeDiff_s_SE": 0.27160882866398073,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": 0.007763975155279503,
+    "PosDiff_SE": 0.03459514308421461,
+    "TimeDiff_s": 0.33905819672133,
+    "TimeDiff_s_SE": 0.27160882866398073,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.4246894409937888,
+    "PosDiff_SE": 0.034914286000063285,
+    "TimeDiff_s": 4.220450413223139,
+    "TimeDiff_s_SE": 0.25372762468966287,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.24378881987577639,
+    "PosDiff_SE": 0.042424057189913746,
+    "TimeDiff_s": -1.768892976588626,
+    "TimeDiff_s_SE": 0.33947920162293715,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.24378881987577639,
+    "PosDiff_SE": 0.042424057189913746,
+    "TimeDiff_s": -1.768892976588626,
+    "TimeDiff_s_SE": 0.33947920162293715,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 1.2546583850931676,
+    "PosDiff_SE": 0.04338733184479282,
+    "TimeDiff_s": 9.75140228873239,
+    "TimeDiff_s_SE": 0.378206736997351,
+    "Runs": 1400
+   },
+   "Iteration": 1,
+   "TrainRows": 3337876,
+   "Epochs": 14
+  },
+  {
+   "Policy": "iteration 2",
+   "MeanStopLap": 23.779285714285713,
+   "TwoStopShare": 0.3535714285714286,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.22903726708074534,
+    "PosDiff_SE": 0.03450357525117118,
+    "TimeDiff_s": -1.6360521597391728,
+    "TimeDiff_s_SE": 0.2786493897276599,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.22903726708074534,
+    "PosDiff_SE": 0.03450357525117118,
+    "TimeDiff_s": -1.6360521597391728,
+    "TimeDiff_s_SE": 0.2786493897276599,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.18788819875776397,
+    "PosDiff_SE": 0.0294790923611158,
+    "TimeDiff_s": 2.096851273623677,
+    "TimeDiff_s_SE": 0.22061031469949982,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.4805900621118012,
+    "PosDiff_SE": 0.043003568968094784,
+    "TimeDiff_s": -3.7991620253164453,
+    "TimeDiff_s_SE": 0.3497454404752998,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.4805900621118012,
+    "PosDiff_SE": 0.043003568968094784,
+    "TimeDiff_s": -3.7991620253164453,
+    "TimeDiff_s_SE": 0.3497454404752998,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 1.0178571428571428,
+    "PosDiff_SE": 0.03728632358869146,
+    "TimeDiff_s": 7.8030189818809355,
+    "TimeDiff_s_SE": 0.33656465662975726,
+    "Runs": 1400
+   },
+   "Iteration": 2,
+   "TrainRows": 3337876,
+   "Epochs": 17
+  },
+  {
+   "Policy": "iteration 3",
+   "MeanStopLap": 24.152142857142856,
+   "TwoStopShare": 0.4092857142857143,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.2942546583850932,
+    "PosDiff_SE": 0.03476522368772738,
+    "TimeDiff_s": -2.1112639344262205,
+    "TimeDiff_s_SE": 0.32972386267239323,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.2942546583850932,
+    "PosDiff_SE": 0.03476522368772738,
+    "TimeDiff_s": -2.1112639344262205,
+    "TimeDiff_s_SE": 0.32972386267239323,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.12267080745341614,
+    "PosDiff_SE": 0.026528771181493854,
+    "TimeDiff_s": 1.612093344155837,
+    "TimeDiff_s_SE": 0.23953378107474077,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.5458074534161491,
+    "PosDiff_SE": 0.040961561761149484,
+    "TimeDiff_s": -4.34565319865321,
+    "TimeDiff_s_SE": 0.36765669628285796,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.5458074534161491,
+    "PosDiff_SE": 0.040961561761149484,
+    "TimeDiff_s": -4.34565319865321,
+    "TimeDiff_s_SE": 0.36765669628285796,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.952639751552795,
+    "PosDiff_SE": 0.035355689057183545,
+    "TimeDiff_s": 7.3374543859649,
+    "TimeDiff_s_SE": 0.36585141155923634,
+    "Runs": 1400
+   },
+   "Iteration": 3,
+   "TrainRows": 3337876,
+   "Epochs": 19
+  },
+  {
+   "Policy": "iteration 4",
+   "MeanStopLap": 23.10214285714286,
+   "TwoStopShare": 0.435,
+   "OtherCompoundShare": 0.0,
+   "Vs fixed one-stop": {
+    "PosDiff": -0.33152173913043476,
+    "PosDiff_SE": 0.036656907482449756,
+    "TimeDiff_s": -2.923259718775834,
+    "TimeDiff_s_SE": 0.292691752036073,
+    "Runs": 1400
+   },
+   "Vs fixed one-stop, any compound": {
+    "PosDiff": -0.33152173913043476,
+    "PosDiff_SE": 0.036656907482449756,
+    "TimeDiff_s": -2.923259718775834,
+    "TimeDiff_s_SE": 0.292691752036073,
+    "Runs": 1400
+   },
+   "Vs fixed best plan": {
+    "PosDiff": 0.08540372670807453,
+    "PosDiff_SE": 0.02783797873880697,
+    "TimeDiff_s": 0.6944071370640674,
+    "TimeDiff_s_SE": 0.20153860661600598,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1), choosing compound": {
+    "PosDiff": -0.5830745341614907,
+    "PosDiff_SE": 0.04233623522208183,
+    "TimeDiff_s": -5.042641221374052,
+    "TimeDiff_s_SE": 0.3388119521756638,
+    "Runs": 1400
+   },
+   "Vs start (pit_network_v1)": {
+    "PosDiff": -0.5830745341614907,
+    "PosDiff_SE": 0.04233623522208183,
+    "TimeDiff_s": -5.042641221374052,
+    "TimeDiff_s_SE": 0.3388119521756638,
+    "Runs": 1400
+   },
+   "Vs hindsight": {
+    "PosDiff": 0.9153726708074534,
+    "PosDiff_SE": 0.03466354705935253,
+    "TimeDiff_s": 6.416532467532458,
+    "TimeDiff_s_SE": 0.30882257130412155,
+    "Runs": 1400
+   },
+   "Iteration": 4,
+   "TrainRows": 3337876,
+   "Epochs": 10
+  }
+ ],
+ "Best": 4,
+ "Seconds": 203
+}

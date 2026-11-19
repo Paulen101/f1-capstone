@@ -198,13 +198,18 @@ def traffic_values(traffic: dict) -> dict:
 
     A duel cannot make a car faster, so a negative t_duel (noise around zero: the measurement's
     standard error is 0.06-0.2 s) is written as 0.
+
+    A race with too few passes to measure t_gap_overtake (NaN: Melbourne 2019 had 6) keeps TUM's value.
     """
     measured = {key: value["measured"] for key, value in traffic["values"].items()}
     measured["t_duel"] = max(measured["t_duel"], 0.0)
-    if not 0.0 < measured["t_gap_overtake"] < 5.0 or min(measured.values()) < 0:
+    unmeasured = {key for key in TRACK_TRAFFIC if math.isnan(measured[key])}
+    checked = {key: v for key, v in measured.items() if key not in unmeasured}
+    if ("t_gap_overtake" in checked and not 0.0 < checked["t_gap_overtake"] < 5.0) or min(checked.values()) < 0 \
+            or any(math.isnan(measured[key]) for key in RACE_TRAFFIC):
         raise ValueError("Traffic values outside TUM's range: %s" % measured)
     values = {("race_pars", key): round(measured[key], 3) for key in RACE_TRAFFIC}
-    values.update({("track_pars", key): round(measured[key], 3) for key in TRACK_TRAFFIC})
+    values.update({("track_pars", key): round(measured[key], 3) for key in TRACK_TRAFFIC if key not in unmeasured})
     return values
 
 

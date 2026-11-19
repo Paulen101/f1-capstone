@@ -48,9 +48,20 @@ def main():
         real = real_results(name)
         real_passes = json.loads((EVIDENCE / ("%s_traffic.json" % name)).read_text(encoding="utf-8"))["counts"]["passes"]
         for label, path in files(track).items():
-            race = simulate(path, {})
-            row = {"Track": track, "Parameters": label, "status": int(race.result_status),
+            row = {"Track": track, "Parameters": label,
                    "RealPasses": real_passes, "RealTop4": "-".join(real.sort_values("Position").Abbreviation[:4])}
+            try:
+                race = simulate(path, {})
+            except RuntimeError as error:
+                # TUM's Melbourne and Sakhir 2019 files burn slightly more than the 110 kg tank holds
+                # (write_fitted_pars.py lowers the burn in our files); a car then runs dry on the last lap
+                if "Unreasonable value" not in str(error):
+                    raise
+                row["status"] = "ran out of fuel"
+                rows.append(row)
+                print(row, flush=True)
+                continue
+            row["status"] = int(race.result_status)
             if race.result_status == 0:
                 row.update(Passes=count_passes(race), **score(race, real))
             rows.append(row)
