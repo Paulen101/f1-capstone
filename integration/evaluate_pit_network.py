@@ -23,6 +23,9 @@ real strategy, as in the training data:
     tum       TUM's supervised VSE (nn_supervised_tirechange + compoundchoice) for this driver
     fixed     one stop on the Monte Carlo label lap (best mean position over the training runs), same compound
 
+With --tyre-error moderate or large, the network and race_file_plan policies believe a wrong tyre model drawn
+per race (integration/tyre_uncertainty.py); the simulator, TUM's VSE and the other drivers keep the true one.
+
 Seeds start at --seed (default 500000), far from the training runs' 0-199, so these are new random races.
 Output in --out (default integration/output/evaluation/<model>_mc<runs>/): runs.csv (one row per simulated
 race) and manifest.json. data_pipeline/summarise_evaluation.py compares the policies.
@@ -90,17 +93,26 @@ def simulate(task):
                      + track_pars["t_pit_tirechange_min"] + pars["car_pars"][team]["t_pit_tirechange_add"], 3)
     network = PitNetwork(settings["model"]) if policy.startswith("network") else None
     choice, second, others, head = None, None, None, None
-    limits, planned = None, None
-    if policy in ("network_limited", "race_file_plan"):
+    file_pars = parse_pars(source.read_bytes().decode("utf-8"))
+    level = settings["tyre_error"]
+    uses_tyre_model = policy.startswith("network") or policy == "race_file_plan"
+    width = (json.loads(Path(settings["widths"]).read_text())["widths"][track]
+             if policy == "network_limited" else None)
+
+    def race_file_setup(tire_pars: dict):
+        """(limits, planned stops) from the race file's plan with these tyre parameters."""
+        if policy not in ("network_limited", "race_file_plan"):
+            return None, None
         from integration import race_file_plan
-        plan = race_file_plan.race_plans(parse_pars(source.read_bytes().decode("utf-8")),
+        plan = race_file_plan.race_plans(dict(file_pars, tireset_pars=tire_pars),
                                          min_stint=settings["min_stint"])[driver]
         if policy == "race_file_plan":
             laps = race_file_plan.planned_stops(plan)
-            planned = tuple(zip(laps, [plan["C1"], plan["C2"]][:len(laps)]))
-        else:
-            width = json.loads(Path(settings["widths"]).read_text())["widths"][track]
-            limits = race_file_plan.limits(plan, width["early"], width["late"], settings["min_stint"])
+            return None, tuple(zip(laps, [plan["C1"], plan["C2"]][:len(laps)]))
+        return race_file_plan.limits(plan, width["early"], width["late"], settings["min_stint"]), None
+
+    limits, planned = race_file_setup(file_pars["tireset_pars"])
+    believed = None
     if policy in ("network_two", "network_choice", "network_head", "network_rule", "network_limited"):
         from integration.two_stop_generator import second_stop_compounds
         second = second_stop_compounds(parse_pars(source.read_bytes().decode("utf-8")))[driver]
@@ -122,6 +134,12 @@ def simulate(task):
     tot = pars["race_pars"]["tot_no_laps"]
     rows, invalid = [], 0
     for run in runs:
+        if uses_tyre_model and level != "exact":
+            from integration.tyre_uncertainty import believed_tires
+            all_believed = believed_tires(file_pars["tireset_pars"], pars["vse_pars"]["param_dry_compounds"],
+                                          track, run, level)
+            believed = all_believed[driver]
+            limits, planned = race_file_setup(all_believed)
         for attempt in range(MAX_ATTEMPTS):
             seed = run_seed(settings["seed"], run, attempt)
             random.seed(seed)
@@ -132,7 +150,8 @@ def simulate(task):
                 race.vse = NetworkVSE(race.vse, race, driver, network, None if choice else stop,
                                       pars["vse_pars"]["location_cat"], pit_loss, compound_choice=choice,
                                       second_compound=second, min_stint=settings["min_stint"],
-                                      other_compounds=others, compound_head=head, limits=limits)
+                                      other_compounds=others, compound_head=head, limits=limits,
+                                      believed_tires=believed)
             elif policy == "race_file_plan":
                 from integration.fixed_lap_policy import PlannedStopsPolicy
                 race.vse = FixedLapVSE(race.vse, driver, PlannedStopsPolicy(planned))
@@ -149,6 +168,7 @@ def simulate(task):
         stops = [(s[0], s[1]) for s in race.drivers_list[idx].strategy_info[1:]]
         laps = float(race.progress[idx])
         rows.append({"Track": track, "Driver": driver, "Policy": policy, "Run": run, "Seed": seed,
+                     "TyreError": level if uses_tyre_model else "exact",
                      "Position": int(race.positions[-1, idx]), "SimulatedLaps": laps, "TotLaps": tot,
                      "RaceTime_s": round(float(race.racetimes[int(laps), idx]), 3),
                      "Finished": bool(race.bool_driving[-1, idx]), "Stops": len(stops),
@@ -176,6 +196,9 @@ def main():
                         help="network_head: the head; network_rule: its report in notes/evidence/pit_network/")
     parser.add_argument("--widths", type=Path, default=ROOT / "notes/evidence/pit_network/plausibility_widths.json",
                         help="network_limited: window widths per track (integration/race_file_plan.py --widths)")
+    parser.add_argument("--tyre-error", choices=["exact", "moderate", "large"], default="exact",
+                        help="network and race_file_plan policies believe a wrong tyre model "
+                             "(integration/tyre_uncertainty.py); the simulator keeps the true one")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     if sys.version_info[:2] != (3, 8):
@@ -183,7 +206,8 @@ def main():
     out = args.out or ROOT / "integration/output/evaluation" / ("%s_mc%d" % (args.model.stem, args.runs))
     out.mkdir(parents=True, exist_ok=True)
     settings = {"model": str(args.model.resolve()), "seed": args.seed, "min_stint": args.min_stint,
-                "compound_head": str(args.compound_head.resolve()), "widths": str(args.widths.resolve())}
+                "compound_head": str(args.compound_head.resolve()), "widths": str(args.widths.resolve()),
+                "tyre_error": args.tyre_error}
     tasks = []
     for track in args.tracks:
         drivers = sorted(stop_compounds(parse_pars(race_file(track).read_bytes().decode("utf-8"))))
@@ -208,7 +232,7 @@ def main():
         writer.writerows(rows)
     manifest = {"model": str(args.model), "model_sha256": hashlib.sha256(args.model.read_bytes()).hexdigest(),
                 "tracks": args.tracks, "drivers": args.drivers, "policies": args.policies, "runs": args.runs,
-                "seed": args.seed, "invalid_attempts": invalid, "races": len(rows),
+                "seed": args.seed, "tyre_error": args.tyre_error, "invalid_attempts": invalid, "races": len(rows),
                 "seconds": round(time.perf_counter() - started)}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
     print("wrote %s: %d races, %d invalid attempts re-run (%.0f s)"

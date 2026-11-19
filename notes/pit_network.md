@@ -409,10 +409,42 @@ What this shows:
 - **It is as good as the best trained network on the tracks the network trained on**: +0.02 ± 0.01 places and 1.0 s *faster* than v6 + compound head over five tracks, level in safety-car races. On these five tracks the network's gain over TUM comes from knowing the race file's tyre model, which the race-file plan uses directly. Its own contribution beyond that (reacting to the race as it unfolds) is about zero in position.
 - **Caveat: the race-file plan knows the simulator's tyre model exactly.** The simulator runs on the same fitted degradation model the plan optimises, fitted on laps of the same 2019 race. On a real future race the tyre model would come from practice or an earlier year and be uncertain, and a plan built on it would be worse; TUM's VSE never sees the race file's tyres. The same holds, less directly, for our networks (their tyre inputs come from the race file). So this does not show that a trivial plan beats TUM in reality; it shows that **in this simulator, the network's lead over TUM is the tyre model, not learned race-craft.**
 
+### A wrong tyre model: how much of the lead survives?
+
+The race-file plan and the network's tyre inputs read the same degradation model the simulator races on. A real team only has an estimate. Here the strategy believes a wrong model while the simulator keeps the true one (`integration/tyre_uncertainty.py`, `evaluate_pit_network.py --tyre-error`, `NetworkVSE(believed_tires=...)`):
+
+- per race and compound, shared by the whole field (one estimate, as from practice running): `k_0` + N(0, σ₀) s and every wear term × exp(N(0, σ_w))
+- **moderate**: σ₀ = 0.3 s, σ_w = 0.3 (about the fit's own standard errors: k0 0.2–0.7 s, wear terms 20–50 %); **large**: σ₀ = 0.6 s, σ_w = 0.6 (the upper end; wear fitted without late-stint laps was off by far more, [heldout_check.md](heldout_check.md))
+- drawn from (track, run, level), so both policies believe the same wrong model in the same race; TUM's VSE, the real strategies and the background drivers do not read the race file's tyres and are unchanged. A check re-raced 100 races with the exact model: positions, race times and stops identical to the earlier runs.
+
+Policies: v6 + compound head and the race-file plan, 100 races per driver-race on all five tracks per level, same seeds ([table](evidence/pit_network/tyre_uncertainty.csv)):
+
+| Minus TUM's VSE | Places | Race time | Green | SC/VSC | Minus real | Austin | Barcelona | Monza | Singapore | Spielberg |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| v6 + head, exact tyres | **−0.18 ± 0.02** | −1.2 s | −0.40 | +0.00 | −0.62 | −0.11 | −0.23 | +0.11 | −0.82 | +0.16 |
+| race-file plan, exact | **−0.16 ± 0.01** | −2.2 s | −0.36 | +0.00 | −0.60 | −0.17 | −0.23 | +0.14 | −0.75 | +0.21 |
+| v6 + head, moderate error | +0.27 ± 0.02 | +3.4 s | +0.03 | +0.48 | −0.17 | +0.37 | +0.26 | +0.19 | +0.16 | +0.39 |
+| race-file plan, moderate | +0.19 ± 0.02 | +1.5 s | +0.00 | +0.34 | −0.25 | +0.23 | −0.11 | +0.33 | −0.15 | +0.65 |
+| v6 + head, large error | +0.78 ± 0.02 | +7.3 s | +0.62 | +0.91 | +0.33 | +1.22 | +0.52 | +0.64 | +0.94 | +0.56 |
+| race-file plan, large | +0.74 ± 0.02 | +6.8 s | +0.59 | +0.86 | +0.30 | +0.94 | +0.32 | +1.07 | +0.29 | +1.08 |
+
+| Wrong minus exact tyres (same policy) | Moderate | Large |
+|---|---:|---:|
+| v6 + head | +0.45 ± 0.02 places, +4.4 s | +0.95 ± 0.02, +8.0 s |
+| race-file plan | +0.35 ± 0.01, +3.7 s | +0.90 ± 0.02, +9.0 s |
+| race-file plan minus v6 + head | −0.09 ± 0.02, −1.8 s | −0.04 ± 0.02, −0.8 s |
+
+What this shows:
+
+- **The lead over TUM's VSE does not survive a realistic tyre error.** With errors about the size of the fit's own standard errors, both policies lose about 0.4 places and fall behind TUM: the network by 0.27 places, the race-file plan by 0.19. In green races they are level with TUM; with a safety car TUM leads by 0.3–0.5. With large errors both are 0.75 places behind TUM and worse than the real strategies.
+- **The network is not more robust than the plan; slightly less.** It loses 0.45 places to the error against the plan's 0.35, and the plan is ahead of it under both error levels (−0.09 and −0.04 places). The network learned to trust its tyre inputs; nothing in its training rewarded doubting them.
+- **What the wrong model does**: at Austin the network's two-stop share falls from 92 % to 59 % (moderate) and 37 % (large), at Barcelona from 70 % to 46 % and 36 %; a wear rate believed too low makes long stints look cheap.
+- **This completes the picture of rounds 6–8.** Our policies' lead over TUM in this simulator is the exact tyre model they share with it. TUM's VSE never had that model and is unaffected; against it, the honest comparison is the "moderate" row.
+
 ## Next
 
-1. Decide what the network is for: in this simulator the race-file plan matches it. Where it could still add something is reacting to the race (safety cars, traffic, rivals' stops), which needs reacting background drivers (TUM's VSE for everyone else) and a race-file-plan baseline in every table.
-2. Robustness: race the race-file plan and the network with a perturbed tyre model (the uncertainty a real team has), so that knowing the exact model is no longer free.
+1. **Train for uncertainty**: give the network wrong tyre inputs during training (the same error model, drawn per stored run), so it learns how far to trust them; compare with the race-file plan under the same errors. The stored runs and their labels stay valid, because only the inputs change.
+2. Decide what the network is for: with exact tyres it matches the race-file plan, with wrong tyres it loses to TUM. What it could still add is reacting to the race (safety cars, traffic, rivals' stops), which needs reacting background drivers (TUM's VSE for everyone else). Keep a race-file-plan baseline and a tyre-error row in every table.
 3. More tracks (2022–2025 seasons): the leave-one-out test says the network does not yet transfer to new tracks.
 
 ## Reproduce
@@ -465,4 +497,6 @@ What this shows:
 .venv-tum/Scripts/python.exe integration/race_file_plan.py --widths integration/output/evaluation/all_five_tracks_mc100/runs.csv --policy v6
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_noX.npz --tracks X --policies network_limited race_file_plan --out integration/output/evaluation/limits_v6_noX_mc100
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_noX.npz --tracks X --policies network_limited --out integration/output/evaluation/limits_v4_noX_mc100
+# round 8, wrong tyre model (LEVEL moderate and large)
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_five_tracks.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_head race_file_plan --compound-head integration/models/pit_compound_head_v2.npz --tyre-error LEVEL --out integration/output/evaluation/tyre_error_LEVEL_mc100
 ```

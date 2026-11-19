@@ -281,5 +281,41 @@ class RaceFilePlanTests(unittest.TestCase):
         self.assertLessEqual(lim["second"][1], 30)
 
 
+class TyreUncertaintyTests(unittest.TestCase):
+    def test_errors_are_paired_shared_and_exact_is_identity(self):
+        from integration.tyre_uncertainty import believed_tires, draw
+        both = {"X": QUAD, "Y": QUAD}
+        self.assertEqual(draw(["A3", "A4"], "Monza", 7, "large"), draw(["A3", "A4"], "Monza", 7, "large"))
+        self.assertNotEqual(draw(["A3", "A4"], "Monza", 7, "large"), draw(["A3", "A4"], "Monza", 8, "large"))
+        self.assertEqual(believed_tires(both, ["A3", "A4"], "Monza", 7, "exact"), both)
+        wrong = believed_tires(both, ["A3", "A4"], "Monza", 7, "large")
+        self.assertEqual(wrong["X"], wrong["Y"])                    # one estimate for the whole field
+        offset, factor = draw(["A3", "A4"], "Monza", 7, "large")["A4"]
+        self.assertAlmostEqual(wrong["X"]["A4"]["k_0"], QUAD["A4"]["k_0"] + offset)
+        self.assertAlmostEqual(wrong["X"]["A4"]["k_2_quad"], QUAD["A4"]["k_2_quad"] * factor)
+        self.assertEqual(QUAD["A4"]["k_0"], -0.5)                    # the true model is not changed
+
+    def test_network_sees_the_believed_tyres(self):
+        sim = SimulatorTests()
+        SimulatorTests.setUpClass()
+        sim.pars, sim.paths, sim.tot = SimulatorTests.pars, SimulatorTests.paths, SimulatorTests.tot
+        from racesim.src.race import Race
+        random.seed(3)
+        np.random.seed(3)
+        race = Race(**sim.pars, vse_paths=sim.paths, use_prob_infl=True, create_rand_events=True)
+        true = race.drivers_list[next(i for i, d in enumerate(race.drivers_list) if d.initials == "VER")].tireset_pars
+        believed = {k: (dict(v, k_0=v["k_0"] + 1.0) if isinstance(v, dict) else v) for k, v in true.items()}
+        vse = NetworkVSE(race.vse, race, "VER", StubNetwork(sim.tot, 10 ** 6), "A3",
+                         sim.pars["vse_pars"]["location_cat"], 20.0, believed_tires=believed)
+        race.vse = vse
+        race.simulate_race()
+        compound = vse.situation(20)["Compound"]
+        seen = vse.situation(20)["TyreDelta_s"]
+        expected = tyre_features(believed, compound, "A3", vse.situation(20)["TyreAge"], 1)["TyreDelta_s"]
+        self.assertAlmostEqual(seen, expected)
+        if compound != "A3":                                         # same offset on both compounds cancels
+            self.assertAlmostEqual(seen, tyre_features(true, compound, "A3", vse.situation(20)["TyreAge"], 1)["TyreDelta_s"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -187,12 +187,15 @@ class NetworkVSE:
     fall in a window around the race file's plan: limits["first"] = [lo, hi] means no first stop before lap lo
     and a forced stop on lap hi if the network has not stopped; limits["second"] the same for the second stop,
     or None for no second stop. The windows of `min_stint` still apply.
+
+    With `believed_tires` (integration/tyre_uncertainty.py) the tyre inputs come from that tyre model instead of
+    the one the simulator races on: the strategy's estimate of its tyres.
     """
 
     def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: Optional[str],
                  location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None,
                  second_compound: Optional[str] = None, min_stint: int = 10, other_compounds=None,
-                 compound_head=None, limits: Optional[dict] = None):
+                 compound_head=None, limits: Optional[dict] = None, believed_tires: Optional[dict] = None):
         if (stop_compound is None) == (compound_choice is None):
             raise ValueError("Give either a fixed stop compound or a compound choice")
         if original_vse is None:
@@ -214,6 +217,7 @@ class NetworkVSE:
         self.other_compounds = list(other_compounds or [])
         self.compound_head = compound_head
         self.limits = limits
+        self.believed_tires = believed_tires
         if limits is not None and limits.get("second") is not None and second_compound is None:
             raise ValueError("A second-stop window needs a second compound")
         if self.other_compounds and stop_compound is None:
@@ -238,7 +242,7 @@ class NetworkVSE:
     def situation(self, lap: int, stop_compound: Optional[str] = None) -> dict:
         from integration.situations import features
         situation = features(self.race, self.idx, lap, self.dry_compounds, self.location_cat, self.pit_loss_s)
-        tire_pars = self.race.drivers_list[self.idx].tireset_pars
+        tire_pars = self.believed_tires or self.race.drivers_list[self.idx].tireset_pars
         situation.update(tyre_features(tire_pars, situation["Compound"], stop_compound or self.compound_for(lap),
                                        situation["TyreAge"], situation["LapsRemaining"]))
         return situation
