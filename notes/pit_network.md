@@ -377,11 +377,43 @@ What this shows:
 - **The failures are implausible plans, not small timing errors**: a first stop on lap 3–5 and two stops where nobody needs them (Spielberg 85–94 %). On an unseen track the track inputs (location category, pit loss, tyre features) take values outside what it trained on, and the network extrapolates badly.
 - **So a new track still needs its own runs.** Four or five tracks do not teach the network what a track does; whether it ever transfers is a question for many more tracks (2022–2025), not this data set. A cheaper safeguard for unseen tracks would be to keep its decisions within plausible windows (no stop before a minimum stint, two stops only where a fixed plan shows they pay); that has not been tried.
 
+### Plausibility limits on unseen tracks, and the race-file plan
+
+The unseen networks fail with implausible plans. Limits that need nothing but the new track's race file:
+
+- **Race-file plan** (`integration/race_file_plan.py`): for every driver, the cheapest one-stop and two-stop plan by the race file's own degradation model plus the stop cost (pit-lane drive, tyre change, team's extra change time, cold-tyre out-lap). Fuel is the same for every plan and traffic is ignored, so no simulation is needed (milliseconds per track). The compounds and windows are those of the two-stop runs. It gets the stop count right at four of five tracks: two stops faster for 20/20 drivers at Austin (median +7.1 s), for 0/20 at Monza, Singapore and Spielberg (−9 to −17 s); Barcelona is borderline (4/20, median −2.1 s), where the simulator says two stops pay.
+- **Limits** (`NetworkVSE(limits=...)`): each stop must fall in a window around the plan's stop, from `early` before to `late` after (fractions of the race); the network cannot stop before the window and is forced to stop at its end. A second stop only for drivers whose race-file plan has two stops.
+- **Widths from the other tracks only** (`race_file_plan.py --widths`, [widths](evidence/pit_network/plausibility_widths.json)): the 5th and 95th percentile of the seen network v6's first stop minus the race-file plan's, pooled over the four tracks other than the held-out one. The seen network stops earlier than the plan, rarely later: early 0.20–0.26, late 0.02–0.06 of the race. (v6 trained on the held-out track too; its stops elsewhere are only a second-order leak.)
+
+Each hidden-track network of the leave-one-out test raced again with limits (`network_limited`), and the race-file plan raced alone as fixed stops (`race_file_plan`); same seeds as every evaluation ([table](evidence/pit_network/plausibility_limits.csv)):
+
+| Places minus TUM's VSE | Austin | Monza | Singapore | Spielberg | Barcelona | Old four together |
+|---|---:|---:|---:|---:|---:|---:|
+| Seen (v6) | −0.11 | +0.15 | −0.81 | +0.30 | −0.22 | −0.12 |
+| Unseen, 3 tracks | +0.97 | +0.53 | +1.62 | +1.52 | | +1.16 |
+| … with limits | +0.21 | +0.14 | +0.32 | +0.67 | | **+0.33** |
+| Unseen, 4 tracks | +0.92 | +0.99 | −0.78 | +1.37 | +0.61 | +0.62 |
+| … with limits | +0.88 | +0.88 | −0.85 | +0.72 | +0.50 | **+0.41** |
+| **Race-file plan alone** | **−0.17** | +0.14 | −0.75 | +0.21 | **−0.23** | **−0.14** |
+
+| Race-file plan minus | Places | Race time | Green | SC/VSC |
+|---|---:|---:|---:|---:|
+| **v6 + compound head, five tracks (best trained policy, seen)** | **+0.02 ± 0.01** | **−1.0 s** | +0.04 | +0.00 |
+| TUM's VSE | −0.16 ± 0.01 | −2.2 s | −0.36 | +0.00 |
+| Real 2019 strategy | −0.60 ± 0.02 | −6.1 s | −0.60 | −0.61 |
+
+What this shows:
+
+- **The limits help, but not enough.** They cut the unseen networks' loss to TUM from +1.16 to +0.33 places (3 tracks) and from +0.62 to +0.41 (4 tracks). The windows are wide on the early side (up to a quarter of the race, because the seen network often stops well before the plan), so at Austin and Monza the 4-track network still stops on lap 5 and 15. The limited networks still lose to TUM's VSE.
+- **The race-file plan alone beats every unseen network and TUM's VSE**: −0.14 places over the old four tracks and −0.23 at Barcelona, without the network and without a single Monte Carlo run.
+- **It is as good as the best trained network on the tracks the network trained on**: +0.02 ± 0.01 places and 1.0 s *faster* than v6 + compound head over five tracks, level in safety-car races. On these five tracks the network's gain over TUM comes from knowing the race file's tyre model, which the race-file plan uses directly. Its own contribution beyond that (reacting to the race as it unfolds) is about zero in position.
+- **Caveat: the race-file plan knows the simulator's tyre model exactly.** The simulator runs on the same fitted degradation model the plan optimises, fitted on laps of the same 2019 race. On a real future race the tyre model would come from practice or an earlier year and be uncertain, and a plan built on it would be worse; TUM's VSE never sees the race file's tyres. The same holds, less directly, for our networks (their tyre inputs come from the race file). So this does not show that a trivial plan beats TUM in reality; it shows that **in this simulator, the network's lead over TUM is the tyre model, not learned race-craft.**
+
 ## Next
 
-1. More tracks (2022–2025 seasons): the leave-one-out test says the network does not yet transfer to new tracks.
-2. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
-3. Plausibility limits on unseen tracks (minimum first stint, two stops only where a fixed plan shows they pay), if the network has to be used on a track without runs.
+1. Decide what the network is for: in this simulator the race-file plan matches it. Where it could still add something is reacting to the race (safety cars, traffic, rivals' stops), which needs reacting background drivers (TUM's VSE for everyone else) and a race-file-plan baseline in every table.
+2. Robustness: race the race-file plan and the network with a perturbed tyre model (the uncertainty a real team has), so that knowing the exact model is no longer free.
+3. More tracks (2022–2025 seasons): the leave-one-out test says the network does not yet transfer to new tracks.
 
 ## Reproduce
 
@@ -428,4 +460,9 @@ What this shows:
 # round 8, leave one track out: for X in Austin Monza Singapore Spielberg, SET v4 (other old tracks) and v6 (plus Catalunya)
 .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks <other tracks> --start integration/models/pit_network_noX.npz --compounds stored --name pit_network_SET_noX --iterations 4
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_SET_noX.npz --tracks X --policies network_two --out integration/output/evaluation/loo_SET_noX_mc100
+# round 8, plausibility limits and the race-file plan (Catalunya: --model pit_network_v4_two_stop.npz)
+.venv-tum/Scripts/python.exe integration/race_file_plan.py
+.venv-tum/Scripts/python.exe integration/race_file_plan.py --widths integration/output/evaluation/all_five_tracks_mc100/runs.csv --policy v6
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_noX.npz --tracks X --policies network_limited race_file_plan --out integration/output/evaluation/limits_v6_noX_mc100
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v4_noX.npz --tracks X --policies network_limited --out integration/output/evaluation/limits_v4_noX_mc100
 ```

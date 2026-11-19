@@ -118,7 +118,8 @@ class SimulatorTests(unittest.TestCase):
         cls.source, cls.pars, cls.paths, _, _ = load(args)
         cls.tot = cls.pars["race_pars"]["tot_no_laps"]
 
-    def race(self, network, seed=3, compound_choice=None, second_compound=None, other_compounds=None, head=None):
+    def race(self, network, seed=3, compound_choice=None, second_compound=None, other_compounds=None, head=None,
+             limits=None):
         from racesim.src.race import Race
         random.seed(seed)
         np.random.seed(seed)
@@ -126,7 +127,7 @@ class SimulatorTests(unittest.TestCase):
         race.vse = NetworkVSE(race.vse, race, "VER", network, None if compound_choice else "A3",
                               self.pars["vse_pars"]["location_cat"], 20.0, compound_choice=compound_choice,
                               second_compound=second_compound, other_compounds=other_compounds,
-                              compound_head=head)
+                              compound_head=head, limits=limits)
         race.simulate_race()
         self.assertEqual(race.result_status, 0)
         return race, race.vse
@@ -167,6 +168,25 @@ class SimulatorTests(unittest.TestCase):
     def test_no_second_stop_without_second_compound(self):
         race, _ = self.race(StubNetwork(self.tot, pit_from=30))
         self.assertEqual(self.stops(race), [(30, "A3")])
+
+    def test_limits_hold_back_an_early_stop(self):
+        # the network wants to stop from lap 5 on (and again 10 laps later); the window opens on lap 20
+        race, _ = self.race(StubNetwork(self.tot, pit_from=5), second_compound="A6",
+                            limits={"first": [20, 40], "second": None})
+        self.assertEqual(self.stops(race), [(20, "A3")])
+
+    def test_limits_force_a_late_stop(self):
+        race, vse = self.race(StubNetwork(self.tot, pit_from=10 ** 6), second_compound="A6",
+                              limits={"first": [20, 30], "second": [45, 50]})
+        self.assertEqual(self.stops(race), [(30, "A3"), (50, "A6")])
+        self.assertEqual([d.get("Forced") for d in vse.decisions if d.get("Forced")], ["first", "second"])
+
+    def test_forced_second_stop_waits_for_min_stint(self):
+        # the second window closes before the first stint's 10 laps are up: forced on the first legal lap
+        race, _ = self.race(StubNetwork(self.tot, pit_from=10 ** 6), second_compound="A6",
+                            limits={"first": [20, 35], "second": [30, 38]})
+        self.assertEqual(self.stops(race), [(35, "A3"), (45, "A6")])
+
 
     def test_network_chooses_the_compound(self):
         network = ChoiceStub(self.tot, pit_from=30)
@@ -232,6 +252,33 @@ class SimulatorTests(unittest.TestCase):
         expected = choice.choose(start, 29 / self.tot)
         self.assertEqual(self.stops(race), [(30, expected)])
         self.assertEqual(vse.decisions[-1]["Compound"], expected)
+
+
+class RaceFilePlanTests(unittest.TestCase):
+    def test_plan_is_the_cheapest_and_limits_follow_it(self):
+        from integration.race_file_plan import driver_plan, limits, stint_cost
+        pars = {"race_pars": {"tot_no_laps": 40},
+                "track_pars": {"t_pitdrive_inlap": 5.0, "t_pitdrive_outlap": 14.0, "t_pit_tirechange_min": 2.0},
+                "car_pars": {"T": {"t_pit_tirechange_add": 1.0}},
+                "tireset_pars": {"X": dict(QUAD, t_add_coldtires=1.0)},
+                "driver_pars": {"X": {"team": "T", "strategy_info": [[0, "A4", 0, 0.0]]}}}
+        plan = driver_plan(pars, "X", "A3", "A4")
+        one = {l1: stint_cost(QUAD, "A4", 0, l1) + 23.0 + stint_cost(QUAD, "A3", 0, 40 - l1) for l1 in range(2, 40)}
+        self.assertEqual(plan["OneStopLap"], min(one, key=one.get))
+        self.assertAlmostEqual(plan["OneStopCost_s"], round(min(one.values()), 3))
+        self.assertEqual(plan["StopCost_s"], 23.0)
+        if plan["TwoStopGain_s"] < 0:
+            lim = limits(plan, early=0.25, late=0.05)
+            self.assertIsNone(lim["second"])
+            self.assertEqual(lim["first"], [max(2, math.floor(plan["OneStopLap"] - 10)),
+                                            min(39, math.ceil(plan["OneStopLap"] + 2))])
+        # with a free stop, two stops always pay and get a second window inside the legal two-stop window
+        free = dict(pars, track_pars={"t_pitdrive_inlap": 0.0, "t_pitdrive_outlap": 0.0, "t_pit_tirechange_min": 0.0},
+                    car_pars={"T": {"t_pit_tirechange_add": 0.0}},
+                    tireset_pars={"X": dict(QUAD, t_add_coldtires=0.0)})
+        lim = limits(driver_plan(free, "X", "A3", "A4"), early=0.25, late=0.5)
+        self.assertIsNotNone(lim["second"])
+        self.assertLessEqual(lim["second"][1], 30)
 
 
 if __name__ == "__main__":

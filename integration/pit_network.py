@@ -182,12 +182,17 @@ class NetworkVSE:
     With `other_compounds` and `compound_head` (data_pipeline/train_compound_head.py) the network times the stop
     on `stop_compound` as without a choice; only when it stops does the head predict the other compounds' advantage
     over `stop_compound` and the stop goes onto the best one if pit_now() says it is better.
+
+    With `limits` (integration/race_file_plan.limits, for tracks the network has not trained on) each stop must
+    fall in a window around the race file's plan: limits["first"] = [lo, hi] means no first stop before lap lo
+    and a forced stop on lap hi if the network has not stopped; limits["second"] the same for the second stop,
+    or None for no second stop. The windows of `min_stint` still apply.
     """
 
     def __init__(self, original_vse, race, driver: str, network: PitNetwork, stop_compound: Optional[str],
                  location_cat: int, pit_loss_s: float, first_lap: int = 2, compound_choice=None,
                  second_compound: Optional[str] = None, min_stint: int = 10, other_compounds=None,
-                 compound_head=None):
+                 compound_head=None, limits: Optional[dict] = None):
         if (stop_compound is None) == (compound_choice is None):
             raise ValueError("Give either a fixed stop compound or a compound choice")
         if original_vse is None:
@@ -208,6 +213,9 @@ class NetworkVSE:
         self.min_stint = min_stint
         self.other_compounds = list(other_compounds or [])
         self.compound_head = compound_head
+        self.limits = limits
+        if limits is not None and limits.get("second") is not None and second_compound is None:
+            raise ValueError("A second-stop window needs a second compound")
         if self.other_compounds and stop_compound is None:
             raise ValueError("Compound choice by the network needs the stored stop compound")
         self.dry_compounds = original_vse.param_dry_compounds
@@ -240,6 +248,13 @@ class NetworkVSE:
             return self.compound_for(lap)
         if lap < self.first_lap:
             return None
+        if self.limits is not None:
+            lo, hi = self.limits["first"]
+            if lap < lo:
+                return None
+            if lap >= hi:
+                self.decisions.append({"Lap": lap, "Pit": True, "Forced": "first", "StopsMade": 0})
+                return self.compound_for(lap)
         if self.other_compounds and self.compound_head is not None:
             return self.ask_head(lap)
         if self.other_compounds:
@@ -252,6 +267,15 @@ class NetworkVSE:
             return None
         if self.other_compounds and first_compound != self.stop_compound:
             return None
+        if self.limits is not None:
+            if self.limits.get("second") is None:
+                return None
+            lo, hi = self.limits["second"]
+            if lap < lo:
+                return None
+            if lap >= hi:
+                self.decisions.append({"Lap": lap, "Pit": True, "Forced": "second", "StopsMade": 1})
+                return self.second_compound
         return self.ask(lap, self.second_compound)
 
     def ask(self, lap: int, compound: str) -> Optional[str]:

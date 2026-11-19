@@ -16,6 +16,9 @@ real strategy, as in the training data:
     network_head  as network_two for the timing; when it stops, --compound-head picks the compound
               (data_pipeline/train_compound_head.py)
     network_rule  as network_head with the head's per-driver rule (always or never the other compound)
+    network_limited  as network_two, inside the plausibility limits of integration/race_file_plan.py (windows
+              around the race file's plan, widths per track from --widths)
+    race_file_plan  the race file's best one- or two-stop plan (integration/race_file_plan.py) as fixed stops
     real      the driver's real 2019 strategy (pit laps and compounds)
     tum       TUM's supervised VSE (nn_supervised_tirechange + compoundchoice) for this driver
     fixed     one stop on the Monte Carlo label lap (best mean position over the training runs), same compound
@@ -41,8 +44,8 @@ from integration.label_generator import (MAX_ATTEMPTS, complete_background_strat
 from integration.run_situations import stop_compounds  # noqa: E402
 from integration.write_fitted_pars import parse_pars  # noqa: E402
 
-POLICIES = ["network", "network_tum", "network_two", "network_choice", "network_head", "network_rule", "real",
-            "tum", "fixed"]
+POLICIES = ["network", "network_tum", "network_two", "network_choice", "network_head", "network_rule",
+            "network_limited", "race_file_plan", "real", "tum", "fixed"]
 YEAR = 2019
 SITUATIONS = ROOT / "integration/output/situations"
 
@@ -87,7 +90,18 @@ def simulate(task):
                      + track_pars["t_pit_tirechange_min"] + pars["car_pars"][team]["t_pit_tirechange_add"], 3)
     network = PitNetwork(settings["model"]) if policy.startswith("network") else None
     choice, second, others, head = None, None, None, None
-    if policy in ("network_two", "network_choice", "network_head", "network_rule"):
+    limits, planned = None, None
+    if policy in ("network_limited", "race_file_plan"):
+        from integration import race_file_plan
+        plan = race_file_plan.race_plans(parse_pars(source.read_bytes().decode("utf-8")),
+                                         min_stint=settings["min_stint"])[driver]
+        if policy == "race_file_plan":
+            laps = race_file_plan.planned_stops(plan)
+            planned = tuple(zip(laps, [plan["C1"], plan["C2"]][:len(laps)]))
+        else:
+            width = json.loads(Path(settings["widths"]).read_text())["widths"][track]
+            limits = race_file_plan.limits(plan, width["early"], width["late"], settings["min_stint"])
+    if policy in ("network_two", "network_choice", "network_head", "network_rule", "network_limited"):
         from integration.two_stop_generator import second_stop_compounds
         second = second_stop_compounds(parse_pars(source.read_bytes().decode("utf-8")))[driver]
     if policy in ("network_choice", "network_head", "network_rule"):
@@ -118,7 +132,10 @@ def simulate(task):
                 race.vse = NetworkVSE(race.vse, race, driver, network, None if choice else stop,
                                       pars["vse_pars"]["location_cat"], pit_loss, compound_choice=choice,
                                       second_compound=second, min_stint=settings["min_stint"],
-                                      other_compounds=others, compound_head=head)
+                                      other_compounds=others, compound_head=head, limits=limits)
+            elif policy == "race_file_plan":
+                from integration.fixed_lap_policy import PlannedStopsPolicy
+                race.vse = FixedLapVSE(race.vse, driver, PlannedStopsPolicy(planned))
             elif policy == "fixed":
                 race.vse = FixedLapVSE(race.vse, driver, FixedLapPolicy(fixed_lap, stop))
             race.simulate_race()
@@ -157,6 +174,8 @@ def main():
     parser.add_argument("--min-stint", type=int, default=10, help="network_two: laps between stops and after the last")
     parser.add_argument("--compound-head", type=Path, default=ROOT / "integration/models/pit_compound_head_v1.npz",
                         help="network_head: the head; network_rule: its report in notes/evidence/pit_network/")
+    parser.add_argument("--widths", type=Path, default=ROOT / "notes/evidence/pit_network/plausibility_widths.json",
+                        help="network_limited: window widths per track (integration/race_file_plan.py --widths)")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     if sys.version_info[:2] != (3, 8):
@@ -164,7 +183,7 @@ def main():
     out = args.out or ROOT / "integration/output/evaluation" / ("%s_mc%d" % (args.model.stem, args.runs))
     out.mkdir(parents=True, exist_ok=True)
     settings = {"model": str(args.model.resolve()), "seed": args.seed, "min_stint": args.min_stint,
-                "compound_head": str(args.compound_head.resolve())}
+                "compound_head": str(args.compound_head.resolve()), "widths": str(args.widths.resolve())}
     tasks = []
     for track in args.tracks:
         drivers = sorted(stop_compounds(parse_pars(race_file(track).read_bytes().decode("utf-8"))))
