@@ -348,13 +348,40 @@ What this shows:
 - **The other four tracks barely move.** Austin, Monza and Spielberg are within ±0.02 places of v4 + head. Singapore loses 0.12 places (TUM lead −0.94 → −0.82; 3 drivers worse, none better). On the old four tracks v6 + head is −0.16 ± 0.02 against TUM, v4 + head −0.20: one network for five tracks costs 0.04 places there.
 - **Over five tracks it beats TUM's VSE by 0.18 places and 1.2 s** and the real strategies by 0.62 places. The safety-car split is unchanged in kind: clearly ahead in green races (−0.40), level with a safety car, where TUM still leads at Monza (+0.31) and Spielberg (+0.36).
 - **The compound head again adds a little** (−0.04 places, at Spielberg and Monza) and costs nothing at Barcelona in the simulator (−0.006), although it was slightly worse there on the held-out runs.
-- **A new track still needs its own runs.** Five tracks are not yet evidence that the network transfers; that needs a leave-one-out test on five (or more) tracks.
+- **A new track still needs its own runs.** Five tracks are not yet evidence that the network transfers; that needs a leave-one-out test on five (or more) tracks (next section).
+
+### Leave one track out, on five tracks
+
+Does the network work on a track it has never raced, and does a fifth training track help? For each of the four old tracks X, two two-stop networks were trained exactly like v4/v6 but without X: on the other three old tracks (`pit_network_v4_noX`) and on those plus Barcelona (`pit_network_v6_noX`). Each starts from the one-stop network trained without X (`pit_network_noX`, round 1), so nothing about X reaches it. For Barcelona, v4 itself never saw it. Each raced its held-out track (policy `network_two`, timing only, no compound head; 100 races per driver, the same seeds as every evaluation). About 25 minutes in total. [Table](evidence/pit_network/leave_one_track_out_five.csv).
+
+| Places minus TUM's VSE (race time) | Seen (v6) | Unseen, trained on 3 tracks | Unseen, trained on 4 tracks (incl. Barcelona) |
+|---|---:|---:|---:|
+| Austin | −0.11 (−1.5 s) | +0.97 (+11.4 s) | +0.92 (+11.8 s) |
+| Monza | +0.15 (+1.6 s) | **+0.53** (+5.4 s) | +0.99 (+7.5 s) |
+| Singapore | −0.81 (−6.9 s) | +1.62 (+18.0 s) | **−0.78 (−7.1 s)** |
+| Spielberg | +0.30 (+2.7 s) | +1.52 (+12.4 s) | +1.37 (+12.6 s) |
+| Barcelona | −0.22 (−0.2 s) | | +0.61 (+9.2 s; v4) |
+| **Old four tracks together** | | **+1.16 ± 0.02** | **+0.62 ± 0.02** |
+
+| Unseen: two-stop share / mean first stop (lap) | 3 tracks | 4 tracks | Seen (v6) |
+|---|---|---|---|
+| Austin | 38 % / 12.4 | 94 % / **5.2** | 92 % / 16.3 |
+| Monza | 0 % / 30.8 | 4 % / 15.2 | 5 % / 25.6 |
+| Singapore | 94 % / **3.2** | 11 % / 18.3 | 3 % / 17.4 |
+| Spielberg | 94 % / **5.5** | 85 % / 13.2 | 7 % / 27.3 |
+
+What this shows:
+
+- **On a track it has never raced the network is still clearly worse than TUM's VSE**, by 0.5 to 1.5 places, in green and safety-car races alike, at every track but one. TUM's VSE was trained on many seasons and tracks; ours on three or four.
+- **The fifth track halves the average gap** (+1.16 → +0.62 places over the four old tracks), but almost all of that is Singapore: there the 4-track network is as good as the one trained on Singapore (−0.78 vs −0.81). At Austin and Spielberg it helps by 0.05–0.15 places, and at **Monza it is worse** (+0.53 → +0.99): from Barcelona it learns earlier stops (lap 15 vs 31) that are wrong at Monza.
+- **The failures are implausible plans, not small timing errors**: a first stop on lap 3–5 and two stops where nobody needs them (Spielberg 85–94 %). On an unseen track the track inputs (location category, pit loss, tyre features) take values outside what it trained on, and the network extrapolates badly.
+- **So a new track still needs its own runs.** Four or five tracks do not teach the network what a track does; whether it ever transfers is a question for many more tracks (2022–2025), not this data set. A cheaper safeguard for unseen tracks would be to keep its decisions within plausible windows (no stop before a minimum stint, two stops only where a fixed plan shows they pay); that has not been tried.
 
 ## Next
 
-1. Leave-one-track-out on five tracks: does a fifth track make the unseen-track result less bad?
+1. More tracks (2022–2025 seasons): the leave-one-out test says the network does not yet transfer to new tracks.
 2. Reacting background drivers (TUM's VSE for everyone else), so undercuts exist and reacting can pay.
-3. More tracks (2022–2025 seasons) before claiming anything about new tracks.
+3. Plausibility limits on unseen tracks (minimum first stint, two stops only where a fixed plan shows they pay), if the network has to be used on a track without runs.
 
 ## Reproduce
 
@@ -398,4 +425,7 @@ What this shows:
 .venv-train/Scripts/python.exe data_pipeline/train_compound_head.py --tracks Austin Monza Singapore Spielberg Catalunya --timing integration/models/pit_network_v6_five_tracks.npz --name pit_compound_head_v2
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_five_tracks.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_two network_head --compound-head integration/models/pit_compound_head_v2.npz --out integration/output/evaluation/pit_network_v6_mc100
 .venv-data/Scripts/python.exe data_pipeline/summarise_evaluation.py integration/output/evaluation/all_five_tracks_mc100 --base v6_head
+# round 8, leave one track out: for X in Austin Monza Singapore Spielberg, SET v4 (other old tracks) and v6 (plus Catalunya)
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks <other tracks> --start integration/models/pit_network_noX.npz --compounds stored --name pit_network_SET_noX --iterations 4
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_SET_noX.npz --tracks X --policies network_two --out integration/output/evaluation/loo_SET_noX_mc100
 ```
