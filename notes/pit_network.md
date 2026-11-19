@@ -470,11 +470,31 @@ What this shows:
 - **What it probably learned**: to lean less on the tyre inputs and more on the track inputs (location category, pit loss), which identify the five tracks it trained on. That would make it robust on these tracks but no help on a new one; this has not been tested.
 - **Overall**: with tyre knowledge that is as uncertain as our own fit, the robust network keeps a small lead over TUM's VSE (−0.07 places), where every policy trained or planned on exact tyres falls behind. That, not the −0.18 of v6 with exact tyres, is the fair headline against TUM.
 
+### Is the robust network memorising the tracks?
+
+The leave-one-out test again, now with the robust training: for each of the five tracks, a network trained like v7 (moderate tyre errors, 4 iterations) on the other four, starting from the one-stop network without that track (`pit_network_noX`; v1 for Barcelona), saved as `pit_network_v7_noX`. Each raced its hidden track with moderate and with exact tyres; the earlier exact-trained hidden-track networks (`pit_network_v6_noX`, v4 for Barcelona) raced it again with moderate tyres. About 20 minutes ([table](evidence/pit_network/leave_one_track_out_robust.csv)).
+
+| Places minus TUM's VSE, moderate tyre error | Austin | Monza | Singapore | Spielberg | Barcelona | All five |
+|---|---:|---:|---:|---:|---:|---:|
+| Robust v7, track seen | +0.22 | +0.21 | −0.78 | +0.18 | −0.17 | **−0.07 ± 0.02** |
+| Robust, track hidden | +1.04 | +0.75 | +0.45 | +0.84 | +0.29 | **+0.67 ± 0.02** |
+| Exact-trained, track hidden | +1.38 | +0.98 | −0.21 | +1.30 | +0.45 | +0.78 ± 0.02 |
+| Race-file plan | +0.23 | +0.33 | −0.15 | +0.65 | −0.11 | +0.19 ± 0.02 |
+
+With exact tyres: robust hidden +0.63, exact-trained hidden +0.62, race-file plan −0.16, robust v7 seen −0.08.
+
+What this shows:
+
+- **Yes: the robust network's lead comes from knowing the tracks.** On a hidden track it is 0.67 places behind TUM's VSE, against 0.07 ahead on the tracks it trained on. Robust training made the hidden-track result only slightly less bad (+0.78 → +0.67 with a tyre error) and not at all with exact tyres (+0.63 vs +0.62).
+- **It is robust, but robustly wrong.** The hidden-track networks barely react to the tyre error (+0.63 exact, +0.67 moderate), because they learned to lean on the tyre inputs less; without the track inputs it knows, nothing tells them what a track needs. They stop twice where it does not pay (Monza 31 %, Spielberg 45 %) and hardly where it does (Austin 12 %, Barcelona 0 %).
+- **On a new track with uncertain tyres the race-file plan is our best option** (+0.19), still behind TUM's VSE. TUM's VSE, trained on many seasons and tracks, is the better strategy for a track neither of our approaches has data for.
+- **The fair summary of the project so far**: on tracks with our own Monte Carlo runs, the robust network beats TUM's VSE by 0.07 ± 0.02 places with realistic tyre uncertainty (0.32 in green races; TUM is better with a safety car). It does not transfer to new tracks; more tracks are the only route to that.
+
 ## Next
 
-1. Leave one track out with the robust network: does robustness to tyre errors come from memorising the tracks?
+1. More tracks (2022–2025 seasons): the only route to a network that transfers; each needs its own runs (about 3 hours per track).
 2. Reacting background drivers (TUM's VSE for everyone else), so safety-car and undercut reactions can pay; keep a race-file-plan baseline and the tyre-error rows in every table.
-3. More tracks (2022–2025 seasons): the leave-one-out test says the network does not yet transfer to new tracks.
+3. If a new track has to be raced without runs: the race-file plan, not the network.
 
 ## Reproduce
 
@@ -530,6 +550,9 @@ What this shows:
 .venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks Austin Monza Singapore Spielberg Catalunya --start integration/models/pit_network_v1.npz --compounds stored --name pit_network_v7_robust --iterations 4 --tyre-error moderate
 .venv-train/Scripts/python.exe data_pipeline/train_compound_head.py --tracks Austin Monza Singapore Spielberg Catalunya --timing integration/models/pit_network_v7_robust.npz --name pit_compound_head_v3_robust --tyre-error moderate
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v7_robust.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_head --compound-head integration/models/pit_compound_head_v3_robust.npz --tyre-error LEVEL --out integration/output/evaluation/robust_v7_LEVEL_mc100
+# round 8, robust leave one track out: for X in all five (start pit_network_noX, v1 for Catalunya)
+.venv-train/Scripts/python.exe data_pipeline/train_two_stop_network.py --tracks <other four> --start integration/models/pit_network_noX.npz --compounds stored --name pit_network_v7_noX --iterations 4 --tyre-error moderate
+.venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v7_noX.npz --tracks X --policies network_two --tyre-error LEVEL --out integration/output/evaluation/loo_robust_noX_LEVEL_mc100
 # round 8, wrong tyre model (LEVEL moderate and large)
 .venv-tum/Scripts/python.exe integration/evaluate_pit_network.py --model integration/models/pit_network_v6_five_tracks.npz --tracks Spielberg Monza Singapore Austin Catalunya --policies network_head race_file_plan --compound-head integration/models/pit_compound_head_v2.npz --tyre-error LEVEL --out integration/output/evaluation/tyre_error_LEVEL_mc100
 ```
