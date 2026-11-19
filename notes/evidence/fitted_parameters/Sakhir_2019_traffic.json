@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 2,
+    "event": "Bahrain Grand Prix",
+    "location": "Sakhir"
+  },
+  "tum_file": "pars_Sakhir_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.462,
+      "se": 0.055,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": -0.295,
+      "se": 0.191,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 1.344,
+      "se": 0.224,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": 0.845,
+      "se": 0.256,
+      "tum": 1.38
+    }
+  },
+  "counts": {
+    "pairs": 587,
+    "close_pairs": 104,
+    "passes": 30,
+    "duel_laps": 27,
+    "passes_clear_ahead": 25
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 32,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 7,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 6,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 5,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 9,
+      "passes": 2
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 10,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 10,
+      "passes": 5
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 22,
+      "passes": 18
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

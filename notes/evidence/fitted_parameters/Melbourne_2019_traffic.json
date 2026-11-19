@@ -1,0 +1,86 @@
+{
+  "race": {
+    "year": 2019,
+    "round": 1,
+    "event": "Australian Grand Prix",
+    "location": "Melbourne"
+  },
+  "tum_file": "pars_Melbourne_2019.ini",
+  "values": {
+    "min_t_dist": {
+      "measured": 0.362,
+      "se": 0.035,
+      "tum": 0.5
+    },
+    "t_duel": {
+      "measured": 0.121,
+      "se": 0.09,
+      "tum": 0.3
+    },
+    "t_overtake_loser": {
+      "measured": 0.92,
+      "se": NaN,
+      "tum": 0.3
+    },
+    "t_gap_overtake": {
+      "measured": NaN,
+      "se": NaN,
+      "tum": 2.7
+    }
+  },
+  "counts": {
+    "pairs": 836,
+    "close_pairs": 240,
+    "passes": 6,
+    "duel_laps": 35,
+    "passes_clear_ahead": 4
+  },
+  "pass_rate_by_advantage": [
+    {
+      "advantage_s": "(-inf, -1.0]",
+      "pairs": 37,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-1.0, -0.5]",
+      "pairs": 35,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.5, -0.25]",
+      "pairs": 22,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(-0.25, 0.0]",
+      "pairs": 31,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.0, 0.25]",
+      "pairs": 23,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.25, 0.5]",
+      "pairs": 17,
+      "passes": 0
+    },
+    {
+      "advantage_s": "(0.5, 1.0]",
+      "pairs": 30,
+      "passes": 1
+    },
+    {
+      "advantage_s": "(1.0, inf]",
+      "pairs": 29,
+      "passes": 5
+    }
+  ],
+  "settings": {
+    "close_gap_s": 1.5,
+    "clear_ahead_s": 2.0,
+    "min_dist_quantile": 0.05,
+    "bootstrap_runs": 200
+  }
+}

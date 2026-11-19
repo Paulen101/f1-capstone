@@ -1,0 +1,21 @@
+Abbreviation,Position,Laps,Status,ResultTime_s
+HAM,1,57,Finished,5661.295
+BOT,2,57,Finished,2.98
+LEC,3,57,Finished,6.131
+VER,4,57,Finished,6.408
+VET,5,57,Finished,36.068
+NOR,6,57,Finished,45.754
+RAI,7,57,Finished,47.47
+GAS,8,57,Finished,58.094
+ALB,9,57,Finished,62.697
+PER,10,57,Finished,63.696
+GIO,11,57,Finished,64.599
+KVY,12,56,+1 Lap,
+MAG,13,56,+1 Lap,
+STR,14,56,+1 Lap,
+RUS,15,56,+1 Lap,
+KUB,16,55,+2 Laps,
+HUL,17,53,Engine,
+RIC,18,53,Out of fuel,
+SAI,19,53,Collision damage,
+GRO,20,16,Retired,

@@ -122,3 +122,32 @@ Deterministic, one stop onto the driver's real second compound, every candidate 
 - **Singapore's fit is weak** (few free-air laps, four drivers on fallback pace).
 - **Two-stop races cannot be labelled yet.**
 - **Trend treated as fuel**, and TUM's safety-car model, as before. Wear is quadratic at Barcelona and Monza, linear elsewhere.
+
+## More tracks: Melbourne, Sakhir, Suzuka (2026-11-19)
+
+Same method, three more 2019 races chosen to add what the five tracks lack: Sakhir (round 2, high wear, 90 % of drivers stopped twice or more), Melbourne (round 1, low wear, 10 %) and Suzuka (round 17, mixed, 55 %).
+
+```sh
+.venv-data/Scripts/python.exe data_pipeline/fit_parameters.py --year 2019 --round 1     # and 2, 17
+.venv-data/Scripts/python.exe data_pipeline/fit_traffic.py --year 2019 --round 1
+.venv-tum/Scripts/python.exe integration/write_fitted_pars.py --fit notes/evidence/fitted_parameters/Melbourne_2019_fit.json
+.venv-tum/Scripts/python.exe integration/check_races.py --tracks Melbourne Sakhir Suzuka --out notes/evidence/fitted_parameters/race_checks_more_tracks.csv
+```
+
+| Track | Free-air laps, residual | Wear | k1 (s/lap) | k0 vs reference (s) | Traffic: t_gap_overtake, passes |
+|---|---|---|---|---|---|
+| Melbourne | 490, 0.69 s | linear | 0.057 all | medium −0.30, soft −0.62 vs hard | not measurable (6 passes): TUM's 2.7 s kept |
+| Sakhir | 451, 0.73 s | linear | 0.125 medium/soft | soft −0.20 vs medium | 0.845 s, 30 passes; t_duel −0.30 written as 0 |
+| Suzuka | 415, 0.59 s | quadratic (stint CV 0.729 vs 0.734) | 0.063, k2 0.0009–0.0022 | medium −0.53, soft −0.74 vs hard | 1.42 s, 36 passes |
+
+Checks against the real race ([race_checks_more_tracks.csv](evidence/fitted_parameters/race_checks_more_tracks.csv); deterministic, real strategies, recorded safety cars):
+
+| Track | Position MAE, fitted / TUM | Top 4, fitted (real) | Passes, fitted / TUM / real |
+|---|---|---|---|
+| Melbourne | **0.6** / TUM's file runs dry | BOT-HAM-VER-VET (same) | 11 / – / 6 |
+| Sakhir | **0.9** / 1.9 | HAM-BOT-NOR-LEC (HAM-BOT-LEC-VER) | 48 / 43 / 30 |
+| Suzuka | **2.4** / 2.6 | HAM-VET-BOT-ALB (BOT-VET-HAM-ALB) | 40 / 48 / 36 |
+
+- **TUM's own Melbourne and Sakhir files run out of fuel** (1.897 kg × 58 = 110.026 kg, 1.930 × 57 = 110.010 kg from 110 kg) in a race without a safety car; our files use the existing fix (1.896, 1.929). `check_races.py` now records this instead of stopping.
+- **Melbourne's overtaking threshold cannot be measured** from 6 passes; `write_fitted_pars.py` now keeps TUM's value when `t_gap_overtake` is NaN (the other traffic values are measured).
+- **Sakhir's hard tyre (A2) is not fitted**: only Sainz used it. It keeps TUM's values (k0 +0.37 s, k1 0.170 s/lap against the fitted medium 0.125), which TUM also gives every driver: slower and faster-wearing. Both files use the medium as reference (k0 = 0), so the offset is consistent; it matters only where the compound runs or TUM's VSE choose the hard.
